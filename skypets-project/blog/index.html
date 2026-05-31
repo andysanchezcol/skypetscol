@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — SkyPets Colombia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange:#FF7600; --teal:#008D83; --yellow:#FFBC00;
+  --success:#71CC1E; --danger:#E5443A;
+  --bg1:#FFFAEC; --bg2:#FFEFC2; --bg3:#FFE7A6;
+  --ink:#2B2418; --cream:#FFFAEC; --muted:#6B5540;
+  --border:2px solid #2B2418; --shadow:4px 4px 0 #2B2418; --shadowL:6px 6px 0 #2B2418;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:var(--bg1);color:var(--ink);}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:68px;background:rgba(255,250,236,.96);backdrop-filter:blur(16px);border-bottom:var(--border);transition:box-shadow .3s;}
+nav.scrolled{box-shadow:var(--shadow);}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.nav-logo img{height:42px;width:auto;}
+.nav-logo-fb{display:none;font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:var(--orange);}
+.nav-logo-fb span{color:var(--teal);}
+.nav-links{display:flex;align-items:center;gap:32px;list-style:none;}
+.nav-links a{font-size:.88rem;font-weight:500;color:var(--ink);text-decoration:none;transition:color .2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--orange);}
+.nav-cta{background:var(--orange);color:var(--cream)!important;font-weight:600!important;padding:.5rem 1.25rem;border-radius:100px;border:var(--border);box-shadow:3px 3px 0 var(--ink);transition:transform .1s,box-shadow .1s!important;}
+.nav-cta:hover{transform:translate(-1px,-1px);box-shadow:var(--shadow)!important;}
+@media(max-width:700px){nav{padding:0 20px;}.nav-links{display:none;}}
+
+/* HERO */
+.hero{background:var(--yellow);border-bottom:var(--border);padding:110px 48px 56px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Ctext x='10' y='55' font-size='36' fill='%232B2418' opacity='0.06'%3E🐾%3C/text%3E%3Ctext x='68' y='105' font-size='26' fill='%232B2418' opacity='0.04'%3E✈%3C/text%3E%3C/svg%3E");}
+.hero-inner{max-width:820px;position:relative;z-index:1;}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:.78rem;color:rgba(43,36,24,.5);margin-bottom:16px;}
+.breadcrumb a{color:rgba(43,36,24,.5);text-decoration:none;}
+.breadcrumb a:hover{color:var(--ink);}
+.hero-badge{display:inline-block;border:var(--border);border-radius:100px;padding:.3rem 1rem;margin-bottom:16px;font-size:.7rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;background:var(--ink);color:var(--cream);box-shadow:2px 2px 0 rgba(43,36,24,.3);}
+.hero h1{font-family:'Fredoka',sans-serif;font-size:clamp(2.4rem,5vw,3.8rem);font-weight:700;line-height:1.05;color:var(--ink);margin-bottom:16px;}
+.hero h1 .acc{color:var(--orange);}
+.hero-sub{font-size:1rem;color:var(--ink);opacity:.72;font-weight:300;line-height:1.7;max-width:520px;}
+@media(max-width:600px){.hero{padding:100px 20px 40px;}}
+
+/* FILTER BAR */
+.filter-bar{position:sticky;top:68px;z-index:80;background:var(--ink);border-bottom:var(--border);padding:0 48px;overflow-x:auto;scrollbar-width:none;}
+.filter-bar::-webkit-scrollbar{display:none;}
+.filter-inner{display:flex;align-items:center;gap:6px;min-width:max-content;padding:10px 0;}
+.filter-btn{display:inline-flex;align-items:center;gap:6px;padding:.32rem .9rem;border-radius:100px;font-size:.75rem;font-weight:500;color:rgba(255,250,236,.55);white-space:nowrap;border:1.5px solid transparent;cursor:pointer;background:transparent;font-family:'Poppins',sans-serif;transition:background .15s,color .15s;}
+.filter-btn:hover{background:rgba(255,250,236,.1);color:var(--cream);}
+.filter-btn.active{background:var(--orange);color:var(--cream);border-color:var(--orange);font-weight:600;box-shadow:2px 2px 0 rgba(255,118,11,.4);}
+@media(max-width:600px){.filter-bar{padding:0 16px;}}
+
+/* MAIN LAYOUT */
+.blog-wrap{max-width:1100px;margin:0 auto;padding:56px 48px 80px;display:grid;grid-template-columns:1fr 300px;gap:48px;align-items:start;}
+@media(max-width:900px){.blog-wrap{grid-template-columns:1fr;padding:40px 20px 60px;}}
+
+/* ARTICLE GRID */
+.articles-grid{display:flex;flex-direction:column;gap:24px;}
+
+/* FEATURED CARD */
+.card-featured{background:#fff;border:var(--border);border-radius:24px;box-shadow:var(--shadow);overflow:hidden;transition:transform .15s,box-shadow .15s;display:grid;grid-template-columns:1fr 1fr;}
+.card-featured:hover{transform:translate(-2px,-2px);box-shadow:var(--shadowL);}
+.card-featured[data-hidden="true"]{display:none;}
+.card-thumb-featured{height:100%;min-height:280px;background:var(--teal);position:relative;overflow:hidden;}
+.card-thumb-featured img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease;}
+.card-featured:hover .card-thumb-featured img{transform:scale(1.04);}
+.card-thumb-fallback{width:100%;height:100%;min-height:280px;display:flex;align-items:center;justify-content:center;font-size:5rem;}
+.card-cat-pill{position:absolute;bottom:14px;left:14px;background:var(--yellow);border:1.5px solid var(--ink);border-radius:100px;padding:.22rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--ink);box-shadow:2px 2px 0 var(--ink);}
+.card-featured-body{padding:32px 28px;display:flex;flex-direction:column;justify-content:center;}
+.featured-tag{display:inline-block;background:var(--orange);color:var(--cream);border:var(--border);border-radius:100px;padding:.2rem .75rem;font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;box-shadow:2px 2px 0 var(--ink);margin-bottom:14px;}
+.card-featured h2{font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:var(--ink);line-height:1.25;margin-bottom:12px;}
+.card-featured p{font-size:.88rem;color:var(--muted);line-height:1.75;font-weight:300;margin-bottom:20px;}
+.card-meta{display:flex;align-items:center;gap:12px;font-size:.75rem;color:var(--muted);margin-bottom:20px;}
+.card-meta-dot{width:4px;height:4px;border-radius:50%;background:var(--muted);}
+.btn-read{display:inline-flex;align-items:center;gap:8px;background:var(--orange);color:var(--cream);font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:600;padding:.65rem 1.4rem;border-radius:100px;border:var(--border);text-decoration:none;box-shadow:var(--shadow);transition:transform .1s,box-shadow .1s;}
+.btn-read:hover{transform:translate(-2px,-2px);box-shadow:var(--shadowL);}
+@media(max-width:700px){.card-featured{grid-template-columns:1fr;}.card-thumb-featured{min-height:200px;}}
+
+/* REGULAR CARD */
+.card-regular{background:#fff;border:var(--border);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;transition:transform .15s,box-shadow .15s;display:flex;align-items:stretch;}
+.card-regular:hover{transform:translate(-2px,-2px);box-shadow:var(--shadowL);}
+.card-regular[data-hidden="true"]{display:none;}
+.card-thumb-sm{width:180px;flex-shrink:0;background:var(--teal);position:relative;overflow:hidden;}
+.card-thumb-sm img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease;}
+.card-regular:hover .card-thumb-sm img{transform:scale(1.05);}
+.card-thumb-sm-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;}
+.card-body-sm{padding:22px 24px;display:flex;flex-direction:column;justify-content:center;flex:1;}
+.card-body-sm .card-cat{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--teal);margin-bottom:6px;display:block;}
+.card-body-sm h3{font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:8px;}
+.card-body-sm p{font-size:.84rem;color:var(--muted);line-height:1.65;font-weight:300;margin-bottom:14px;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;}
+.card-date{font-size:.75rem;color:var(--muted);}
+.link-read{font-size:.82rem;font-weight:600;color:var(--orange);text-decoration:none;transition:color .2s;}
+.link-read:hover{color:#C45500;}
+@media(max-width:600px){.card-regular{flex-direction:column;}.card-thumb-sm{width:100%;height:160px;}}
+
+/* EMPTY STATE */
+.empty-state{background:var(--bg2);border:var(--border);border-radius:20px;padding:48px 32px;text-align:center;box-shadow:var(--shadow);}
+.empty-state span{font-size:3rem;display:block;margin-bottom:16px;}
+.empty-state h3{font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:600;color:var(--ink);margin-bottom:8px;}
+.empty-state p{font-size:.86rem;color:var(--muted);font-weight:300;}
+
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;gap:20px;}
+
+.sidebar-widget{background:#fff;border:var(--border);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;}
+.widget-header{background:var(--teal);padding:14px 20px;font-family:'Fredoka',sans-serif;font-size:.95rem;font-weight:600;color:var(--cream);display:flex;align-items:center;gap:8px;}
+.widget-body{padding:16px;}
+
+/* Newsletter widget */
+.newsletter-widget{background:var(--teal);border:var(--border);border-radius:20px;box-shadow:var(--shadow);padding:24px 20px;text-align:center;}
+.newsletter-widget h3{font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:var(--cream);margin-bottom:6px;}
+.newsletter-widget p{font-size:.8rem;color:rgba(255,250,236,.75);font-weight:300;margin-bottom:16px;line-height:1.5;}
+.nl-input{width:100%;padding:.55rem .85rem;border:var(--border);border-radius:10px;font-family:'Poppins',sans-serif;font-size:.82rem;background:var(--bg1);color:var(--ink);outline:none;margin-bottom:10px;}
+.nl-input:focus{border-color:var(--yellow);}
+.nl-btn{width:100%;background:var(--yellow);color:var(--ink);border:var(--border);border-radius:100px;padding:.6rem;font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;box-shadow:var(--shadow);transition:transform .1s,box-shadow .1s;}
+.nl-btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink);}
+
+/* Category list */
+.cat-list{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.cat-list a{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:10px;text-decoration:none;font-size:.85rem;font-weight:500;color:var(--ink);transition:background .15s;}
+.cat-list a:hover{background:var(--bg2);}
+.cat-count{background:var(--bg2);border:1.5px solid rgba(43,36,24,.12);border-radius:100px;padding:.1rem .55rem;font-size:.7rem;font-weight:700;color:var(--muted);}
+
+/* Popular posts */
+.pop-post{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(43,36,24,.07);}
+.pop-post:last-child{border-bottom:none;padding-bottom:0;}
+.pop-thumb{width:56px;height:56px;border-radius:12px;border:1.5px solid var(--ink);object-fit:cover;flex-shrink:0;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;overflow:hidden;}
+.pop-thumb img{width:100%;height:100%;object-fit:cover;}
+.pop-title{font-family:'Fredoka',sans-serif;font-size:.88rem;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:3px;}
+.pop-date{font-size:.72rem;color:var(--muted);font-weight:300;}
+
+/* WA widget */
+.wa-widget{background:var(--orange);border:var(--border);border-radius:20px;box-shadow:var(--shadow);padding:20px;text-align:center;}
+.wa-widget h3{font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.wa-widget p{font-size:.78rem;color:var(--ink);opacity:.75;font-weight:300;margin-bottom:14px;line-height:1.5;}
+.wa-btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--cream);font-family:'Poppins',sans-serif;font-size:.82rem;font-weight:600;padding:.6rem 1.2rem;border-radius:100px;border:1.5px solid var(--ink);text-decoration:none;box-shadow:2px 2px 0 rgba(43,36,24,.3);transition:transform .1s;}
+.wa-btn:hover{transform:translate(-1px,-1px);}
+
+/* FOOTER */
+footer{background:var(--ink);border-top:var(--border);padding:28px 48px;}
+.footer-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:.8rem;color:rgba(255,250,236,.45);}
+.f-links{display:flex;gap:24px;flex-wrap:wrap;}
+.f-links a{color:rgba(255,250,236,.4);text-decoration:none;font-size:.82rem;transition:color .2s;}
+.f-links a:hover{color:var(--orange);}
+
+/* WA FLOAT */
+.wa{position:fixed;bottom:24px;right:24px;z-index:200;width:58px;height:58px;border-radius:50%;background:#25D366;border:var(--border);display:flex;align-items:center;justify-content:center;font-size:1.7rem;box-shadow:var(--shadowL);text-decoration:none;animation:wap 2.5s ease-in-out infinite;}
+.wa:hover{transform:translate(-2px,-2px);animation:none;}
+@keyframes wap{0%,100%{box-shadow:var(--shadowL)}50%{box-shadow:4px 4px 0 var(--ink),0 0 0 8px rgba(37,211,102,.18)}}
+
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="/" class="nav-logo">
+    <img src="https://skypetscol.com/wp-content/uploads/2025/10/cropped-Logo-SkyPets-Travel-500-400x400.webp"
+         alt="SkyPets" onerror="this.style.display='none';document.getElementById('lf').style.display='block'">
+    <span id="lf" class="nav-logo-fb">Sky<span>Pets</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Inicio</a></li>
+    <li><a href="/servicios">Servicios</a></li>
+    <li><a href="/nosotros">Nosotros</a></li>
+    <li><a href="/blog" class="active">Blog</a></li>
+    <li><a href="https://wa.me/573213556909" class="nav-cta">💬 Cotiza Ahora</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="/">Inicio</a><span>›</span><span style="opacity:.8">Blog</span></div>
+    <span class="hero-badge">PET BLOG</span>
+    <h1>Todo lo que necesitas saber<br>para viajar con tu <span class="acc">peludito</span></h1>
+    <p class="hero-sub">Guías prácticas, tips de viaje, requisitos por destino y todo lo que un papito viajero necesita saber. Escrito por nuestro equipo de expertos.</p>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-inner">
+    <button class="filter-btn active" data-cat="todos">Todos los artículos</button>
+    <button class="filter-btn" data-cat="tips">✈️ Tips de viaje</button>
+    <button class="filter-btn" data-cat="salud">🩺 Salud</button>
+    <button class="filter-btn" data-cat="documentacion">📄 Documentación</button>
+    <button class="filter-btn" data-cat="destinos">🌍 Destinos</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="blog-wrap">
+  <div>
+    <div class="articles-grid" id="articlesGrid">
+
+      <!-- ARTÍCULO DESTACADO 1 -->
+      <div class="card-featured reveal" data-cat="tips">
+        <div class="card-thumb-featured">
+          <img src="https://skypetscol.com/wp-content/uploads/2025/10/1-1.webp"
+               alt="Perro listo para volar"
+               onerror="this.parentElement.innerHTML='<div class=card-thumb-fallback>🐶</div>'">
+          <span class="card-cat-pill">Tips de viaje</span>
+        </div>
+        <div class="card-featured-body">
+          <span class="featured-tag">⭐ DESTACADO</span>
+          <h2>¿Cómo preparar a tu perro para volar contigo sin estrés?</h2>
+          <div class="card-meta">
+            <span>5 nov 2025</span>
+            <span class="card-meta-dot"></span>
+            <span>6 min de lectura</span>
+            <span class="card-meta-dot"></span>
+            <span>Por SkyPets</span>
+          </div>
+          <p>Viajar en avión con tu perro puede parecer un reto, pero con la preparación adecuada es totalmente posible. Te contamos todo: desde cómo acostumbrarlo al guacal hasta el día del vuelo.</p>
+          <a href="/blog/como-preparar-a-tu-perro-para-volar-sin-estres/" class="btn-read">Leer artículo →</a>
+        </div>
+      </div>
+
+      <!-- ARTÍCULO REGULAR 2 -->
+      <div class="card-regular reveal" data-cat="tips">
+        <div class="card-thumb-sm">
+          <img src="https://skypetscol.com/wp-content/uploads/2025/10/Gato-SkyPets.webp"
+               alt="Gato viajero"
+               onerror="this.parentElement.innerHTML='<div class=card-thumb-sm-fallback>🐱</div>'">
+        </div>
+        <div class="card-body-sm">
+          <span class="card-cat">Perros & Gatos</span>
+          <h3>Cómo preparar a tu mascota antes de viajar: Guía completa para dueños de perros y gatos</h3>
+          <p>Desde la primera consulta hasta el aterrizaje. Todo lo que necesitas saber para que el viaje de tu perro o gato sea seguro, tranquilo y sin contratiempos.</p>
+          <div class="card-footer">
+            <span class="card-date">1 nov 2025</span>
+            <a href="/blog/como-preparar-a-tu-mascota-antes-de-viajar-guia-completa/" class="link-read">Leer más →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ARTÍCULOS PLACEHOLDER (próximamente) -->
+      <div class="card-regular reveal" data-cat="documentacion">
+        <div class="card-thumb-sm" style="background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:3rem;">📄</div>
+        <div class="card-body-sm">
+          <span class="card-cat">Documentación</span>
+          <h3>¿Qué documentos necesita tu mascota para viajar a Europa?</h3>
+          <p>Microchip, serología, vacuna antirrábica, certificado ICA... Te explicamos cada trámite y los tiempos que debes respetar para llegar a la UE sin contratiempos.</p>
+          <div class="card-footer">
+            <span class="card-date" style="background:var(--bg2);border:1.5px solid rgba(43,36,24,.15);border-radius:100px;padding:.15rem .6rem;font-size:.68rem;font-weight:600">Próximamente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-regular reveal" data-cat="salud">
+        <div class="card-thumb-sm" style="background:#E0F5F3;display:flex;align-items:center;justify-content:center;font-size:3rem;">🩺</div>
+        <div class="card-body-sm">
+          <span class="card-cat">Salud</span>
+          <h3>¿Qué es la serología y por qué tu peludito la necesita para viajar?</h3>
+          <p>La prueba de título de anticuerpos contra la rabia es clave para viajar a EE.UU., Europa, Japón y Australia. Te explicamos cómo funciona y cuándo hacerla.</p>
+          <div class="card-footer">
+            <span class="card-date" style="background:var(--bg2);border:1.5px solid rgba(43,36,24,.15);border-radius:100px;padding:.15rem .6rem;font-size:.68rem;font-weight:600">Próximamente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-regular reveal" data-cat="destinos">
+        <div class="card-thumb-sm" style="background:#FFF0E6;display:flex;align-items:center;justify-content:center;font-size:3rem;">🇺🇸</div>
+        <div class="card-body-sm">
+          <span class="card-cat">Destinos</span>
+          <h3>Viajar con tu mascota a Estados Unidos: requisitos completos 2025</h3>
+          <p>CDC, USDA, serología, microchip, vacunas... Los requisitos para entrar a EE.UU. con tu perro o gato cambiaron. Te ponemos al día con todo lo vigente.</p>
+          <div class="card-footer">
+            <span class="card-date" style="background:var(--bg2);border:1.5px solid rgba(43,36,24,.15);border-radius:100px;padding:.15rem .6rem;font-size:.68rem;font-weight:600">Próximamente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-regular reveal" data-cat="tips">
+        <div class="card-thumb-sm" style="background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:3rem;">🧳</div>
+        <div class="card-body-sm">
+          <span class="card-cat">Tips de viaje</span>
+          <h3>El guacal perfecto: cómo elegir el transportín según la aerolínea</h3>
+          <p>No todos los guacales son iguales ni todas las aerolíneas aceptan los mismos. Te enseñamos cómo elegir el correcto según si tu peludito viaja en cabina o bodega.</p>
+          <div class="card-footer">
+            <span class="card-date" style="background:var(--bg2);border:1.5px solid rgba(43,36,24,.15);border-radius:100px;padding:.15rem .6rem;font-size:.68rem;font-weight:600">Próximamente</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- EMPTY STATE (oculto por defecto) -->
+    <div class="empty-state" id="emptyState" style="display:none">
+      <span>🐾</span>
+      <h3>Próximamente en esta categoría</h3>
+      <p>Estamos preparando contenido para esta sección. Vuelve pronto o escríbenos si tienes alguna duda específica.</p>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- Newsletter -->
+    <div class="newsletter-widget reveal">
+      <h3>🐾 Tips en tu correo</h3>
+      <p>Recibe guías, novedades y consejos de viaje con mascotas directamente en tu bandeja.</p>
+      <input class="nl-input" type="email" placeholder="tu@correo.com">
+      <button class="nl-btn" onclick="subscribeNewsletter()">Suscribirme gratis</button>
+    </div>
+
+    <!-- Categorías -->
+    <div class="sidebar-widget reveal">
+      <div class="widget-header">📂 Categorías</div>
+      <div class="widget-body">
+        <ul class="cat-list">
+          <li><a href="#" onclick="filterCat('todos');return false">Todos los artículos <span class="cat-count">6</span></a></li>
+          <li><a href="#" onclick="filterCat('tips');return false">✈️ Tips de viaje <span class="cat-count">3</span></a></li>
+          <li><a href="#" onclick="filterCat('salud');return false">🩺 Salud <span class="cat-count">1</span></a></li>
+          <li><a href="#" onclick="filterCat('documentacion');return false">📄 Documentación <span class="cat-count">1</span></a></li>
+          <li><a href="#" onclick="filterCat('destinos');return false">🌍 Destinos <span class="cat-count">1</span></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Más leídos -->
+    <div class="sidebar-widget reveal">
+      <div class="widget-header">🔥 Más leídos</div>
+      <div class="widget-body">
+        <div class="pop-post">
+          <div class="pop-thumb">
+            <img src="https://skypetscol.com/wp-content/uploads/2025/10/1-1.webp"
+                 onerror="this.parentElement.innerHTML='🐶'">
+          </div>
+          <div>
+            <div class="pop-title">¿Cómo preparar a tu perro para volar sin estrés?</div>
+            <div class="pop-date">5 nov 2025</div>
+          </div>
+        </div>
+        <div class="pop-post">
+          <div class="pop-thumb">
+            <img src="https://skypetscol.com/wp-content/uploads/2025/10/Gato-SkyPets.webp"
+                 onerror="this.parentElement.innerHTML='🐱'">
+          </div>
+          <div>
+            <div class="pop-title">Cómo preparar a tu mascota antes de viajar: Guía completa</div>
+            <div class="pop-date">1 nov 2025</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WA widget -->
+    <div class="wa-widget reveal">
+      <h3>¿Tienes una duda?</h3>
+      <p>No esperes el próximo artículo. Escríbenos ahora y te respondemos en minutos.</p>
+      <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20tengo%20una%20pregunta%20sobre%20viajar%20con%20mi%20mascota" class="wa-btn" target="_blank">💬 Preguntar por WhatsApp</a>
+    </div>
+
+  </aside>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-row">
+    <span>© 2025 SkyPets Col — Todos los derechos reservados</span>
+    <div class="f-links">
+      <a href="/">Inicio</a>
+      <a href="/servicios">Servicios</a>
+      <a href="/terminos-y-condiciones">Términos</a>
+      <a href="/politica-de-privacidad">Privacidad</a>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/573213556909" class="wa" title="WhatsApp">💬</a>
+
+<script>
+  window.addEventListener('scroll', () =>
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 30));
+
+  document.querySelectorAll('.reveal').forEach(el =>
+    new IntersectionObserver(e => { if(e[0].isIntersecting) e[0].target.classList.add('visible'); },{threshold:.1}).observe(el));
+
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cards      = document.querySelectorAll('[data-cat]');
+  const empty      = document.getElementById('emptyState');
+
+  function filterCat(cat) {
+    filterBtns.forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+    let visible = 0;
+    cards.forEach(c => {
+      const show = cat === 'todos' || c.dataset.cat === cat;
+      c.dataset.hidden = show ? 'false' : 'true';
+      if (show) visible++;
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  filterBtns.forEach(b => b.addEventListener('click', () => filterCat(b.dataset.cat)));
+
+  function subscribeNewsletter() {
+    const input = document.querySelector('.nl-input');
+    const email = input.value.trim();
+    if (!email || !email.includes('@')) { input.style.borderColor='#E5443A'; return; }
+    const btn = document.querySelector('.nl-btn');
+    btn.textContent = '✅ ¡Suscrito!';
+    btn.style.background = '#71CC1E';
+    input.value = '';
+    setTimeout(() => { btn.textContent = 'Suscribirme gratis'; btn.style.background = ''; }, 3000);
+  }
+</script>
+</body>
+</html>

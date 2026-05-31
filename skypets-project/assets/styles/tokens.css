@@ -1,0 +1,33 @@
+/* ─────────────────────────────────────────
+   SKYPETS DESIGN SYSTEM — CSS TOKENS v1.0
+   ───────────────────────────────────────── */
+:root {
+  --orange:#FF7600; --teal:#008D83; --yellow:#FFBC00;
+  --success:#71CC1E; --danger:#E5443A;
+  --bg1:#FFFAEC; --bg2:#FFEFC2; --bg3:#FFE7A6;
+  --ink:#2B2418; --cream:#FFFAEC; --muted:#6B5540; --white:#FFFFFF;
+  --orange-50:#FFF0E6; --orange-200:#FFB380; --orange-700:#C45500;
+  --teal-50:#E0F5F3; --teal-200:#5CC9C2; --teal-700:#006860;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px;
+  --sp-5:24px; --sp-6:32px; --sp-7:48px; --sp-8:64px; --sp-9:96px;
+  --r-sm:10px; --r-md:16px; --r-lg:24px; --r-xl:36px;
+  --border:2px solid #2B2418;
+  --shadow:4px 4px 0 #2B2418;
+  --shadow-lg:6px 6px 0 #2B2418;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:var(--bg1);color:var(--ink);overflow-x:hidden;}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Poppins',sans-serif;font-size:.92rem;font-weight:600;padding:.78rem 1.75rem;border-radius:100px;border:var(--border);text-decoration:none;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s,box-shadow .1s;white-space:nowrap;}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-lg);}
+.btn:active{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink);}
+.btn-primary{background:var(--orange);color:var(--cream);}
+.btn-secondary{background:var(--teal);color:var(--cream);}
+.btn-accent{background:var(--yellow);color:var(--ink);}
+.btn-white{background:var(--cream);color:var(--ink);}
+.section-tag{display:inline-block;font-family:'Poppins',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:var(--ink);background:var(--yellow);border:var(--border);border-radius:100px;padding:.22rem .85rem;box-shadow:2px 2px 0 var(--ink);margin-bottom:14px;}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.wa-float{position:fixed;bottom:24px;right:24px;z-index:200;width:58px;height:58px;border-radius:50%;background:#25D366;border:var(--border);display:flex;align-items:center;justify-content:center;font-size:1.7rem;box-shadow:var(--shadow-lg);text-decoration:none;animation:waPulse 2.5s ease-in-out infinite;}
+.wa-float:hover{transform:translate(-2px,-2px);animation:none;}
+@keyframes waPulse{0%,100%{box-shadow:var(--shadow-lg)}50%{box-shadow:4px 4px 0 var(--ink),0 0 0 8px rgba(37,211,102,.18)}}
