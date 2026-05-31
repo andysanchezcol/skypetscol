@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contacto — SkyPets Colombia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange:  #FF7600;
+  --teal:    #008D83;
+  --yellow:  #FFBC00;
+  --success: #71CC1E;
+  --bg1:     #FFFAEC;
+  --bg2:     #FFEFC2;
+  --bg3:     #FFE7A6;
+  --ink:     #2B2418;
+  --cream:   #FFFAEC;
+  --muted:   #6B5540;
+  --border:  2px solid #2B2418;
+  --shadow:  4px 4px 0 #2B2418;
+  --shadowL: 6px 6px 0 #2B2418;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--ink); }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 68px;
+  background: rgba(255,250,236,0.96); backdrop-filter: blur(16px);
+  border-bottom: var(--border); transition: box-shadow .3s;
+}
+nav.scrolled { box-shadow: var(--shadow); }
+.nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.nav-logo img { height: 42px; width: auto; }
+.nav-logo-fb { display:none; font-family:'Fredoka',sans-serif; font-size:1.5rem; font-weight:700; color:var(--orange); }
+.nav-logo-fb span { color:var(--teal); }
+.nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+.nav-links a { font-size:.88rem; font-weight:500; color:var(--ink); text-decoration:none; transition:color .2s; }
+.nav-links a:hover, .nav-links a.active { color:var(--orange); }
+.nav-cta {
+  background:var(--orange); color:var(--cream) !important; font-weight:600 !important;
+  padding:.5rem 1.25rem; border-radius:100px; border:var(--border);
+  box-shadow:3px 3px 0 var(--ink); transition:transform .1s,box-shadow .1s !important;
+}
+.nav-cta:hover { transform:translate(-1px,-1px); box-shadow:var(--shadow) !important; }
+@media(max-width:700px){ nav{padding:0 20px;} .nav-links{display:none;} }
+
+/* ── HERO ── */
+.hero {
+  background: var(--teal); border-bottom: var(--border);
+  padding: 110px 48px 60px; position: relative; overflow: hidden;
+}
+.hero::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Ctext x='10' y='55' font-size='36' fill='%23FFFAEC' opacity='0.06'%3E🐾%3C/text%3E%3Ctext x='68' y='105' font-size='26' fill='%23FFFAEC' opacity='0.04'%3E✈%3C/text%3E%3C/svg%3E");
+}
+.hero-inner { max-width:700px; position:relative; z-index:1; }
+.breadcrumb { display:flex; align-items:center; gap:8px; font-size:.78rem; color:rgba(255,250,236,.5); margin-bottom:16px; }
+.breadcrumb a { color:rgba(255,250,236,.5); text-decoration:none; }
+.breadcrumb a:hover { color:var(--yellow); }
+.hero-badge {
+  display:inline-block; border:2px solid rgba(255,250,236,.25); border-radius:100px;
+  padding:.3rem 1rem; margin-bottom:16px;
+  font-size:.7rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase;
+  background:var(--yellow); color:var(--ink);
+  box-shadow:2px 2px 0 rgba(43,36,24,.3);
+}
+.hero h1 {
+  font-family:'Fredoka',sans-serif;
+  font-size:clamp(2.4rem,5vw,4rem); font-weight:700;
+  line-height:1.05; color:var(--cream); margin-bottom:16px;
+}
+.hero h1 .inv { color:var(--yellow); }
+.hero-sub { font-size:1rem; color:rgba(255,250,236,.82); font-weight:300; line-height:1.7; }
+@media(max-width:600px){ .hero{padding:100px 20px 44px;} }
+
+/* ── MAIN LAYOUT ── */
+.contact-wrap {
+  max-width:1100px; margin:0 auto;
+  padding:64px 48px 80px;
+  display:grid; grid-template-columns:1fr 420px;
+  gap:48px; align-items:start;
+}
+@media(max-width:900px){
+  .contact-wrap { grid-template-columns:1fr; padding:40px 20px 60px; }
+}
+
+/* ── CONTACT CHANNELS ── */
+.channels-title {
+  font-family:'Fredoka',sans-serif; font-size:1.5rem; font-weight:700;
+  color:var(--ink); margin-bottom:6px;
+}
+.channels-sub { font-size:.9rem; color:var(--muted); font-weight:300; line-height:1.65; margin-bottom:32px; }
+
+.channel-card {
+  background:#fff; border:var(--border); border-radius:20px;
+  padding:22px 24px; box-shadow:var(--shadow);
+  display:flex; align-items:center; gap:18px;
+  text-decoration:none; color:var(--ink);
+  transition:transform .15s, box-shadow .15s;
+  margin-bottom:14px;
+}
+.channel-card:hover { transform:translate(-2px,-2px); box-shadow:var(--shadowL); }
+
+.channel-icon {
+  width:52px; height:52px; border-radius:50%; flex-shrink:0;
+  border:var(--border); display:flex; align-items:center;
+  justify-content:center; font-size:1.4rem;
+  box-shadow:2px 2px 0 var(--ink);
+}
+.channel-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:3px; }
+.channel-value { font-family:'Fredoka',sans-serif; font-size:1.05rem; font-weight:600; color:var(--ink); }
+.channel-desc { font-size:.78rem; color:var(--muted); font-weight:300; margin-top:2px; }
+.channel-arrow {
+  margin-left:auto; flex-shrink:0;
+  width:32px; height:32px; border-radius:50%;
+  background:var(--bg2); border:1.5px solid var(--ink);
+  display:flex; align-items:center; justify-content:center;
+  font-size:.85rem; transition:background .15s;
+}
+.channel-card:hover .channel-arrow { background:var(--orange); color:#fff; }
+
+/* Hours card */
+.hours-card {
+  background:var(--bg2); border:var(--border); border-radius:20px;
+  padding:22px 24px; box-shadow:var(--shadow); margin-bottom:14px;
+}
+.hours-title {
+  display:flex; align-items:center; gap:10px;
+  font-family:'Fredoka',sans-serif; font-size:1rem; font-weight:600;
+  color:var(--ink); margin-bottom:16px;
+}
+.hours-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.hours-row {
+  display:flex; flex-direction:column;
+  background:#fff; border:1.5px solid rgba(43,36,24,.12); border-radius:12px;
+  padding:10px 14px;
+}
+.hours-day { font-size:.72rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+.hours-time { font-family:'Fredoka',sans-serif; font-size:.95rem; font-weight:600; color:var(--ink); margin-top:2px; }
+.hours-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--success); border:var(--border); border-radius:100px;
+  padding:.25rem .85rem; font-size:.75rem; font-weight:700; color:var(--ink);
+  box-shadow:2px 2px 0 var(--ink); margin-top:14px;
+}
+
+/* Socials */
+.socials-row { display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
+.social-pill {
+  display:inline-flex; align-items:center; gap:8px;
+  background:#fff; border:var(--border); border-radius:100px;
+  padding:.38rem 1rem; font-size:.82rem; font-weight:600; color:var(--ink);
+  text-decoration:none; box-shadow:var(--shadow);
+  transition:transform .1s, box-shadow .1s;
+}
+.social-pill:hover { transform:translate(-1px,-1px); box-shadow:3px 3px 0 var(--ink); }
+
+/* ── FORM CARD ── */
+.form-card {
+  background:#fff; border:var(--border); border-radius:24px;
+  box-shadow:var(--shadowL); overflow:hidden;
+  position:sticky; top:88px;
+}
+.form-header {
+  background:var(--teal); padding:24px 28px; border-bottom:var(--border);
+}
+.form-header h2 {
+  font-family:'Fredoka',sans-serif; font-size:1.3rem; font-weight:700;
+  color:var(--cream); margin-bottom:4px;
+}
+.form-header p { font-size:.82rem; color:rgba(255,250,236,.75); font-weight:300; }
+.form-body { padding:24px 28px; display:flex; flex-direction:column; gap:16px; }
+
+.form-group { display:flex; flex-direction:column; gap:6px; }
+.form-group label { font-size:.78rem; font-weight:600; color:var(--ink); }
+.form-input, .form-select, .form-textarea {
+  width:100%; padding:.6rem .85rem;
+  border:var(--border); border-radius:10px;
+  font-family:'Poppins',sans-serif; font-size:.86rem;
+  color:var(--ink); background:var(--bg1); outline:none;
+  transition:border-color .2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color:var(--teal); background:#fff;
+}
+.form-textarea { resize:vertical; min-height:90px; line-height:1.6; }
+.form-select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232B2418' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:36px; }
+
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+.form-submit {
+  width:100%; background:var(--orange); color:var(--cream);
+  font-family:'Poppins',sans-serif; font-size:.95rem; font-weight:700;
+  padding:.85rem; border-radius:100px; border:var(--border);
+  box-shadow:var(--shadow); cursor:pointer;
+  transition:transform .1s, box-shadow .1s;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.form-submit:hover { transform:translate(-2px,-2px); box-shadow:var(--shadowL); }
+.form-note { font-size:.72rem; color:var(--muted); text-align:center; font-weight:300; }
+
+/* ── FAQ STRIP ── */
+.faq-section {
+  background:var(--bg2); border-top:var(--border); border-bottom:var(--border);
+  padding:64px 48px;
+}
+.faq-inner { max-width:780px; margin:0 auto; }
+.section-tag {
+  display:inline-block; font-size:.7rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:2.5px; color:var(--ink);
+  background:var(--yellow); border:var(--border); border-radius:100px;
+  padding:.22rem .85rem; box-shadow:2px 2px 0 var(--ink); margin-bottom:14px;
+}
+.section-title {
+  font-family:'Fredoka',sans-serif; font-size:clamp(1.8rem,3vw,2.4rem);
+  font-weight:700; color:var(--ink); line-height:1.15; margin-bottom:32px;
+}
+.section-title .acc { color:var(--orange); }
+
+.faq-item {
+  background:#fff; border:var(--border); border-radius:16px;
+  margin-bottom:10px; box-shadow:var(--shadow); overflow:hidden;
+  transition:box-shadow .15s;
+}
+.faq-item:hover { box-shadow:var(--shadowL); }
+.faq-q {
+  width:100%; display:flex; align-items:center; justify-content:space-between;
+  gap:16px; padding:18px 22px;
+  font-family:'Fredoka',sans-serif; font-size:1rem; font-weight:600;
+  color:var(--ink); background:none; border:none; cursor:pointer;
+  text-align:left; font-family:'Fredoka',sans-serif;
+}
+.faq-q:hover { background:var(--bg1); }
+.faq-icon {
+  width:28px; height:28px; border-radius:50%; flex-shrink:0;
+  background:var(--bg2); border:1.5px solid var(--ink);
+  display:flex; align-items:center; justify-content:center;
+  font-size:.85rem; font-weight:700; transition:background .2s, transform .2s;
+}
+.faq-item.open .faq-icon { background:var(--orange); color:#fff; transform:rotate(45deg); }
+.faq-a {
+  display:none; padding:0 22px 18px;
+  font-size:.88rem; color:var(--muted); line-height:1.75; font-weight:300;
+}
+.faq-item.open .faq-a { display:block; }
+@media(max-width:600px){ .faq-section{padding:48px 20px;} }
+
+/* ── FOOTER ── */
+footer { background:var(--ink); border-top:var(--border); padding:28px 48px; }
+.footer-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-size:.8rem; color:rgba(255,250,236,.45); }
+.f-links { display:flex; gap:24px; flex-wrap:wrap; }
+.f-links a { color:rgba(255,250,236,.4); text-decoration:none; font-size:.82rem; transition:color .2s; }
+.f-links a:hover { color:var(--orange); }
+
+/* ── WA FLOAT ── */
+.wa {
+  position:fixed; bottom:24px; right:24px; z-index:200;
+  width:58px; height:58px; border-radius:50%;
+  background:#25D366; border:var(--border);
+  display:flex; align-items:center; justify-content:center; font-size:1.7rem;
+  box-shadow:var(--shadowL); text-decoration:none;
+  animation:wap 2.5s ease-in-out infinite;
+}
+.wa:hover { transform:translate(-2px,-2px); animation:none; }
+@keyframes wap { 0%,100%{box-shadow:var(--shadowL)} 50%{box-shadow:4px 4px 0 var(--ink),0 0 0 8px rgba(37,211,102,.18)} }
+
+.reveal { opacity:0; transform:translateY(20px); transition:opacity .5s ease,transform .5s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="/" class="nav-logo">
+    <img src="https://skypetscol.com/wp-content/uploads/2025/10/cropped-Logo-SkyPets-Travel-500-400x400.webp"
+         alt="SkyPets" onerror="this.style.display='none';document.getElementById('lf').style.display='block'">
+    <span id="lf" class="nav-logo-fb">Sky<span>Pets</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Inicio</a></li>
+    <li><a href="/servicios">Servicios</a></li>
+    <li><a href="/nosotros">Nosotros</a></li>
+    <li><a href="/contacto" class="active">Contacto</a></li>
+    <li><a href="https://wa.me/573213556909" class="nav-cta">💬 Cotiza Ahora</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="/">Inicio</a><span>›</span><span style="opacity:.8">Contacto</span></div>
+    <span class="hero-badge">HABLEMOS</span>
+    <h1>¿Listo para el<br>gran viaje? <span class="inv">Escríbenos.</span></h1>
+    <p class="hero-sub">Atendemos lunes a domingo de 8:00 am a 10:00 pm. Sin formularios complicados ni esperas — solo escríbenos y en minutos tienes respuesta.</p>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="contact-wrap">
+
+  <!-- LEFT: Canales + horarios + redes -->
+  <div>
+    <h2 class="channels-title reveal">Encuéntranos donde prefieras</h2>
+    <p class="channels-sub reveal">La forma más rápida es siempre WhatsApp. También puedes escribirnos por correo o seguirnos en redes para tips de viaje con mascotas.</p>
+
+    <!-- WhatsApp -->
+    <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20información%20para%20viajar%20con%20mi%20mascota"
+       class="channel-card reveal" target="_blank">
+      <div class="channel-icon" style="background:#25D366">💬</div>
+      <div>
+        <div class="channel-label">Canal principal</div>
+        <div class="channel-value">WhatsApp</div>
+        <div class="channel-desc">+57 321 355 6909 · Respuesta en minutos</div>
+      </div>
+      <div class="channel-arrow">→</div>
+    </a>
+
+    <!-- Email -->
+    <a href="mailto:info@skypetscol.com" class="channel-card reveal">
+      <div class="channel-icon" style="background:var(--bg2)">📧</div>
+      <div>
+        <div class="channel-label">Correo electrónico</div>
+        <div class="channel-value">info@skypetscol.com</div>
+        <div class="channel-desc">Respuesta en menos de 24 horas hábiles</div>
+      </div>
+      <div class="channel-arrow">→</div>
+    </a>
+
+    <!-- Location -->
+    <div class="channel-card reveal" style="cursor:default">
+      <div class="channel-icon" style="background:var(--bg3)">📍</div>
+      <div>
+        <div class="channel-label">Ubicación</div>
+        <div class="channel-value">Bogotá D.C., Colombia</div>
+        <div class="channel-desc">Sede física disponible · Atención virtual para todo el país</div>
+      </div>
+    </div>
+
+    <!-- Horarios -->
+    <div class="hours-card reveal">
+      <div class="hours-title">🕗 Horario de atención</div>
+      <div class="hours-grid">
+        <div class="hours-row">
+          <span class="hours-day">Lunes — Viernes</span>
+          <span class="hours-time">8:00 am – 10:00 pm</span>
+        </div>
+        <div class="hours-row">
+          <span class="hours-day">Sábados</span>
+          <span class="hours-time">8:00 am – 10:00 pm</span>
+        </div>
+        <div class="hours-row">
+          <span class="hours-day">Domingos</span>
+          <span class="hours-time">8:00 am – 10:00 pm</span>
+        </div>
+        <div class="hours-row" style="background:var(--bg3)">
+          <span class="hours-day">Festivos</span>
+          <span class="hours-time">8:00 am – 8:00 pm</span>
+        </div>
+      </div>
+      <span class="hours-badge">🟢 Atendemos todos los días</span>
+    </div>
+
+    <!-- Redes -->
+    <div class="reveal" style="margin-top:8px">
+      <div style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">Síguenos en redes</div>
+      <div class="socials-row">
+        <a href="https://instagram.com/skypetcol" class="social-pill" target="_blank">📷 @skypetcol</a>
+        <a href="https://tiktok.com/@skypetstravel" class="social-pill" target="_blank">🎵 @skypetstravel</a>
+        <a href="https://facebook.com/skypetscol" class="social-pill" target="_blank">📘 /skypetscol</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Formulario -->
+  <div>
+    <div class="form-card reveal">
+      <div class="form-header">
+        <h2>Cuéntanos sobre tu viaje 🐾</h2>
+        <p>Completa el formulario y te respondemos por WhatsApp lo antes posible.</p>
+      </div>
+      <div class="form-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tu nombre</label>
+            <input class="form-input" type="text" placeholder="Ej. Laura García">
+          </div>
+          <div class="form-group">
+            <label>WhatsApp</label>
+            <input class="form-input" type="tel" placeholder="+57 300 000 0000">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nombre de tu peludito</label>
+          <input class="form-input" type="text" placeholder="Ej. Milo">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Especie</label>
+            <select class="form-select">
+              <option value="" disabled selected>Selecciona</option>
+              <option>🐶 Perro</option>
+              <option>🐱 Gato</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tipo de viaje</label>
+            <select class="form-select">
+              <option value="" disabled selected>Selecciona</option>
+              <option>✈️ Internacional</option>
+              <option>🇨🇴 Nacional</option>
+              <option>No lo sé aún</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Destino aproximado</label>
+          <input class="form-input" type="text" placeholder="Ej. Madrid, España">
+        </div>
+
+        <div class="form-group">
+          <label>¿En qué te podemos ayudar?</label>
+          <textarea class="form-textarea" placeholder="Cuéntanos qué necesitas o qué dudas tienes sobre el viaje de tu peludito..."></textarea>
+        </div>
+
+        <button class="form-submit" onclick="handleSubmit()">
+          💬 Enviar por WhatsApp
+        </button>
+        <p class="form-note">Al enviar, serás redirigido a WhatsApp con tu consulta lista. No guardamos datos personales sin tu consentimiento.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="faq-inner">
+    <div class="reveal">
+      <span class="section-tag">PREGUNTAS FRECUENTES</span>
+      <h2 class="section-title">Lo que más nos<br>preguntan <span class="acc">antes de escribir</span></h2>
+    </div>
+
+    <div class="faq-item reveal">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        ¿Cuánto tiempo antes del vuelo debo contactarlos?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">Para vuelos internacionales a destinos que requieren examen de serología — como <strong>Estados Unidos, Europa y otros países de alta restricción sanitaria</strong> — lo ideal es iniciar el proceso con <strong>al menos 4 meses de anticipación</strong>, ya que este examen tiene tiempos mínimos de espera. Para vuelos nacionales o internacionales que no requieren serología, con 2 a 3 semanas es suficiente. ¡Pero si tienes el vuelo pronto, escríbenos igual — siempre encontramos soluciones!</div>
+    </div>
+
+    <div class="faq-item reveal">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        ¿Con qué aerolíneas trabajan?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">
+        <p style="margin-bottom:10px">Trabajamos con las siguientes aerolíneas:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px">
+          <span style="display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500">🐾 Avianca</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500">🐾 Air France <span style="font-size:.72rem;color:var(--muted);font-weight:300">(solo cert. asistencia)</span></span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500">🐾 LATAM</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500">🐾 Iberia <span style="font-size:.72rem;color:var(--muted);font-weight:300">(solo cert. asistencia)</span></span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500">🐾 Wingo</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500">🐾 AeroMéxico <span style="font-size:.72rem;color:var(--muted);font-weight:300">(solo apoyo psiquiatría)</span></span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500">🐾 Copa Airlines</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500">🐾 Viva Aerobús</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500">🐾 United Airlines</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500">🐾 KLM</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500">🐾 Satena</span>
+        </div>
+        <div style="background:rgba(229,68,58,.07);border:1.5px solid #E5443A;border-radius:12px;padding:12px 14px;font-size:.82rem;color:var(--ink)">
+          🚫 <strong>No asesoramos viajes con:</strong> JetSmart, EasyFly, Air Europa, Gol, Aerolíneas Argentinas, Spirit, Clic, Air Canada, Plus Ultra, Delta, World2Fly ni American Airlines.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item reveal">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        ¿Atienden en toda Colombia o solo en Bogotá?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">Atendemos de manera <strong>virtual para todo el territorio colombiano</strong> — Medellín, Cali, Barranquilla y cualquier otra ciudad. Los documentos se gestionan y entregan digitalmente. Adicionalmente, si te encuentras en <strong>Bogotá</strong>, contamos con <strong>sede física</strong> por si prefieres venir a iniciar el procedimiento de manera presencial.</div>
+    </div>
+
+    <div class="faq-item reveal">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        ¿La asesoría inicial tiene algún costo?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">La <strong>asesoría inicial es completamente gratuita</strong>. Te decimos exactamente qué necesita tu peludito según su especie, destino y aerolínea, sin ningún costo ni compromiso.</div>
+    </div>
+
+    <div class="faq-item reveal">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        ¿Pueden viajar tanto perros como gatos?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">Sí, trabajamos con <strong>perros y gatos</strong> en la mayoría de servicios. Algunos como el Certificado de Asistencia y Servicio aplican exclusivamente para perros. Consulta tu caso específico y te orientamos con precisión.</div>
+    </div>
+
+    <div class="faq-item reveal">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        ¿Cómo se entregan los documentos?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">Todos los certificados y documentos se entregan de forma <strong>digital, directamente a tu WhatsApp o correo electrónico</strong>, dentro del horario de atención. Algunos trámites como el ICA pueden requerir entrega física adicional, lo cual te informamos con anticipación.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-row">
+    <span>© 2025 SkyPets Col — Todos los derechos reservados</span>
+    <div class="f-links">
+      <a href="/">Inicio</a>
+      <a href="/servicios">Servicios</a>
+      <a href="/terminos-y-condiciones">Términos</a>
+      <a href="/politica-de-privacidad">Privacidad</a>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/573213556909" class="wa" title="WhatsApp">💬</a>
+
+<script>
+  window.addEventListener('scroll', () =>
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 30));
+
+  document.querySelectorAll('.reveal').forEach(el =>
+    new IntersectionObserver(e => { if(e[0].isIntersecting) e[0].target.classList.add('visible'); },{threshold:.1}).observe(el));
+
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  function handleSubmit() {
+    const nombre  = document.querySelectorAll('.form-input')[0].value.trim();
+    const wp      = document.querySelectorAll('.form-input')[1].value.trim();
+    const pet     = document.querySelectorAll('.form-input')[2].value.trim();
+    const destino = document.querySelectorAll('.form-input')[3].value.trim();
+    const especie = document.querySelectorAll('.form-select')[0].value;
+    const tipo    = document.querySelectorAll('.form-select')[1].value;
+    const mensaje = document.querySelector('.form-textarea').value.trim();
+
+    let text = `Hola SkyPets 🐾, me gustaría recibir asesoría:\n\n`;
+    if (nombre)  text += `👤 Nombre: ${nombre}\n`;
+    if (wp)      text += `📱 WhatsApp: ${wp}\n`;
+    if (pet)     text += `🐾 Peludito: ${pet}\n`;
+    if (especie && especie !== 'Selecciona') text += `🐾 Especie: ${especie}\n`;
+    if (tipo && tipo !== 'Selecciona')       text += `✈️ Viaje: ${tipo}\n`;
+    if (destino) text += `📍 Destino: ${destino}\n`;
+    if (mensaje) text += `\n💬 Consulta: ${mensaje}`;
+
+    window.open(`https://wa.me/573213556909?text=${encodeURIComponent(text)}`, '_blank');
+  }
+</script>
+</body>
+</html>

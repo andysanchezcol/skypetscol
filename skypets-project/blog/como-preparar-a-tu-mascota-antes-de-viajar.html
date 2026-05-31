@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cómo preparar a tu mascota antes de viajar — SkyPets Colombia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#FF7600;--teal:#008D83;--yellow:#FFBC00;--success:#71CC1E;--bg1:#FFFAEC;--bg2:#FFEFC2;--bg3:#FFE7A6;--ink:#2B2418;--cream:#FFFAEC;--muted:#6B5540;--border:2px solid #2B2418;--shadow:4px 4px 0 #2B2418;--shadowL:6px 6px 0 #2B2418;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:var(--bg1);color:var(--ink);}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:68px;background:rgba(255,250,236,.96);backdrop-filter:blur(16px);border-bottom:var(--border);transition:box-shadow .3s;}
+nav.scrolled{box-shadow:var(--shadow);}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.nav-logo img{height:42px;width:auto;}
+.nav-logo-fb{display:none;font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:var(--orange);}
+.nav-logo-fb span{color:var(--teal);}
+.nav-links{display:flex;align-items:center;gap:32px;list-style:none;}
+.nav-links a{font-size:.88rem;font-weight:500;color:var(--ink);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--orange);}
+.nav-cta{background:var(--orange);color:var(--cream)!important;font-weight:600!important;padding:.5rem 1.25rem;border-radius:100px;border:var(--border);box-shadow:3px 3px 0 var(--ink);}
+@media(max-width:700px){nav{padding:0 20px;}.nav-links{display:none;}}
+
+.article-hero{background:var(--orange);border-bottom:var(--border);padding:110px 48px 56px;position:relative;overflow:hidden;}
+.article-hero::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Ctext x='10' y='55' font-size='36' fill='%232B2418' opacity='0.06'%3E🐾%3C/text%3E%3C/svg%3E");}
+.article-hero-inner{max-width:780px;position:relative;z-index:1;}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:.78rem;color:rgba(43,36,24,.5);margin-bottom:16px;flex-wrap:wrap;}
+.breadcrumb a{color:rgba(43,36,24,.5);text-decoration:none;}
+.breadcrumb a:hover{color:var(--ink);}
+.art-cat{display:inline-block;background:var(--ink);border:var(--border);border-radius:100px;padding:.28rem .9rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--cream);box-shadow:2px 2px 0 rgba(43,36,24,.3);margin-bottom:16px;}
+.article-hero h1{font-family:'Fredoka',sans-serif;font-size:clamp(2rem,4.5vw,3.2rem);font-weight:700;line-height:1.1;color:var(--ink);margin-bottom:20px;}
+.art-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.art-meta span{font-size:.78rem;color:rgba(43,36,24,.6);font-weight:300;display:flex;align-items:center;gap:5px;}
+@media(max-width:600px){.article-hero{padding:100px 20px 40px;}}
+
+.cover-img-wrap{max-width:860px;margin:0 auto;padding:0 48px;position:relative;top:-24px;}
+.cover-img{width:100%;height:340px;object-fit:cover;border-radius:20px;border:var(--border);box-shadow:var(--shadowL);display:block;}
+.cover-fallback{width:100%;height:340px;border-radius:20px;border:var(--border);box-shadow:var(--shadowL);background:linear-gradient(135deg,var(--orange),var(--teal));display:flex;align-items:center;justify-content:center;font-size:6rem;}
+@media(max-width:600px){.cover-img-wrap{padding:0 20px;top:-16px;}.cover-img,.cover-fallback{height:220px;}}
+
+.article-wrap{max-width:860px;margin:0 auto;padding:0 48px 80px;display:grid;grid-template-columns:1fr 260px;gap:48px;align-items:start;}
+@media(max-width:860px){.article-wrap{grid-template-columns:1fr;padding:0 20px 60px;}}
+
+.article-body h2{font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:var(--ink);margin:36px 0 12px;line-height:1.2;}
+.article-body h3{font-family:'Fredoka',sans-serif;font-size:1.15rem;font-weight:600;color:var(--ink);margin:24px 0 10px;}
+.article-body p{font-size:.95rem;line-height:1.85;color:var(--muted);font-weight:300;margin-bottom:16px;}
+.article-body strong{color:var(--ink);font-weight:600;}
+.article-body a{color:var(--teal);font-weight:500;}
+.article-body ul{margin:12px 0 16px;display:flex;flex-direction:column;gap:8px;}
+.article-body ul li{font-size:.92rem;color:var(--muted);line-height:1.7;font-weight:300;display:flex;align-items:flex-start;gap:10px;}
+.article-body ul li::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--teal);border:1.5px solid var(--ink);flex-shrink:0;margin-top:7px;}
+
+.tip-box{background:var(--bg2);border:var(--border);border-radius:16px;padding:18px 22px;margin:20px 0;box-shadow:2px 2px 0 var(--ink);display:flex;gap:12px;align-items:flex-start;}
+.tip-box p{font-size:.88rem;line-height:1.7;color:var(--ink);margin:0;font-weight:400;}
+.warn-box{background:rgba(229,68,58,.07);border:2px solid #E5443A;border-radius:16px;padding:18px 22px;margin:20px 0;display:flex;gap:12px;align-items:flex-start;}
+.warn-box p{font-size:.88rem;line-height:1.7;color:var(--ink);margin:0;font-weight:400;}
+
+/* Comparison table */
+.compare-table{width:100%;border-collapse:collapse;margin:20px 0;border:var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);}
+.compare-table th{background:var(--ink);color:var(--cream);padding:12px 16px;font-family:'Fredoka',sans-serif;font-size:.9rem;font-weight:600;text-align:left;}
+.compare-table td{padding:11px 16px;font-size:.85rem;color:var(--muted);border-bottom:1px solid rgba(43,36,24,.08);font-weight:300;}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table tr:nth-child(even) td{background:var(--bg1);}
+.compare-table .tag-req{background:var(--success);color:var(--ink);border-radius:100px;padding:.15rem .55rem;font-size:.7rem;font-weight:700;border:1.5px solid var(--ink);}
+.compare-table .tag-opt{background:var(--bg3);color:var(--ink);border-radius:100px;padding:.15rem .55rem;font-size:.7rem;font-weight:700;border:1.5px solid var(--ink);}
+
+.art-cta{background:var(--teal);border:var(--border);border-radius:20px;padding:24px 28px;margin:32px 0;box-shadow:var(--shadow);text-align:center;}
+.art-cta h3{font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:var(--cream);margin-bottom:6px;}
+.art-cta p{font-size:.85rem;color:rgba(255,250,236,.8);font-weight:300;margin-bottom:16px;}
+.art-cta a{display:inline-flex;align-items:center;gap:8px;background:var(--yellow);color:var(--ink);font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:700;padding:.7rem 1.5rem;border-radius:100px;border:var(--border);text-decoration:none;box-shadow:2px 2px 0 var(--ink);}
+
+.art-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:32px;padding-top:20px;border-top:1.5px solid rgba(43,36,24,.1);}
+.art-tag{background:var(--bg2);border:1.5px solid rgba(43,36,24,.15);border-radius:100px;padding:.25rem .85rem;font-size:.75rem;font-weight:600;color:var(--muted);}
+
+.art-sidebar{display:flex;flex-direction:column;gap:18px;}
+.sidebar-widget{background:#fff;border:var(--border);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;}
+.widget-header{background:var(--teal);padding:12px 18px;font-family:'Fredoka',sans-serif;font-size:.9rem;font-weight:600;color:var(--cream);}
+.widget-body{padding:14px;}
+.toc-link{display:block;padding:7px 10px;font-size:.82rem;color:var(--muted);text-decoration:none;border-radius:8px;transition:background .15s,color .15s;font-weight:400;}
+.toc-link:hover{background:var(--bg2);color:var(--ink);}
+.toc-link.active{background:var(--bg3);color:var(--ink);font-weight:600;}
+
+.wa-side{background:var(--orange);border:var(--border);border-radius:18px;box-shadow:var(--shadow);padding:18px;text-align:center;}
+.wa-side h3{font-family:'Fredoka',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.wa-side p{font-size:.76rem;color:rgba(43,36,24,.7);font-weight:300;margin-bottom:12px;line-height:1.5;}
+.wa-side a{display:inline-flex;align-items:center;gap:6px;background:var(--ink);color:var(--cream);font-family:'Poppins',sans-serif;font-size:.8rem;font-weight:700;padding:.55rem 1rem;border-radius:100px;border:1.5px solid var(--ink);text-decoration:none;box-shadow:2px 2px 0 rgba(43,36,24,.3);}
+
+footer{background:var(--ink);border-top:var(--border);padding:28px 48px;}
+.footer-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:.8rem;color:rgba(255,250,236,.45);}
+.f-links{display:flex;gap:24px;flex-wrap:wrap;}
+.f-links a{color:rgba(255,250,236,.4);text-decoration:none;font-size:.82rem;transition:color .2s;}
+.f-links a:hover{color:var(--orange);}
+.wa{position:fixed;bottom:24px;right:24px;z-index:200;width:58px;height:58px;border-radius:50%;background:#25D366;border:var(--border);display:flex;align-items:center;justify-content:center;font-size:1.7rem;box-shadow:var(--shadowL);text-decoration:none;animation:wap 2.5s ease-in-out infinite;}
+.wa:hover{transform:translate(-2px,-2px);animation:none;}
+@keyframes wap{0%,100%{box-shadow:var(--shadowL)}50%{box-shadow:4px 4px 0 var(--ink),0 0 0 8px rgba(37,211,102,.18)}}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="/" class="nav-logo">
+    <img src="https://skypetscol.com/wp-content/uploads/2025/10/cropped-Logo-SkyPets-Travel-500-400x400.webp"
+         alt="SkyPets" onerror="this.style.display='none';document.getElementById('lf').style.display='block'">
+    <span id="lf" class="nav-logo-fb">Sky<span>Pets</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Inicio</a></li>
+    <li><a href="/servicios">Servicios</a></li>
+    <li><a href="/blog" class="active">Blog</a></li>
+    <li><a href="https://wa.me/573213556909" class="nav-cta">💬 Cotiza Ahora</a></li>
+  </ul>
+</nav>
+
+<div class="article-hero">
+  <div class="article-hero-inner">
+    <div class="breadcrumb">
+      <a href="/">Inicio</a><span>›</span>
+      <a href="/blog">Blog</a><span>›</span>
+      <span style="opacity:.8">Cómo preparar a tu mascota antes de viajar</span>
+    </div>
+    <span class="art-cat">🐾 Perros & Gatos</span>
+    <h1>Cómo preparar a tu mascota antes de viajar: Guía completa para dueños de perros y gatos</h1>
+    <div class="art-meta">
+      <span>📅 1 noviembre 2025</span>
+      <span>⏱ 8 min de lectura</span>
+      <span>✍️ Equipo SkyPets</span>
+    </div>
+  </div>
+</div>
+
+<div class="cover-img-wrap">
+  <img src="https://skypetscol.com/wp-content/uploads/2025/10/Gato-SkyPets.webp"
+       class="cover-img" alt="Gato viajero"
+       onerror="this.outerHTML='<div class=cover-fallback>🐱✈️</div>'">
+</div>
+
+<div class="article-wrap">
+  <article class="article-body">
+
+    <p>Viajar con tu perro o gato requiere planificación, tiempo y el cumplimiento de varios requisitos para garantizar un viaje seguro y sin contratiempos. Ya sea un vuelo nacional dentro de Colombia o un destino internacional, el proceso es diferente para cada caso — y conocerlo con anticipación marca toda la diferencia.</p>
+    <p>En esta guía te explicamos paso a paso todo lo que necesitas preparar, tanto para <strong>perros</strong> como para <strong>gatos</strong>, antes de abordar el avión.</p>
+
+    <h2 id="s1">¿Por qué es tan importante prepararse con anticipación?</h2>
+    <p>A diferencia de un viaje humano, viajar con mascotas involucra trámites veterinarios, documentos oficiales y requisitos de aerolíneas que tienen <strong>tiempos mínimos que no se pueden acortar</strong>. Un certificado de salud vence en 10 días. Una serología requiere al menos 90 días después de la vacuna antirrábica. El microchip debe estar registrado antes de cualquier otro trámite.</p>
+    <p>Empezar tarde es el error más común — y el más costoso. Por eso, la regla de oro en SkyPets es: <strong>contáctanos antes de comprar el tiquete.</strong></p>
+
+    <h2 id="s2">Diferencias clave: perros vs. gatos</h2>
+    <p>Aunque los requisitos generales son similares, hay diferencias importantes entre viajar con un perro y con un gato que debes conocer:</p>
+    <table class="compare-table">
+      <thead><tr><th>Aspecto</th><th>Perros 🐶</th><th>Gatos 🐱</th></tr></thead>
+      <tbody>
+        <tr><td>Microchip</td><td><span class="tag-req">Obligatorio</span></td><td><span class="tag-req">Obligatorio</span></td></tr>
+        <tr><td>Vacuna antirrábica</td><td><span class="tag-req">Obligatoria</span></td><td><span class="tag-req">Obligatoria</span></td></tr>
+        <tr><td>Cert. asistencia/servicio</td><td><span class="tag-req">Aplica</span></td><td><span class="tag-opt">No aplica</span></td></tr>
+        <tr><td>Cert. ESA</td><td><span class="tag-req">Aplica</span></td><td><span class="tag-req">Aplica</span></td></tr>
+        <tr><td>Restricciones de raza</td><td><span class="tag-req">Braquicéfalas</span></td><td><span class="tag-req">Braquicéfalas</span></td></tr>
+        <tr><td>Peso máx. cabina (aprox.)</td><td>Hasta 8 kg con guacal</td><td>Hasta 8 kg con guacal</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="s3">Paso 1: Microchip — el primer trámite</h2>
+    <p>El microchip de identificación ISO 11784/11785 es el <strong>primer paso obligatorio</strong> para cualquier viaje internacional. Debe estar implantado antes de que se aplique la vacuna antirrábica, o esta no tendrá validez oficial.</p>
+    <div class="tip-box">
+      <span style="font-size:1.3rem;flex-shrink:0">📡</span>
+      <p>El microchip es de <strong>identificación únicamente</strong>, no emite señal GPS ni permite rastrear a tu mascota. Es simplemente un número único que la identifica a nivel mundial.</p>
+    </div>
+
+    <h2 id="s4">Paso 2: Vacunación completa y al día</h2>
+    <p>La vacuna antirrábica es la más crítica para viajes internacionales. Según el destino, los requisitos varían:</p>
+    <ul>
+      <li><strong>Primera aplicación:</strong> la vacuna debe aplicarse después del microchip y tiene un período de espera de 21 a 30 días antes de ser válida</li>
+      <li><strong>Refuerzo anual:</strong> muchos países exigen que la vacuna esté vigente y con refuerzo al día</li>
+      <li><strong>Otras vacunas:</strong> DHPP (Distemper, Hepatitis, Parvovirus, Parainfluenza) y Bordetella para perros; Triple felina para gatos</li>
+    </ul>
+
+    <h2 id="s5">Paso 3: Serología — para destinos de alta restricción</h2>
+    <p>La prueba de título de anticuerpos contra la rabia (test FAVN o ELISA) es <strong>obligatoria para ingresar a EE.UU., la Unión Europea, Japón, Australia, Nueva Zelanda y otros destinos</strong> con alta restricción sanitaria.</p>
+    <div class="warn-box">
+      <span style="font-size:1.2rem;flex-shrink:0">⚠️</span>
+      <p>La serología debe realizarse <strong>al menos 90 días después de la vacuna antirrábica</strong> y en algunos destinos el viaje debe ser 3 meses después del resultado. En total, inicia este proceso con <strong>4 meses mínimo de anticipación</strong>.</p>
+    </div>
+
+    <h2 id="s6">Paso 4: Certificado de salud veterinario</h2>
+    <p>El certificado de salud es emitido por un veterinario y debe ser reciente — su vigencia es de <strong>máximo 10 días antes del vuelo</strong>. Este documento certifica que tu mascota está en condiciones óptimas para viajar.</p>
+    <p>Para vuelos internacionales, el certificado debe ser avalado por el ICA (Instituto Colombiano Agropecuario), lo que agrega tiempo adicional al proceso.</p>
+
+    <h2 id="s7">Paso 5: Requisitos de la aerolínea</h2>
+    <p>Cada aerolínea tiene políticas propias sobre mascotas. Los puntos más importantes a verificar son:</p>
+    <ul>
+      <li>Peso máximo permitido en cabina (generalmente 8 kg con guacal)</li>
+      <li>Dimensiones máximas del guacal o transportín</li>
+      <li>Cupo de mascotas por vuelo (siempre limitado — reserva con anticipación)</li>
+      <li>Documentos específicos que exige la aerolínea</li>
+      <li>Restricciones por raza o especie</li>
+    </ul>
+    <p>En SkyPets verificamos directamente con cada aerolínea los requisitos actualizados para que no haya sorpresas el día del vuelo.</p>
+
+    <div class="art-cta">
+      <h3>¿Sabes qué necesita tu mascota? 🐾</h3>
+      <p>Cuéntanos el destino y la especie y te armo el checklist completo sin costo.</p>
+      <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20leí%20la%20guía%20y%20quiero%20saber%20qué%20necesita%20mi%20mascota">💬 Asesoría gratuita</a>
+    </div>
+
+    <h2 id="s8">Tiempos recomendados según destino</h2>
+    <p>Para que lo tengas claro de un vistazo:</p>
+    <ul>
+      <li><strong>Vuelo nacional (Colombia):</strong> 2-3 semanas de anticipación</li>
+      <li><strong>Internacional sin serología:</strong> 1-2 meses de anticipación</li>
+      <li><strong>EE.UU., Europa, Japón, Australia:</strong> mínimo 4 meses de anticipación</li>
+    </ul>
+
+    <div class="art-tags">
+      <span class="art-tag">🐶 Perros</span>
+      <span class="art-tag">🐱 Gatos</span>
+      <span class="art-tag">✈️ Viaje aéreo</span>
+      <span class="art-tag">📋 Documentación</span>
+      <span class="art-tag">🔬 Serología</span>
+      <span class="art-tag">💉 Vacunas</span>
+    </div>
+
+    <div style="margin-top:32px;padding:20px 24px;background:var(--bg2);border:var(--border);border-radius:16px;box-shadow:2px 2px 0 var(--ink)">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--orange);border:var(--border);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;box-shadow:2px 2px 0 var(--ink)">🩺</div>
+        <div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:.95rem;font-weight:600;color:var(--ink)">Equipo SkyPets Colombia</div>
+          <div style="font-size:.78rem;color:var(--muted);font-weight:300">Expertos en viaje de mascotas · Bogotá, Colombia · Lun–Dom 8am–10pm</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <aside class="art-sidebar">
+    <div class="sidebar-widget">
+      <div class="widget-header">📋 En este artículo</div>
+      <div class="widget-body">
+        <a href="#s1" class="toc-link">¿Por qué anticiparse?</a>
+        <a href="#s2" class="toc-link">Perros vs. gatos</a>
+        <a href="#s3" class="toc-link">Paso 1: Microchip</a>
+        <a href="#s4" class="toc-link">Paso 2: Vacunación</a>
+        <a href="#s5" class="toc-link">Paso 3: Serología</a>
+        <a href="#s6" class="toc-link">Paso 4: Cert. de salud</a>
+        <a href="#s7" class="toc-link">Paso 5: Aerolínea</a>
+        <a href="#s8" class="toc-link">Tiempos por destino</a>
+      </div>
+    </div>
+
+    <div class="wa-side">
+      <h3>¿Cuándo debes iniciar? 🐾</h3>
+      <p>Escríbenos y te decimos exactamente cuánto tiempo necesitas según tu destino.</p>
+      <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20saber%20cuándo%20iniciar%20los%20trámites">💬 Preguntar ahora</a>
+    </div>
+
+    <div class="sidebar-widget">
+      <div class="widget-header">📖 También te puede interesar</div>
+      <div class="widget-body" style="display:flex;flex-direction:column;gap:12px">
+        <a href="/blog/como-preparar-a-tu-perro-para-volar-sin-estres/" style="display:flex;gap:10px;text-decoration:none;color:var(--ink)">
+          <div style="width:48px;height:48px;border-radius:10px;background:var(--bg2);border:1.5px solid rgba(43,36,24,.15);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem">🐶</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:.85rem;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:3px">¿Cómo preparar a tu perro para volar sin estrés?</div>
+            <div style="font-size:.72rem;color:var(--muted)">5 nov 2025</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <a href="/servicios" style="display:block;background:var(--teal);border:var(--border);border-radius:18px;padding:18px;text-align:center;text-decoration:none;box-shadow:var(--shadow)">
+      <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--cream);margin-bottom:6px">Ver todos nuestros servicios →</div>
+      <div style="font-size:.76rem;color:rgba(255,250,236,.75);font-weight:300">Certificados, microchip, serología y más</div>
+    </a>
+  </aside>
+</div>
+
+<footer>
+  <div class="footer-row">
+    <span>© 2025 SkyPets Col — Todos los derechos reservados</span>
+    <div class="f-links">
+      <a href="/">Inicio</a><a href="/blog">Blog</a>
+      <a href="/servicios">Servicios</a><a href="/contacto">Contacto</a>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/573213556909" class="wa" title="WhatsApp">💬</a>
+
+<script>
+  window.addEventListener('scroll', () =>
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 30));
+  const sections = document.querySelectorAll('[id^="s"]');
+  const tocLinks = document.querySelectorAll('.toc-link');
+  sections.forEach(s => new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const m = document.querySelector(`.toc-link[href="#${entries[0].target.id}"]`);
+      if (m) m.classList.add('active');
+    }
+  }, { rootMargin: '-20% 0px -70% 0px' }).observe(s));
+</script>
+</body>
+</html>

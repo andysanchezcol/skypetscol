@@ -1,0 +1,49 @@
+# SkyPets Colombia — Configuración de Netlify
+
+[build]
+  publish = "."
+
+# Redirecciones de URLs limpias
+[[redirects]]
+  from = "/terminos-y-condiciones"
+  to   = "/terminos-y-condiciones.html"
+  status = 200
+
+[[redirects]]
+  from = "/politica-de-privacidad"
+  to   = "/politica-de-privacidad.html"
+  status = 200
+
+[[redirects]]
+  from = "/servicios"
+  to   = "/servicios.html"
+  status = 200
+
+[[redirects]]
+  from = "/nosotros"
+  to   = "/nosotros.html"
+  status = 200
+
+[[redirects]]
+  from = "/contacto"
+  to   = "/contacto.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog"
+  to   = "/blog/index.html"
+  status = 200
+
+# Headers de seguridad
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache de assets estáticos
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

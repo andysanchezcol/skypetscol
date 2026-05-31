@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Servicios — SkyPets Colombia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange:  #FF7600;
+  --teal:    #008D83;
+  --yellow:  #FFBC00;
+  --success: #71CC1E;
+  --danger:  #E5443A;
+  --bg1:     #FFFAEC;
+  --bg2:     #FFEFC2;
+  --bg3:     #FFE7A6;
+  --ink:     #2B2418;
+  --cream:   #FFFAEC;
+  --muted:   #6B5540;
+  --border:  2px solid #2B2418;
+  --shadow:  4px 4px 0 #2B2418;
+  --shadowL: 6px 6px 0 #2B2418;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--ink); }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 68px;
+  background: rgba(255,250,236,0.96); backdrop-filter: blur(16px);
+  border-bottom: var(--border); transition: box-shadow .3s;
+}
+nav.scrolled { box-shadow: var(--shadow); }
+.nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.nav-logo img { height: 42px; width: auto; }
+.nav-logo-fb { display:none; font-family:'Fredoka',sans-serif; font-size:1.5rem; font-weight:700; color:var(--orange); }
+.nav-logo-fb span { color:var(--teal); }
+.nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+.nav-links a { font-size:.88rem; font-weight:500; color:var(--ink); text-decoration:none; transition:color .2s; }
+.nav-links a:hover, .nav-links a.active { color:var(--orange); }
+.nav-cta {
+  background:var(--orange); color:var(--cream) !important; font-weight:600 !important;
+  padding:.5rem 1.25rem; border-radius:100px; border:var(--border);
+  box-shadow:3px 3px 0 var(--ink); transition:transform .1s,box-shadow .1s !important;
+}
+.nav-cta:hover { transform:translate(-1px,-1px); box-shadow:var(--shadow) !important; }
+@media(max-width:700px){ nav{padding:0 20px;} .nav-links{display:none;} }
+
+/* ── HERO ── */
+.hero {
+  background: var(--orange); border-bottom: var(--border);
+  padding: 110px 48px 56px; position: relative; overflow: hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute; inset:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Ctext x='10' y='55' font-size='36' fill='%232B2418' opacity='0.07'%3E🐾%3C/text%3E%3Ctext x='68' y='105' font-size='26' fill='%232B2418' opacity='0.05'%3E✈%3C/text%3E%3C/svg%3E");
+}
+.hero-inner { max-width:900px; position:relative; z-index:1; }
+.breadcrumb { display:flex; align-items:center; gap:8px; font-size:.78rem; color:rgba(43,36,24,.5); margin-bottom:16px; font-weight:300; }
+.breadcrumb a { color:rgba(43,36,24,.5); text-decoration:none; }
+.breadcrumb a:hover { color:var(--ink); }
+.hero-badge {
+  display:inline-block; border:var(--border); border-radius:100px;
+  padding:.3rem 1rem; margin-bottom:16px;
+  font-size:.7rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase;
+  background:var(--ink); color:var(--cream); box-shadow:2px 2px 0 rgba(255,250,236,.3);
+  border-color:rgba(255,250,236,.25);
+}
+.hero h1 {
+  font-family:'Fredoka',sans-serif;
+  font-size:clamp(2.4rem,5.5vw,4rem); font-weight:700;
+  line-height:1.05; color:var(--ink); margin-bottom:16px;
+}
+.hero h1 .inv { color:var(--cream); }
+.hero-sub { font-size:1rem; color:var(--ink); opacity:.75; font-weight:300; max-width:520px; margin-bottom:32px; line-height:1.7; }
+.hero-actions { display:flex; gap:12px; flex-wrap:wrap; }
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:'Poppins',sans-serif; font-size:.92rem; font-weight:600;
+  padding:.78rem 1.75rem; border-radius:100px;
+  border:var(--border); text-decoration:none;
+  box-shadow:var(--shadow); transition:transform .1s,box-shadow .1s;
+  white-space:nowrap;
+}
+.btn:hover { transform:translate(-2px,-2px); box-shadow:var(--shadowL); }
+.btn:active { transform:translate(1px,1px); box-shadow:2px 2px 0 var(--ink); }
+.btn-ink    { background:var(--ink); color:var(--cream); }
+.btn-white  { background:var(--cream); color:var(--ink); }
+.btn-teal   { background:var(--teal); color:var(--cream); }
+.btn-yellow { background:var(--yellow); color:var(--ink); }
+@media(max-width:600px){ .hero{padding:100px 20px 40px;} }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  position:sticky; top:68px; z-index:80;
+  background:var(--ink); border-bottom:var(--border);
+  padding:0 48px; overflow-x:auto; scrollbar-width:none;
+}
+.filter-bar::-webkit-scrollbar { display:none; }
+.filter-inner {
+  display:flex; align-items:center; gap:6px;
+  min-width:max-content; padding:10px 0;
+}
+.filter-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:.32rem .9rem; border-radius:100px;
+  font-size:.75rem; font-weight:500; color:rgba(255,250,236,.55);
+  text-decoration:none; white-space:nowrap;
+  border:1.5px solid transparent; cursor:pointer;
+  background:transparent; font-family:'Poppins',sans-serif;
+  transition:background .15s,color .15s,border-color .15s;
+}
+.filter-btn:hover { background:rgba(255,250,236,.1); color:var(--cream); }
+.filter-btn.active {
+  background:var(--orange); color:var(--cream);
+  border-color:var(--orange); font-weight:600;
+  box-shadow:2px 2px 0 var(--ink);
+}
+@media(max-width:600px){ .filter-bar{padding:0 16px;} }
+
+/* ── SERVICES GRID ── */
+.services-section { padding:56px 48px 80px; max-width:1200px; margin:0 auto; }
+.services-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(320px,1fr));
+  gap:24px;
+}
+@media(max-width:600px){ .services-section{padding:36px 20px 60px;} .services-grid{grid-template-columns:1fr;} }
+
+/* ── SERVICE CARD ── */
+.svc-card {
+  background:#fff; border-radius:24px; border:var(--border);
+  box-shadow:var(--shadow); overflow:hidden;
+  transition:transform .15s,box-shadow .15s;
+  display:flex; flex-direction:column;
+}
+.svc-card:hover { transform:translate(-2px,-2px); box-shadow:var(--shadowL); }
+.svc-card[data-hidden="true"] { display:none; }
+
+.svc-card-top {
+  padding:28px 28px 20px;
+  display:flex; align-items:flex-start; gap:16px;
+  border-bottom:var(--border);
+}
+.svc-icon-wrap {
+  width:54px; height:54px; border-radius:50%; flex-shrink:0;
+  border:var(--border); display:flex; align-items:center;
+  justify-content:center; font-size:1.5rem;
+  box-shadow:2px 2px 0 var(--ink);
+}
+.svc-card-meta { flex:1; min-width:0; }
+.svc-cat {
+  display:inline-block; font-size:.65rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:2px; color:var(--muted);
+  margin-bottom:4px;
+}
+.svc-card h3 {
+  font-family:'Fredoka',sans-serif; font-size:1.15rem; font-weight:600;
+  color:var(--ink); line-height:1.2;
+}
+.svc-card-body { padding:20px 28px 24px; flex:1; display:flex; flex-direction:column; gap:12px; }
+.svc-desc { font-size:.88rem; color:var(--muted); line-height:1.75; font-weight:300; flex:1; }
+
+.svc-features { list-style:none; display:flex; flex-direction:column; gap:7px; }
+.svc-features li {
+  display:flex; align-items:flex-start; gap:9px;
+  font-size:.82rem; color:var(--muted); line-height:1.5; font-weight:300;
+}
+.svc-features li::before {
+  content:''; width:7px; height:7px; border-radius:50%;
+  background:var(--teal); border:1.5px solid var(--ink);
+  flex-shrink:0; margin-top:5px;
+}
+
+.svc-card-footer {
+  padding:16px 28px 20px;
+  border-top:1.5px solid rgba(43,36,24,.08);
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.svc-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  border:1.5px solid var(--ink); border-radius:100px;
+  padding:.25rem .85rem; font-size:.78rem; font-weight:700; color:var(--ink);
+}
+.svc-cta {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--orange); color:var(--cream);
+  font-family:'Poppins',sans-serif; font-size:.82rem; font-weight:600;
+  padding:.48rem 1.1rem; border-radius:100px;
+  border:var(--border); text-decoration:none;
+  box-shadow:2px 2px 0 var(--ink); transition:transform .1s,box-shadow .1s;
+}
+.svc-cta:hover { transform:translate(-1px,-1px); box-shadow:3px 3px 0 var(--ink); }
+
+/* ── FREE SERVICE HIGHLIGHT ── */
+.svc-card.free .svc-card-top { background:var(--bg2); }
+.svc-card.free .svc-badge { background:var(--success); border-color:var(--ink); }
+
+/* ── CTA BAND ── */
+.cta-band {
+  background:var(--teal); border-top:var(--border); border-bottom:var(--border);
+  padding:56px 48px; text-align:center; position:relative; overflow:hidden;
+}
+.cta-band::before {
+  content:'';
+  position:absolute; inset:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ctext x='10' y='45' font-size='28' fill='%23FFFAEC' opacity='0.05'%3E🐾%3C/text%3E%3C/svg%3E");
+}
+.cta-inner { position:relative; z-index:1; max-width:600px; margin:0 auto; }
+.cta-tag {
+  display:inline-block; border:2px solid rgba(255,250,236,.3); border-radius:100px;
+  padding:.28rem .85rem; margin-bottom:16px;
+  font-size:.7rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase;
+  color:rgba(255,250,236,.8);
+}
+.cta-band h2 {
+  font-family:'Fredoka',sans-serif;
+  font-size:clamp(1.8rem,3.5vw,2.6rem); font-weight:700;
+  color:var(--cream); line-height:1.1; margin-bottom:10px;
+}
+.cta-band p { font-size:.98rem; color:rgba(255,250,236,.8); font-weight:300; margin-bottom:28px; }
+.cta-band-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+/* ── FOOTER ── */
+footer { background:var(--ink); border-top:var(--border); padding:28px 48px; }
+.footer-row {
+  display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:12px; font-size:.8rem; color:rgba(255,250,236,.45);
+}
+.f-links { display:flex; gap:24px; flex-wrap:wrap; }
+.f-links a { color:rgba(255,250,236,.4); text-decoration:none; font-size:.82rem; transition:color .2s; }
+.f-links a:hover { color:var(--orange); }
+
+/* ── WA FLOAT ── */
+.wa {
+  position:fixed; bottom:24px; right:24px; z-index:200;
+  width:58px; height:58px; border-radius:50%;
+  background:#25D366; border:var(--border);
+  display:flex; align-items:center; justify-content:center; font-size:1.7rem;
+  box-shadow:var(--shadowL); text-decoration:none;
+  animation:wap 2.5s ease-in-out infinite;
+}
+.wa:hover { transform:translate(-2px,-2px); animation:none; }
+@keyframes wap { 0%,100%{box-shadow:var(--shadowL)} 50%{box-shadow:4px 4px 0 var(--ink),0 0 0 8px rgba(37,211,102,.18)} }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="/" class="nav-logo">
+    <img src="https://skypetscol.com/wp-content/uploads/2025/10/cropped-Logo-SkyPets-Travel-500-400x400.webp"
+         alt="SkyPets" onerror="this.style.display='none';document.getElementById('lf').style.display='block'">
+    <span id="lf" class="nav-logo-fb">Sky<span>Pets</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Inicio</a></li>
+    <li><a href="/servicios" class="active">Servicios</a></li>
+    <li><a href="/blog">Blog</a></li>
+    <li><a href="/#contacto">Contacto</a></li>
+    <li><a href="https://wa.me/573213556909" class="nav-cta">💬 Cotiza Ahora</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="/">Inicio</a><span>›</span><span style="opacity:.8">Servicios</span></div>
+    <span class="hero-badge">QUÉ HACEMOS</span>
+    <h1>Todo lo que tu<br>peludito necesita<br>para <span class="inv">volar.</span></h1>
+    <p class="hero-sub">Desde la primera consulta hasta el aterrizaje. Gestionamos cada trámite para que tú y tu mascota viajen sin susto y sin sorpresas.</p>
+    <div class="hero-actions">
+      <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20conocer%20sus%20servicios" class="btn btn-ink">💬 Hablar con un asesor</a>
+      <a href="#servicios" class="btn btn-white">Ver todos los servicios ↓</a>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-inner">
+    <button class="filter-btn active" data-cat="todos">Todos los servicios</button>
+    <button class="filter-btn" data-cat="documentacion">📄 Documentación</button>
+    <button class="filter-btn" data-cat="salud">🩺 Salud & Vacunas</button>
+    <button class="filter-btn" data-cat="asesoria">💡 Asesoría</button>
+    <button class="filter-btn" data-cat="adicional">🛍️ Adicionales</button>
+  </div>
+</div>
+
+<!-- SERVICES GRID -->
+<section class="services-section" id="servicios">
+  <div class="services-grid" id="servicesGrid">
+
+    <!-- 1. Certificado de Salud Nacional -->
+    <div class="svc-card" data-cat="documentacion">
+      <div class="svc-card-top">
+        <div class="svc-icon-wrap" style="background:#E0F5F3">🩺</div>
+        <div class="svc-card-meta">
+          <span class="svc-cat">Documentación</span>
+          <h3>Certificado de Salud Nacional</h3>
+        </div>
+      </div>
+      <div class="svc-card-body">
+        <p class="svc-desc">Certificado veterinario oficial requerido para vuelos domésticos en Colombia. Acredita que tu mascota está en condiciones óptimas de salud para viajar en cabina o bodega.</p>
+        <ul class="svc-features">
+          <li>Válido para todas las aerolíneas nacionales</li>
+          <li>Emisión por veterinario certificado</li>
+          <li>Entrega digital inmediata</li>
+          <li>Vigencia de 10 días antes del vuelo</li>
+        </ul>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-badge" style="background:var(--bg2)">🇨🇴 Nacional</span>
+        <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20información%20sobre%20el%20Certificado%20de%20Salud%20Nacional" class="svc-cta">Cotizar →</a>
+      </div>
+    </div>
+
+    <!-- 2. Certificado de Salud Internacional -->
+    <div class="svc-card" data-cat="documentacion">
+      <div class="svc-card-top">
+        <div class="svc-icon-wrap" style="background:#E0F5F3">🌍</div>
+        <div class="svc-card-meta">
+          <span class="svc-cat">Documentación</span>
+          <h3>Certificado de Salud Internacional</h3>
+        </div>
+      </div>
+      <div class="svc-card-body">
+        <p class="svc-desc">Certificado sanitario para viajes internacionales, adaptado a los requisitos específicos del país de destino. Incluye revisión de normativa vigente de la aerolínea y el país.</p>
+        <ul class="svc-features">
+          <li>Adaptado al país y aerolínea de destino</li>
+          <li>Verificación de requisitos de ingreso</li>
+          <li>Apostilla si el país lo requiere</li>
+          <li>Entrega digital y física</li>
+        </ul>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-badge" style="background:var(--bg3)">✈️ Internacional</span>
+        <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20información%20sobre%20el%20Certificado%20de%20Salud%20Internacional" class="svc-cta">Cotizar →</a>
+      </div>
+    </div>
+
+    <!-- 3. Certificado de Asistencia y Servicio -->
+    <div class="svc-card" data-cat="documentacion">
+      <div class="svc-card-top">
+        <div class="svc-icon-wrap" style="background:#FFF0E6">🦮</div>
+        <div class="svc-card-meta">
+          <span class="svc-cat">Documentación</span>
+          <h3>Certificado de Asistencia y Servicio</h3>
+        </div>
+      </div>
+      <div class="svc-card-body">
+        <p class="svc-desc">Documentación oficial <strong>exclusiva para perros</strong> que cumplen función de asistencia o servicio, permitiendo su ingreso a espacios y vuelos con condiciones especiales según normativa vigente.</p>
+        <ul class="svc-features">
+          <li>Solo aplica para perros de asistencia o servicio</li>
+          <li>Evaluación comportamental del animal</li>
+          <li>Documentación avalada por profesionales</li>
+          <li>Guía de derechos y condiciones de viaje</li>
+        </ul>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-badge" style="background:var(--bg2)">🐕 Solo perros</span>
+        <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20información%20sobre%20el%20Certificado%20de%20Asistencia%20y%20Servicio" class="svc-cta">Cotizar →</a>
+      </div>
+    </div>
+
+    <!-- 4. Certificado ESA -->
+    <div class="svc-card" data-cat="documentacion">
+      <div class="svc-card-top">
+        <div class="svc-icon-wrap" style="background:#FFF0E6">💛</div>
+        <div class="svc-card-meta">
+          <span class="svc-cat">Documentación</span>
+          <h3>Certificado de Apoyo Emocional (ESA)</h3>
+        </div>
+      </div>
+      <div class="svc-card-body">
+        <p class="svc-desc">El Emotional Support Animal (ESA) es un certificado que acredita el vínculo terapéutico entre el paciente y su mascota, facilitando el viaje en cabina en aerolíneas que lo aceptan.</p>
+        <ul class="svc-features">
+          <li>Evaluación psicológica del titular</li>
+          <li>Carta ESA firmada por profesional de salud</li>
+          <li>Orientación sobre aerolíneas que lo aceptan</li>
+          <li>Requisitos específicos por destino</li>
+        </ul>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-badge" style="background:#FFF0E6">💛 ESA</span>
+        <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20información%20sobre%20el%20Certificado%20ESA" class="svc-cta">Cotizar →</a>
+      </div>
+    </div>
+
+    <!-- 5. Vacunación -->
+    <div class="svc-card" data-cat="salud">
+      <div class="svc-card-top">
+        <div class="svc-icon-wrap" style="background:#E0F5F3">💉</div>
+        <div class="svc-card-meta">
+          <span class="svc-cat">Salud & Vacunas</span>
+          <h3>Vacunación</h3>
+        </div>
+      </div>
+      <div class="svc-card-body">
+        <p class="svc-desc">Esquema de vacunación certificado para viajes nacionales e internacionales. Gestionamos las vacunas requeridas según el destino y las condiciones de cada aerolínea.</p>
+        <ul class="svc-features">
+          <li>Antirrábica obligatoria para destinos internacionales</li>
+          <li>Esquema completo según destino</li>
+          <li>Carnet de vacunación internacional</li>
+          <li>Tiempos y vigencias según normativa</li>
+        </ul>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-badge" style="background:#E0F5F3">💉 Vacunas</span>
+        <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20información%20sobre%20vacunación%20para%20viaje" class="svc-cta">Cotizar →</a>
+      </div>
+    </div>
+
+    <!-- 6. Microchip -->
+    <div class="svc-card" data-cat="salud">
+      <div class="svc-card-top">
+        <div class="svc-icon-wrap" style="background:#E0F5F3">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Chip body -->
+            <rect x="7" y="7" width="12" height="12" rx="2" fill="#008D83" stroke="#2B2418" stroke-width="1.5"/>
+            <!-- Inner grid lines -->
+            <line x1="7" y1="11" x2="19" y2="11" stroke="#2B2418" stroke-width="0.8"/>
+            <line x1="7" y1="15" x2="19" y2="15" stroke="#2B2418" stroke-width="0.8"/>
+            <line x1="11" y1="7" x2="11" y2="19" stroke="#2B2418" stroke-width="0.8"/>
+            <line x1="15" y1="7" x2="15" y2="19" stroke="#2B2418" stroke-width="0.8"/>
+            <!-- Pins top -->
+            <line x1="10" y1="4" x2="10" y2="7" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="13" y1="3" x2="13" y2="7" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="16" y1="4" x2="16" y2="7" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Pins bottom -->
+            <line x1="10" y1="19" x2="10" y2="22" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="13" y1="19" x2="13" y2="23" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="16" y1="19" x2="16" y2="22" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Pins left -->
+            <line x1="4" y1="10" x2="7" y2="10" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="3" y1="13" x2="7" y2="13" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="4" y1="16" x2="7" y2="16" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Pins right -->
+            <line x1="19" y1="10" x2="22" y2="10" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="19" y1="13" x2="23" y2="13" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="19" y1="16" x2="22" y2="16" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="svc-card-meta">
+          <span class="svc-cat">Salud & Vacunas</span>
+          <h3>Implantación de Microchip</h3>
+        </div>
+      </div>
+      <div class="svc-card-body">
+        <p class="svc-desc">La implantación de microchip ISO 11784/11785 es requisito obligatorio para viajar a la Unión Europea, Japón, Australia y decenas de destinos más. Rápido, seguro e indoloro. <strong>Es un chip de identificación, no de rastreo GPS.</strong></p>
+        <ul class="svc-features">
+          <li>Estándar internacional ISO 11784/11785</li>
+          <li>Obligatorio para UE, Japón, Australia y más</li>
+          <li>Procedimiento rápido e indoloro</li>
+          <li>Identificación única — no emite señal ni rastrea ubicación</li>
+        </ul>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-badge" style="background:#E0F5F3">📡 ISO 11784</span>
+        <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20información%20sobre%20implantación%20de%20microchip" class="svc-cta">Cotizar →</a>
+      </div>
+    </div>
+
+    <!-- 7. Serología -->
+    <div class="svc-card" data-cat="salud">
+      <div class="svc-card-top">
+        <div class="svc-icon-wrap" style="background:#E0F5F3">🔬</div>
+        <div class="svc-card-meta">
+          <span class="svc-cat">Salud & Vacunas</span>
+          <h3>Examen de Serología</h3>
+        </div>
+      </div>
+      <div class="svc-card-body">
+        <p class="svc-desc">La prueba de título de anticuerpos contra la rabia (FAVN o ELISA) es indispensable para ingresar a destinos de alta restricción sanitaria. Coordinamos con laboratorios certificados.</p>
+        <ul class="svc-features">
+          <li>Requerido para UE, Japón, Australia, UK y más</li>
+          <li>Laboratorio certificado por SENASA / OIE</li>
+          <li>Tiempos mínimos de 90 días antes del viaje</li>
+          <li>Acompañamiento en todo el proceso</li>
+        </ul>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-badge" style="background:#E0F5F3">🔬 Serología</span>
+        <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20información%20sobre%20el%20examen%20de%20serología" class="svc-cta">Cotizar →</a>
+      </div>
+    </div>
+
+    <!-- 8. Asesoría ICA -->
+    <div class="svc-card" data-cat="asesoria">
+      <div class="svc-card-top">
+        <div class="svc-icon-wrap" style="background:var(--bg3)">📋</div>
+        <div class="svc-card-meta">
+          <span class="svc-cat">Asesoría</span>
+          <h3>Asesoría ICA</h3>
+        </div>
+      </div>
+      <div class="svc-card-body">
+        <p class="svc-desc">Te orientamos en todos los trámites ante el Instituto Colombiano Agropecuario (ICA) para la expedición de certificados sanitarios de exportación requeridos para salir del país con tu mascota.</p>
+        <ul class="svc-features">
+          <li>Gestión de certificado zoosanitario de exportación</li>
+          <li>Revisión de documentos antes de presentar</li>
+          <li>Acompañamiento en inspección ICA</li>
+          <li>Conocimiento actualizado de normativa vigente</li>
+        </ul>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-badge" style="background:var(--bg3)">📋 ICA</span>
+        <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20información%20sobre%20la%20asesoría%20ICA" class="svc-cta">Cotizar →</a>
+      </div>
+    </div>
+
+    <!-- 9. Pet Nanny -->
+    <div class="svc-card" data-cat="adicional">
+      <div class="svc-card-top">
+        <div class="svc-icon-wrap" style="background:var(--bg2)">🧡</div>
+        <div class="svc-card-meta">
+          <span class="svc-cat">Adicionales</span>
+          <h3>Pet Nanny</h3>
+        </div>
+      </div>
+      <div class="svc-card-body">
+        <p class="svc-desc">Acompañante especializado que viaja con tu mascota o la cuida antes y después del vuelo. Ideal cuando tú no puedes viajar en el mismo vuelo o necesitas apoyo logístico en el destino.</p>
+        <ul class="svc-features">
+          <li>Acompañamiento en vuelo o traslado</li>
+          <li>Cuidado pre y post vuelo</li>
+          <li>Reporte en tiempo real vía WhatsApp</li>
+          <li>Personal capacitado en manejo de mascotas</li>
+        </ul>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-badge" style="background:var(--bg2)">🧡 Pet Nanny</span>
+        <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20información%20sobre%20el%20servicio%20de%20Pet%20Nanny" class="svc-cta">Cotizar →</a>
+      </div>
+    </div>
+
+    <!-- 10. Asesoría Gratuita -->
+    <div class="svc-card free" data-cat="asesoria">
+      <div class="svc-card-top">
+        <div class="svc-icon-wrap" style="background:var(--bg3)">💬</div>
+        <div class="svc-card-meta">
+          <span class="svc-cat">Asesoría</span>
+          <h3>Asesoría Inicial Gratuita</h3>
+        </div>
+      </div>
+      <div class="svc-card-body">
+        <p class="svc-desc">¿No sabes por dónde empezar? En una consulta inicial sin costo te decimos exactamente qué documentos, vacunas y trámites necesita tu peludito según su destino y aerolínea.</p>
+        <ul class="svc-features">
+          <li>Diagnóstico completo de lo que necesitas</li>
+          <li>Sin compromiso de contratación</li>
+          <li>Por WhatsApp, en minutos</li>
+          <li>Válida para cualquier destino nacional o internacional</li>
+        </ul>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-badge" style="background:var(--success);border-color:var(--ink)">✅ GRATIS</span>
+        <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20mi%20asesoría%20gratuita%20para%20viajar%20con%20mi%20mascota" class="svc-cta">Empezar gratis →</a>
+      </div>
+    </div>
+
+    <!-- 11. Venta de accesorios -->
+    <div class="svc-card" data-cat="adicional">
+      <div class="svc-card-top">
+        <div class="svc-icon-wrap" style="background:var(--bg2)">🛍️</div>
+        <div class="svc-card-meta">
+          <span class="svc-cat">Adicionales</span>
+          <h3>Venta de Accesorios para Viaje</h3>
+        </div>
+      </div>
+      <div class="svc-card-body">
+        <p class="svc-desc">Contamos con los accesorios esenciales para que tu peludito viaje cómodo y seguro: guacales certificados por aerolíneas, correas, bebederos y kit de viaje.</p>
+        <ul class="svc-features">
+          <li>Guacales certificados por IATA</li>
+          <li>Tamaños para cabina y bodega</li>
+          <li>Kit de viaje (bebedero, plato, almohadilla)</li>
+          <li>Asesoría sobre el accesorio correcto para tu vuelo</li>
+        </ul>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-badge" style="background:var(--bg2)">🛍️ Accesorios</span>
+        <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20información%20sobre%20accesorios%20para%20viaje" class="svc-cta">Ver disponibilidad →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<div class="cta-band">
+  <div class="cta-inner">
+    <span class="cta-tag">¿POR DÓNDE EMPIEZO?</span>
+    <h2>Cuéntanos a dónde<br>va tu peludito. 🐾</h2>
+    <p>Escríbenos por WhatsApp, dinos el destino y el tipo de mascota, y en minutos te armamos el checklist completo.</p>
+    <div class="cta-band-btns">
+      <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20asesoría%20para%20viajar%20con%20mi%20mascota" class="btn btn-yellow">💬 Asesoría gratuita por WhatsApp</a>
+      <a href="/" class="btn btn-white">Ver más sobre nosotros</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-row">
+    <span>© 2025 SkyPets Col — Todos los derechos reservados</span>
+    <div class="f-links">
+      <a href="/">Inicio</a>
+      <a href="/terminos-y-condiciones">Términos</a>
+      <a href="/politica-de-privacidad">Privacidad</a>
+      <a href="/#contacto">Contacto</a>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/573213556909" class="wa" title="WhatsApp">💬</a>
+
+<script>
+  /* Nav scroll */
+  window.addEventListener('scroll', () =>
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 30));
+
+  /* Filter */
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.svc-card');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+      cards.forEach(card => {
+        card.dataset.hidden = (cat !== 'todos' && card.dataset.cat !== cat) ? 'true' : 'false';
+      });
+    });
+  });
+</script>
+</body>
+</html>

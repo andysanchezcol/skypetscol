@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkyPets Colombia — Tu peludito vuela en cabina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────
+   SKYPETS DESIGN SYSTEM TOKENS
+───────────────────────────────────────── */
+:root {
+  --color-primary:   #FF7600;
+  --color-secondary: #008D83;
+  --color-accent:    #FFBC00;
+  --color-success:   #71CC1E;
+  --color-danger:    #E5443A;
+
+  --bg-1:   #FFFAEC;
+  --bg-2:   #FFEFC2;
+  --bg-3:   #FFE7A6;
+  --bg-ink: #2B2418;
+  --fg-1:   #2B2418;
+  --fg-inv: #FFFAEC;
+  --fg-muted: #6B5540;
+
+  --orange-50:  #FFF0E6;
+  --orange-200: #FFB380;
+  --teal-50:    #E0F5F3;
+
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px;
+  --sp-5:24px; --sp-6:32px; --sp-7:48px; --sp-8:64px; --sp-9:96px;
+
+  --r-sm:10px; --r-md:16px; --r-lg:24px; --r-xl:36px;
+  --border: 2px solid var(--bg-ink);
+  --shadow: 4px 4px 0 var(--bg-ink);
+  --shadow-lg: 6px 6px 0 var(--bg-ink);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-1);
+  color: var(--fg-1);
+  overflow-x: hidden;
+}
+
+/* ─────────────────────────────────────────
+   NAV
+───────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--sp-8); height: 68px;
+  background: rgba(255,250,236,0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: var(--border);
+  transition: box-shadow 0.3s;
+}
+nav.scrolled { box-shadow: var(--shadow); }
+
+.nav-logo { display: flex; align-items: center; gap: var(--sp-2); text-decoration: none; }
+.nav-logo img { height: 42px; width: auto; }
+.nav-logo-fallback {
+  display: none; font-family: 'Fredoka', sans-serif; font-size: 1.5rem;
+  font-weight: 700; color: var(--color-primary);
+}
+.nav-logo-fallback span { color: var(--color-secondary); }
+
+.nav-links { display: flex; align-items: center; gap: var(--sp-6); list-style: none; }
+.nav-links a {
+  font-size: 0.88rem; font-weight: 500; color: var(--fg-1);
+  text-decoration: none; transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--color-primary); }
+
+.nav-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--color-primary); color: var(--fg-inv) !important;
+  font-weight: 600 !important; font-size: 0.88rem !important;
+  padding: 0.5rem 1.25rem; border-radius: 100px;
+  border: var(--border); box-shadow: 3px 3px 0 var(--bg-ink);
+  transition: transform 0.1s, box-shadow 0.1s !important;
+}
+.nav-cta:hover { transform: translate(-1px,-1px); box-shadow: var(--shadow) !important; }
+
+/* ─────────────────────────────────────────
+   HERO
+───────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  background: var(--color-primary);
+  position: relative; overflow: hidden;
+  display: flex; align-items: center;
+}
+
+/* Paw + airplane scatter pattern */
+.hero-pattern {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  overflow: hidden;
+}
+.hero-pattern svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+}
+
+/* Real photo — right side */
+.hero-photo {
+  position: absolute; right: 0; top: 0; bottom: 0;
+  width: 48%; z-index: 1;
+}
+.hero-photo img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+/* Gradient mask so photo blends into orange */
+.hero-photo::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 2;
+  background: linear-gradient(to right, var(--color-primary) 0%, transparent 40%);
+}
+/* Sticker badge floats over photo */
+.hero-sticker {
+  position: absolute; bottom: var(--sp-8); right: var(--sp-8); z-index: 4;
+  width: 140px; height: 140px;
+  background: var(--bg-ink); border-radius: 50%;
+  border: 3px solid var(--bg-ink);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: var(--sp-3);
+  box-shadow: var(--shadow-lg);
+  animation: spin-slow 20s linear infinite;
+}
+.hero-sticker .s-num {
+  font-family: 'Fredoka', sans-serif; font-size: 1.7rem; font-weight: 700;
+  color: var(--color-accent); line-height: 1;
+}
+.hero-sticker .s-txt {
+  font-size: 0.62rem; font-weight: 600; color: var(--fg-inv);
+  text-transform: uppercase; letter-spacing: 1px; line-height: 1.3;
+  margin-top: 3px;
+}
+@keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.hero-content {
+  position: relative; z-index: 3;
+  padding: 120px var(--sp-8) 80px;
+  max-width: 620px;
+}
+
+.hero-tagline {
+  display: inline-block;
+  border: var(--border); border-radius: 100px;
+  padding: 0.3rem 1rem; margin-bottom: var(--sp-5);
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; background: var(--color-accent);
+  color: var(--bg-ink); box-shadow: 2px 2px 0 var(--bg-ink);
+  animation: fadeUp 0.5s ease both;
+}
+
+.hero-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(3rem, 5.5vw, 5rem); font-weight: 700;
+  line-height: 1.0; letter-spacing: -0.02em;
+  color: var(--bg-ink); margin-bottom: var(--sp-5);
+  animation: fadeUp 0.6s 0.08s ease both;
+}
+.hero-title .highlight {
+  display: inline; background: var(--bg-ink); color: var(--color-accent);
+  padding: 0 0.15em; border-radius: 6px;
+}
+
+.hero-sub {
+  font-size: 1.05rem; line-height: 1.65; font-weight: 300;
+  color: var(--bg-ink); opacity: 0.82;
+  max-width: 440px; margin-bottom: var(--sp-7);
+  animation: fadeUp 0.6s 0.16s ease both;
+}
+
+.hero-actions {
+  display: flex; gap: var(--sp-3); flex-wrap: wrap;
+  animation: fadeUp 0.6s 0.24s ease both;
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 600;
+  padding: 0.8rem 1.8rem; border-radius: 100px;
+  border: var(--border); text-decoration: none; cursor: pointer;
+  box-shadow: var(--shadow); transition: transform 0.1s, box-shadow 0.1s;
+  white-space: nowrap;
+}
+.btn:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-lg); }
+.btn:active { transform: translate(1px,1px); box-shadow: 2px 2px 0 var(--bg-ink); }
+
+.btn-ink    { background: var(--bg-ink); color: var(--fg-inv); }
+.btn-white  { background: var(--fg-inv); color: var(--bg-ink); }
+.btn-teal   { background: var(--color-secondary); color: var(--fg-inv); }
+.btn-accent { background: var(--color-accent); color: var(--bg-ink); }
+.btn-ghost  { background: transparent; color: var(--bg-ink); border-color: var(--bg-ink); box-shadow: none; }
+.btn-ghost:hover { background: rgba(43,36,24,0.07); box-shadow: none; }
+
+/* Slider dots */
+.hero-dots {
+  position: absolute; bottom: var(--sp-6); left: var(--sp-8); z-index: 4;
+  display: flex; gap: var(--sp-2);
+}
+.hero-dot {
+  width: 10px; height: 10px; border-radius: 100px;
+  border: var(--border); background: transparent;
+  cursor: pointer; transition: width 0.3s, background 0.3s;
+}
+.hero-dot.active { width: 32px; background: var(--bg-ink); }
+
+/* ─────────────────────────────────────────
+   STATS STRIP
+───────────────────────────────────────── */
+.stats-strip {
+  background: var(--bg-ink);
+  border-top: var(--border); border-bottom: var(--border);
+  display: flex; justify-content: center;
+  gap: clamp(var(--sp-7), 8vw, 120px);
+  padding: var(--sp-6) var(--sp-8);
+  flex-wrap: wrap;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(2rem, 3.5vw, 2.8rem); font-weight: 700;
+  color: var(--color-accent); display: block; line-height: 1;
+}
+.stat-lbl { font-size: 0.78rem; color: rgba(255,250,236,0.5); margin-top: 4px; font-weight: 300; }
+
+/* ─────────────────────────────────────────
+   SECTIONS
+───────────────────────────────────────── */
+.section { padding: var(--sp-9) var(--sp-8); }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+
+.section-header { margin-bottom: var(--sp-7); }
+.section-tag {
+  display: inline-block; font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2.5px;
+  color: var(--bg-ink); background: var(--color-accent);
+  border: var(--border); border-radius: 100px;
+  padding: 0.22rem 0.85rem; box-shadow: 2px 2px 0 var(--bg-ink);
+  margin-bottom: var(--sp-3);
+}
+.section-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(1.9rem, 3.5vw, 2.8rem); font-weight: 700;
+  line-height: 1.12; color: var(--bg-ink);
+}
+.section-title .accent { color: var(--color-primary); }
+.section-desc {
+  font-size: 1rem; color: var(--fg-muted); line-height: 1.7;
+  font-weight: 300; max-width: 560px; margin-top: var(--sp-3);
+}
+
+/* ─────────────────────────────────────────
+   SERVICE CARDS
+───────────────────────────────────────── */
+.services-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--sp-4);
+}
+.svc-card {
+  background: var(--bg-2); border-radius: var(--r-lg);
+  border: var(--border); padding: var(--sp-6);
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative; overflow: hidden;
+}
+.svc-card:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-lg); }
+
+.svc-icon {
+  width: 52px; height: 52px; border-radius: 50%;
+  border: var(--border); display: flex; align-items: center;
+  justify-content: center; font-size: 1.4rem; margin-bottom: var(--sp-4);
+  box-shadow: 2px 2px 0 var(--bg-ink);
+}
+.svc-card h3 {
+  font-family: 'Fredoka', sans-serif; font-size: 1.2rem; font-weight: 600;
+  color: var(--bg-ink); margin-bottom: var(--sp-2);
+}
+.svc-card p {
+  font-size: 0.87rem; color: var(--fg-muted); line-height: 1.7; font-weight: 300;
+}
+.svc-pill {
+  display: inline-block; margin-top: var(--sp-4);
+  border: 1.5px solid var(--bg-ink); border-radius: 100px;
+  padding: 0.25rem 0.9rem; font-size: 0.78rem; font-weight: 600;
+  color: var(--bg-ink); background: var(--fg-inv);
+}
+
+/* ─────────────────────────────────────────
+   WHY SECTION (Teal surface)
+───────────────────────────────────────── */
+.why-section {
+  background: var(--color-secondary);
+  border-top: var(--border); border-bottom: var(--border);
+  padding: var(--sp-9) var(--sp-8);
+  position: relative; overflow: hidden;
+}
+.why-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-8); align-items: center;
+}
+.why-section .section-tag { background: var(--color-accent); }
+.why-section .section-title { color: var(--fg-inv); }
+.why-section .section-desc { color: rgba(255,250,236,0.75); }
+
+.why-list { list-style: none; margin-top: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-4); }
+.why-list li {
+  display: flex; align-items: flex-start; gap: var(--sp-3);
+  font-size: 0.92rem; color: var(--fg-inv); line-height: 1.6; font-weight: 300;
+}
+.why-check {
+  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+  background: var(--color-accent); border: var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; color: var(--bg-ink);
+  box-shadow: 2px 2px 0 var(--bg-ink); margin-top: 1px;
+}
+
+.why-cards { display: flex; flex-direction: column; gap: var(--sp-3); }
+.why-card {
+  background: rgba(255,250,236,0.10);
+  border: 1.5px solid rgba(255,250,236,0.20);
+  border-radius: var(--r-md); padding: var(--sp-4) var(--sp-5);
+  display: flex; align-items: center; gap: var(--sp-4);
+  transition: background 0.2s, transform 0.15s;
+}
+.why-card:hover { background: rgba(255,250,236,0.18); transform: translateX(4px); }
+.why-card-icon { font-size: 1.7rem; flex-shrink: 0; }
+.why-card h4 {
+  font-family: 'Fredoka', sans-serif; font-size: 0.98rem;
+  font-weight: 600; color: var(--fg-inv); margin-bottom: 2px;
+}
+.why-card p { font-size: 0.78rem; color: rgba(255,250,236,0.6); font-weight: 300; }
+
+/* ─────────────────────────────────────────
+   REVIEWS (Google style)
+───────────────────────────────────────── */
+.reviews-section { background: var(--bg-2); border-top: var(--border); border-bottom: var(--border); }
+
+.google-summary {
+  background: var(--fg-inv); border-radius: var(--r-xl);
+  border: var(--border); box-shadow: var(--shadow-lg);
+  padding: var(--sp-6) var(--sp-7);
+  display: flex; align-items: center; gap: var(--sp-7);
+  margin-bottom: var(--sp-6); flex-wrap: wrap;
+}
+.grb-num {
+  font-family: 'Fredoka', sans-serif; font-size: 4rem;
+  font-weight: 700; color: var(--bg-ink); line-height: 1;
+}
+.grb-stars { color: #F9AB00; font-size: 1.4rem; margin: 4px 0; }
+.grb-count { font-size: 0.75rem; color: var(--fg-muted); font-weight: 300; }
+.g-divider { width: 1px; height: 80px; background: rgba(43,36,24,0.12); flex-shrink: 0; }
+.g-bars { flex: 1; min-width: 160px; display: flex; flex-direction: column; gap: 7px; }
+.gbar-row { display: flex; align-items: center; gap: var(--sp-2); font-size: 0.78rem; }
+.gbar-lbl { width: 14px; text-align: right; font-weight: 600; color: var(--bg-ink); }
+.gbar-track { flex: 1; height: 8px; background: rgba(43,36,24,0.08); border-radius: 100px; overflow: hidden; border: 1px solid rgba(43,36,24,0.1); }
+.gbar-fill { height: 100%; background: #F9AB00; border-radius: 100px; }
+.g-logo { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+.g-badge {
+  font-size: 0.72rem; font-weight: 600; color: var(--fg-muted);
+  border: 1.5px solid rgba(43,36,24,0.15); border-radius: 100px;
+  padding: 0.2rem 0.65rem;
+}
+
+.reviews-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-4);
+}
+.review-card {
+  background: var(--fg-inv); border-radius: var(--r-lg);
+  border: var(--border); padding: var(--sp-6);
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+.review-card:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-lg); }
+
+.rev-header { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-4); }
+.rev-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--color-primary); border: var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka', sans-serif; font-size: 1.1rem;
+  font-weight: 700; color: var(--fg-inv); flex-shrink: 0;
+  box-shadow: 2px 2px 0 var(--bg-ink);
+}
+.rev-name { font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--bg-ink); }
+.rev-meta { font-size: 0.72rem; color: var(--fg-muted); font-weight: 300; }
+.rev-stars { color: #F9AB00; font-size: 0.9rem; margin-bottom: var(--sp-3); }
+.rev-text { font-size: 0.87rem; color: var(--fg-muted); line-height: 1.75; font-style: italic; font-weight: 300; }
+.rev-route {
+  margin-top: var(--sp-4); padding-top: var(--sp-3);
+  border-top: 1px solid rgba(43,36,24,0.08);
+  font-size: 0.78rem; font-weight: 600; color: var(--color-secondary);
+  display: flex; align-items: center; gap: 6px;
+}
+.rev-g-icon { position: absolute; top: var(--sp-4); right: var(--sp-4); width: 20px; opacity: 0.3; }
+
+.reviews-more {
+  text-align: center; margin-top: var(--sp-6);
+}
+.reviews-more a {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.88rem; font-weight: 500; color: var(--fg-muted);
+  text-decoration: none; border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.reviews-more a:hover { color: var(--color-primary); border-color: var(--color-primary); }
+
+/* ─────────────────────────────────────────
+   BLOG
+───────────────────────────────────────── */
+.blog-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--sp-4); max-width: 1100px; margin: 0 auto;
+}
+.blog-card {
+  background: var(--fg-inv); border-radius: var(--r-lg);
+  border: var(--border); overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.blog-card:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-lg); }
+
+.blog-thumb {
+  height: 196px; overflow: hidden; position: relative;
+  background: var(--color-secondary);
+  border-bottom: var(--border);
+}
+.blog-thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.4s ease;
+}
+.blog-card:hover .blog-thumb img { transform: scale(1.04); }
+.blog-thumb-fallback {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center; font-size: 4rem;
+}
+.blog-cat-pill {
+  position: absolute; bottom: var(--sp-3); left: var(--sp-3);
+  background: var(--color-accent); border: 1.5px solid var(--bg-ink);
+  border-radius: 100px; padding: 0.2rem 0.75rem;
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--bg-ink);
+  box-shadow: 2px 2px 0 var(--bg-ink);
+}
+.blog-body { padding: var(--sp-5); }
+.blog-card h3 {
+  font-family: 'Fredoka', sans-serif; font-size: 1.12rem; font-weight: 600;
+  color: var(--bg-ink); line-height: 1.35; margin-bottom: var(--sp-2);
+}
+.blog-card p { font-size: 0.85rem; color: var(--fg-muted); line-height: 1.7; font-weight: 300; }
+.blog-meta {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: var(--sp-4); padding-top: var(--sp-3);
+  border-top: 1px solid rgba(43,36,24,0.08);
+  font-size: 0.78rem; color: var(--fg-muted);
+}
+.blog-read-more {
+  color: var(--color-primary); font-weight: 600;
+  text-decoration: none; transition: color 0.2s;
+}
+.blog-read-more:hover { color: #C45500; }
+
+/* ─────────────────────────────────────────
+   CTA BAND (orange surface)
+───────────────────────────────────────── */
+.cta-section {
+  background: var(--color-primary);
+  border-top: var(--border); border-bottom: var(--border);
+  padding: var(--sp-9) var(--sp-8);
+  text-align: center; position: relative; overflow: hidden;
+}
+/* Paw scatter */
+.cta-section::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ctext x='10' y='40' font-size='28' fill='%232B2418'%3E🐾%3C/text%3E%3Ctext x='55' y='80' font-size='22' fill='%232B2418'%3E✈%3C/text%3E%3C/svg%3E");
+}
+.cta-inner { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+.cta-section .section-tag { background: var(--bg-ink); color: var(--fg-inv); border-color: var(--bg-ink); }
+.cta-section h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem); font-weight: 700;
+  color: var(--bg-ink); line-height: 1.1; margin: var(--sp-3) 0 var(--sp-2);
+}
+.cta-section p {
+  font-size: 1rem; color: var(--bg-ink); opacity: 0.8;
+  font-weight: 300; margin-bottom: var(--sp-6);
+}
+
+/* ─────────────────────────────────────────
+   FOOTER (dark surface)
+───────────────────────────────────────── */
+footer {
+  background: var(--bg-ink); color: rgba(255,250,236,0.55);
+  border-top: var(--border); padding: var(--sp-8) var(--sp-8) var(--sp-5);
+}
+.footer-grid {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1.2fr;
+  gap: var(--sp-8); max-width: 1100px; margin: 0 auto var(--sp-7);
+}
+.footer-logo { height: 40px; width: auto; margin-bottom: var(--sp-4); filter: brightness(0) invert(1); opacity: 0.85; }
+.footer-brand p { font-size: 0.84rem; line-height: 1.8; max-width: 280px; font-weight: 300; }
+.social-row { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); }
+.social-btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,250,236,0.08); border: 1.5px solid rgba(255,250,236,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem; text-decoration: none;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+.social-btn:hover {
+  background: var(--color-primary); border-color: var(--color-primary);
+  transform: translate(-1px,-1px); box-shadow: 2px 2px 0 var(--bg-ink);
+}
+.footer-col h4 {
+  font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600;
+  color: var(--fg-inv); margin-bottom: var(--sp-4);
+}
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: var(--sp-2); }
+.footer-col ul a {
+  font-size: 0.84rem; color: rgba(255,250,236,0.45);
+  text-decoration: none; transition: color 0.2s; font-weight: 300;
+}
+.footer-col ul a:hover { color: var(--color-primary); }
+.footer-contact { display: flex; flex-direction: column; gap: var(--sp-2); }
+.footer-contact-row { display: flex; align-items: center; gap: var(--sp-2); font-size: 0.84rem; font-weight: 300; }
+.footer-bottom {
+  border-top: 1px solid rgba(255,250,236,0.08);
+  padding-top: var(--sp-4); display: flex;
+  justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: var(--sp-3); font-size: 0.78rem;
+  max-width: 1100px; margin: 0 auto;
+}
+
+/* ─────────────────────────────────────────
+   WA FLOAT
+───────────────────────────────────────── */
+.wa-float {
+  position: fixed; bottom: var(--sp-5); right: var(--sp-5); z-index: 200;
+  width: 58px; height: 58px; border-radius: 50%;
+  background: #25D366; border: var(--border);
+  display: flex; align-items: center; justify-content: center; font-size: 1.7rem;
+  box-shadow: var(--shadow-lg); text-decoration: none;
+  animation: wa-pulse 2.5s ease-in-out infinite;
+  transition: transform 0.15s;
+}
+.wa-float:hover { transform: translate(-2px,-2px); animation: none; box-shadow: var(--shadow-lg); }
+@keyframes wa-pulse { 0%,100% { box-shadow: 4px 4px 0 var(--bg-ink); } 50% { box-shadow: 4px 4px 0 var(--bg-ink), 0 0 0 8px rgba(37,211,102,0.2); } }
+
+/* ─────────────────────────────────────────
+   ADMIN PANEL
+───────────────────────────────────────── */
+.admin-bar {
+  display: none; background: var(--bg-ink); color: var(--fg-inv);
+  padding: var(--sp-2) var(--sp-6); align-items: center;
+  justify-content: space-between; gap: var(--sp-4);
+  border-bottom: var(--border); font-size: 0.82rem;
+}
+.admin-bar.visible { display: flex; }
+.admin-bar-btn {
+  background: var(--color-primary); color: var(--fg-inv);
+  border: 1.5px solid var(--fg-inv); border-radius: 100px;
+  padding: 0.35rem 1rem; font-size: 0.75rem; font-weight: 600;
+  cursor: pointer; font-family: 'Poppins', sans-serif; transition: background 0.2s;
+}
+.admin-bar-btn:hover { background: #C45500; }
+
+.img-manager {
+  display: none; position: fixed; top: 80px; right: var(--sp-5); z-index: 500;
+  background: var(--fg-inv); border-radius: var(--r-lg); width: 330px;
+  border: var(--border); box-shadow: var(--shadow-lg); overflow: hidden;
+}
+.img-manager.visible { display: block; }
+.im-head {
+  background: var(--bg-ink); color: var(--fg-inv);
+  padding: var(--sp-4) var(--sp-5);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.im-head h3 { font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600; }
+.im-close { background: none; border: none; color: var(--fg-inv); font-size: 1.2rem; cursor: pointer; }
+.im-body { padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-4); }
+.im-row-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--fg-muted); margin-bottom: var(--sp-2); }
+.im-preview {
+  width: 100%; height: 90px; border-radius: var(--r-md);
+  background-size: cover; background-position: center;
+  border: var(--border); position: relative; overflow: hidden;
+}
+.im-overlay {
+  position: absolute; inset: 0; background: rgba(43,36,24,0.5);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  opacity: 0; transition: opacity 0.2s;
+}
+.im-preview:hover .im-overlay { opacity: 1; }
+.im-sm-btn {
+  background: var(--fg-inv); color: var(--bg-ink); border: 1.5px solid var(--bg-ink);
+  padding: 0.3rem 0.75rem; border-radius: 100px; font-size: 0.72rem;
+  font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif;
+}
+.im-sm-btn:hover { background: var(--color-primary); color: var(--fg-inv); }
+.im-url-row { display: flex; gap: 6px; margin-top: var(--sp-2); }
+.im-url-input {
+  flex: 1; padding: 0.4rem 0.7rem; border-radius: 8px;
+  border: var(--border); font-size: 0.78rem; font-family: 'Poppins', sans-serif;
+  background: var(--bg-1); outline: none;
+}
+.im-url-input:focus { border-color: var(--color-primary); }
+.im-apply {
+  background: var(--color-secondary); color: var(--fg-inv); border: var(--border);
+  padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.75rem;
+  font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif;
+}
+.im-footer { padding: var(--sp-2) var(--sp-4) var(--sp-4); }
+.im-save {
+  width: 100%; background: var(--color-primary); color: var(--fg-inv);
+  border: var(--border); padding: 0.7rem; border-radius: var(--r-md);
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  font-family: 'Poppins', sans-serif; box-shadow: var(--shadow);
+  transition: background 0.2s;
+}
+.im-save:hover { background: #C45500; }
+.im-hint { font-size: 0.7rem; color: var(--fg-muted); text-align: center; margin-top: var(--sp-2); line-height: 1.5; }
+
+/* ─────────────────────────────────────────
+   ANIMATIONS
+───────────────────────────────────────── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.reveal { opacity:0; transform:translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+@media (max-width: 960px) {
+  nav .nav-links { display: none; }
+  .hero-photo { display: none; }
+  .hero-content { max-width: 100%; }
+  .why-inner { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .google-summary { gap: var(--sp-4); }
+  .g-divider { display: none; }
+}
+@media (max-width: 600px) {
+  .section { padding: var(--sp-7) var(--sp-5); }
+  nav { padding: 0 var(--sp-5); }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .hero-content { padding: 110px var(--sp-5) 70px; }
+  .stats-strip { gap: var(--sp-5); padding: var(--sp-5); }
+  .hero-sticker { width: 110px; height: 110px; bottom: var(--sp-5); right: var(--sp-5); }
+}
+</style>
+</head>
+<body>
+
+<!-- ADMIN BAR -->
+<div class="admin-bar" id="adminBar">
+  <span>⚙️ Modo edición activo</span>
+  <button class="admin-bar-btn" onclick="toggleIM()">📷 Editar imágenes del banner</button>
+</div>
+
+<!-- IMAGE MANAGER -->
+<div class="img-manager" id="imgManager">
+  <div class="im-head">
+    <h3>📷 Imágenes del banner</h3>
+    <button class="im-close" onclick="toggleIM()">✕</button>
+  </div>
+  <div class="im-body" id="imBody"></div>
+  <div class="im-footer">
+    <button class="im-save" onclick="saveImgs()">💾 Guardar</button>
+    <p class="im-hint">Se guarda en este navegador.<br>Para publicar, sube las fotos a /assets/images/</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="/" class="nav-logo">
+    <img src="https://skypetscol.com/wp-content/uploads/2025/10/cropped-Logo-SkyPets-Travel-500-400x400.webp"
+         alt="SkyPets Colombia"
+         onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'">
+    <span id="logoFallback" class="nav-logo-fallback">Sky<span>Pets</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="/blog">Blog</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+    <li><a href="https://wa.me/573213556909" class="nav-cta">💬 Cotiza Ahora</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="heroSection">
+  <div class="hero-pattern">
+    <svg viewBox="0 0 1440 800" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="820"  y="120" font-size="36" fill="#2B2418" opacity="0.08" transform="rotate(-15 820 120)">🐾</text>
+      <text x="1100" y="220" font-size="28" fill="#2B2418" opacity="0.07" transform="rotate(10 1100 220)">✈</text>
+      <text x="680"  y="320" font-size="22" fill="#2B2418" opacity="0.06" transform="rotate(-8 680 320)">🐾</text>
+      <text x="950"  y="450" font-size="32" fill="#2B2418" opacity="0.07" transform="rotate(20 950 450)">✈</text>
+      <text x="760"  y="600" font-size="26" fill="#2B2418" opacity="0.06" transform="rotate(-12 760 600)">🐾</text>
+      <text x="1200" y="550" font-size="20" fill="#2B2418" opacity="0.06" transform="rotate(5 1200 550)">🐾</text>
+      <text x="1050" y="700" font-size="30" fill="#2B2418" opacity="0.07" transform="rotate(-18 1050 700)">✈</text>
+    </svg>
+  </div>
+
+  <!-- Real photo right side -->
+  <div class="hero-photo" id="heroPhotoWrap">
+    <img src="https://skypetscol.com/wp-content/uploads/2025/10/1-1.webp"
+         id="heroPhoto"
+         alt="Mascota viajera SkyPets"
+         onerror="document.getElementById('heroPhotoWrap').style.display='none'">
+  </div>
+
+  <!-- Rotating sticker -->
+  <div class="hero-sticker">
+    <span class="s-num" id="stickerNum">+591</span>
+    <span class="s-txt">vuelos<br>exitosos</span>
+  </div>
+
+  <div class="hero-content">
+    <span class="hero-tagline">JUNTOS EN CADA DESTINO</span>
+    <h1 class="hero-title">
+      Tu peludito<br>vuela <span class="highlight">en cabina.</span><br>Tú vuelas tranquila.
+    </h1>
+    <p class="hero-sub">Acompañamos cada detalle del viaje: documentos, vet, certificado de apoyo emocional y logística con la aerolínea. Sin sustos. Sin sorpresas.</p>
+    <div class="hero-actions">
+      <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20información%20para%20viajar%20con%20mi%20mascota" class="btn btn-ink">Agenda tu asesoría →</a>
+      <a href="https://wa.me/573213556909" class="btn btn-white">💬 Hablar por WhatsApp</a>
+    </div>
+  </div>
+
+  <div class="hero-dots" id="heroDots">
+    <button class="hero-dot active" data-idx="0"></button>
+    <button class="hero-dot" data-idx="1"></button>
+    <button class="hero-dot" data-idx="2"></button>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stat-item"><span class="stat-num" data-target="591">0</span><span class="stat-lbl">Viajeros Internacionales</span></div>
+  <div class="stat-item"><span class="stat-num" data-target="384">0</span><span class="stat-lbl">Serologías realizadas</span></div>
+  <div class="stat-item"><span class="stat-num" data-target="168">0</span><span class="stat-lbl">Pet Nannys</span></div>
+  <div class="stat-item"><span class="stat-num" data-target="2">0</span><span class="stat-lbl">Años de experiencia</span></div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="servicios">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">QUÉ HACEMOS</span>
+      <h2 class="section-title">Todo el viaje de tu peludito,<br>en un <span class="accent">solo lugar</span></h2>
+      <p class="section-desc">Desde la primera consulta hasta el aterrizaje en el destino. Tú confías, nosotros nos encargamos.</p>
+    </div>
+    <div class="services-grid">
+      <div class="svc-card reveal">
+        <div class="svc-icon" style="background:var(--color-primary)">✈️</div>
+        <h3>Vuelo en cabina</h3>
+        <p>Tu peludito viaja contigo, no en bodega. Gestionamos todo con la aerolínea: requisitos, documentos y preparación.</p>
+        <span class="svc-pill">Desde $450k</span>
+      </div>
+      <div class="svc-card reveal">
+        <div class="svc-icon" style="background:var(--color-secondary)">🩺</div>
+        <h3>Veterinaria & ESA</h3>
+        <p>Chequeos, certificado de apoyo emocional y todos los documentos al día para cualquier destino.</p>
+        <span class="svc-pill">Incluido</span>
+      </div>
+      <div class="svc-card reveal">
+        <div class="svc-icon" style="background:var(--color-accent)">📡</div>
+        <h3>Microchip & Serología</h3>
+        <p>Implantación ISO y prueba de título de anticuerpos contra rabia. Imprescindible para Europa, Japón y Australia.</p>
+        <span class="svc-pill">Add-on</span>
+      </div>
+      <div class="svc-card reveal">
+        <div class="svc-icon" style="background:var(--color-success)">📋</div>
+        <h3>Documentación completa</h3>
+        <p>Gestionamos cada trámite: certificados sanitarios, permisos de ingreso y normativa de la aerolínea.</p>
+        <span class="svc-pill">Incluido</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why-section" id="nosotros">
+  <div class="why-inner">
+    <div class="why-content reveal">
+      <span class="section-tag">¿POR QUÉ ELEGIRNOS?</span>
+      <h2 class="section-title">La diferencia<br>SkyPets</h2>
+      <p class="section-desc">No somos una agencia de viajes. Somos apasionados por los peluditos que aprendimos a hablar perro, gato y aerolínea.</p>
+      <ul class="why-list">
+        <li><span class="why-check">✓</span>Atención personalizada y acompañamiento experto en cada trámite</li>
+        <li><span class="why-check">✓</span>Actualización permanente en normativas nacionales e internacionales</li>
+        <li><span class="why-check">✓</span>Servicios integrales: todo en un solo lugar, sin correr de lado a lado</li>
+        <li><span class="why-check">✓</span>Certificados digitales entregados directamente a tu WhatsApp</li>
+        <li><span class="why-check">✓</span>Horario extendido: lunes a domingo, 8:00 am – 10:00 pm</li>
+      </ul>
+    </div>
+    <div class="why-cards reveal">
+      <div class="why-card"><span class="why-card-icon">🕗</span><div><h4>Horario Extendido</h4><p>Lun–Dom · 8:00 am – 10:00 pm</p></div></div>
+      <div class="why-card"><span class="why-card-icon">📄</span><div><h4>Certificados Digitales</h4><p>Entrega virtual inmediata a tu WhatsApp</p></div></div>
+      <div class="why-card"><span class="why-card-icon">🌍</span><div><h4>+40 Destinos</h4><p>Europa, EE.UU., Latinoamérica y más</p></div></div>
+      <div class="why-card"><span class="why-card-icon">💬</span><div><h4>WhatsApp Directo</h4><p>Respuesta rápida, sin formularios</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews-section section">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">FAMILIAS FELICES</span>
+      <h2 class="section-title">Lo que dicen quienes<br>ya <span class="accent">volaron con nosotros</span></h2>
+    </div>
+    <div class="google-summary reveal">
+      <div style="text-align:center;flex-shrink:0">
+        <div class="grb-num">5.0</div>
+        <div class="grb-stars">★★★★★</div>
+        <div class="grb-count">Reseñas en Google</div>
+      </div>
+      <div class="g-divider"></div>
+      <div class="g-bars">
+        <div class="gbar-row"><span class="gbar-lbl">5</span><div class="gbar-track"><div class="gbar-fill" style="width:100%"></div></div></div>
+        <div class="gbar-row"><span class="gbar-lbl">4</span><div class="gbar-track"><div class="gbar-fill" style="width:0%"></div></div></div>
+        <div class="gbar-row"><span class="gbar-lbl">3</span><div class="gbar-track"><div class="gbar-fill" style="width:0%"></div></div></div>
+        <div class="gbar-row"><span class="gbar-lbl">2</span><div class="gbar-track"><div class="gbar-fill" style="width:0%"></div></div></div>
+        <div class="gbar-row"><span class="gbar-lbl">1</span><div class="gbar-track"><div class="gbar-fill" style="width:0%"></div></div></div>
+      </div>
+      <div class="g-divider"></div>
+      <div class="g-logo">
+        <svg width="40" height="40" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 32.7 29.1 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6 29.3 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-4z"/></svg>
+        <span class="g-badge">Google Business</span>
+        <span style="font-size:0.65rem;color:var(--fg-muted)">Reseñas verificadas</span>
+      </div>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card reveal">
+        <svg class="rev-g-icon" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 32.7 29.1 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6 29.3 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-4z"/></svg>
+        <div class="rev-header">
+          <div class="rev-avatar">L</div>
+          <div><div class="rev-name">Laura M.</div><div class="rev-meta">Google · hace 3 meses</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Desde el primer contacto sentí apoyo total. Me ayudaron con todos los requisitos para volar con Milo por Avianca. Milo viajó en cabina, llegó relajado y sano. ¡Son expertos de verdad y súper humanos!</p>
+        <div class="rev-route">✈️ Bogotá → Miami · Avianca</div>
+      </div>
+      <div class="review-card reveal">
+        <svg class="rev-g-icon" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 32.7 29.1 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6 29.3 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-4z"/></svg>
+        <div class="rev-header">
+          <div class="rev-avatar" style="background:var(--color-secondary)">A</div>
+          <div><div class="rev-name">Andrés R.</div><div class="rev-meta">Google · hace 4 meses</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Llevar a Lua a vivir a Madrid parecía interminable. SkyPets fue impecable: documentos, microchip, vacunas, certificados y normativa de Iberia y la UE. Lua voló tranquila y llegó perfecta.</p>
+        <div class="rev-route">✈️ Medellín → Madrid · Iberia</div>
+      </div>
+      <div class="review-card reveal">
+        <svg class="rev-g-icon" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 32.7 29.1 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6 29.3 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-4z"/></svg>
+        <div class="rev-header">
+          <div class="rev-avatar" style="background:var(--color-accent);color:var(--bg-ink)">V</div>
+          <div><div class="rev-name">Valentina G.</div><div class="rev-meta">Google · hace 5 meses</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">SkyPets me explicó todo para volar con Rocky por LATAM e incluso revisaron los requisitos directamente con la aerolínea. Rocky llegó feliz y yo viajé completamente tranquila.</p>
+        <div class="rev-route">✈️ Cali → Bogotá · LATAM</div>
+      </div>
+    </div>
+    <div class="reviews-more reveal">
+      <a href="https://www.google.com/maps/search/SkyPets+Colombia" target="_blank">Ver todas las reseñas en Google Maps →</a>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section class="section" style="background:var(--bg-2);border-top:var(--border)">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">PET BLOG</span>
+      <h2 class="section-title">Recursos para <span class="accent">papitos viajeros</span></h2>
+    </div>
+    <div class="blog-grid">
+      <div class="blog-card reveal">
+        <div class="blog-thumb">
+          <img src="https://skypetscol.com/wp-content/uploads/2025/10/1-1.webp" alt="Perro en vuelo"
+               onerror="this.parentElement.innerHTML='<div class=blog-thumb-fallback>🐶</div>'">
+          <span class="blog-cat-pill">Peluditos Viajeros</span>
+        </div>
+        <div class="blog-body">
+          <h3>¿Cómo preparar a tu perro para volar contigo sin estrés?</h3>
+          <p>Desde documentación hasta confort en la cabina. Consejos prácticos para dueños responsables.</p>
+          <div class="blog-meta"><span>5 nov 2025</span><a href="https://skypetscol.com/como-preparar-a-tu-perro-para-volar-sin-estres/" class="blog-read-more">Leer más →</a></div>
+        </div>
+      </div>
+      <div class="blog-card reveal">
+        <div class="blog-thumb">
+          <img src="https://skypetscol.com/wp-content/uploads/2025/10/Gato-SkyPets.webp" alt="Gato viajero"
+               onerror="this.parentElement.innerHTML='<div class=blog-thumb-fallback>🐱</div>'">
+          <span class="blog-cat-pill">Perros &amp; Gatos</span>
+        </div>
+        <div class="blog-body">
+          <h3>Cómo preparar a tu mascota antes de viajar: Guía completa</h3>
+          <p>Todo lo que necesitas saber para que el viaje de tu perro o gato sea seguro y sin contratiempos.</p>
+          <div class="blog-meta"><span>1 nov 2025</span><a href="https://skypetscol.com/como-preparar-a-tu-mascota-antes-de-viajar-guia-completa-para-duenos-de-perros-y-gatos/" class="blog-read-more">Leer más →</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <span class="section-tag">¿LISTO PARA VOLAR?</span>
+    <h2>Tu peludito te espera<br>en la cabina. 🐾</h2>
+    <p>Escríbenos y en minutos te decimos exactamente qué necesita tu peludito para el gran viaje.</p>
+    <div style="display:flex;gap:var(--sp-3);justify-content:center;flex-wrap:wrap">
+      <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20información%20para%20viajar%20con%20mi%20mascota" class="btn btn-ink">💬 Escribir por WhatsApp</a>
+      <a href="#servicios" class="btn btn-white">Ver todos los servicios</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contacto">
+  <div class="footer-grid">
+    <div>
+      <img src="https://skypetscol.com/wp-content/uploads/2025/10/cropped-Logo-SkyPets-Travel-500-400x400.webp"
+           alt="SkyPets" class="footer-logo" onerror="this.style.display='none'">
+      <p>Asesoría integral para el viaje de tu mascota. Con amor, experiencia y acompañamiento experto desde Bogotá, Colombia.</p>
+      <div class="social-row">
+        <a href="https://facebook.com/skypetscol" class="social-btn">📘</a>
+        <a href="https://instagram.com/skypetcol" class="social-btn">📷</a>
+        <a href="https://tiktok.com/@skypetstravel" class="social-btn">🎵</a>
+        <a href="https://wa.me/573213556909" class="social-btn">💬</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Servicios</h4>
+      <ul>
+        <li><a href="#servicios">Asesoría de viaje</a></li>
+        <li><a href="#servicios">Vacunas</a></li>
+        <li><a href="#servicios">Microchip</a></li>
+        <li><a href="#servicios">Serología</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="/terminos-y-condiciones">Términos y Condiciones</a></li>
+        <li><a href="/politica-de-privacidad">Política de Privacidad</a></li>
+        <li><a href="/politica-de-cookies">Política de Cookies</a></li>
+        <li><a href="/nosotros">Acerca de Nosotros</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contáctanos</h4>
+      <div class="footer-contact">
+        <div class="footer-contact-row">📍 Bogotá D.C., Colombia</div>
+        <div class="footer-contact-row">📞 +57 321 355 6909</div>
+        <div class="footer-contact-row">📧 info@skypetscol.com</div>
+        <div class="footer-contact-row">🕗 Lun–Dom 8am–10pm</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 SkyPets Col — Todos los derechos reservados</span>
+    <span>Hecho con 🧡 en Bogotá · <a href="?admin=1" style="color:rgba(255,250,236,0.2);text-decoration:none;font-size:0.72rem">⚙</a></span>
+  </div>
+</footer>
+
+<a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20información%20para%20viajar%20con%20mi%20mascota" class="wa-float" title="WhatsApp">💬</a>
+
+<script>
+/* ── CONFIG ── */
+const DEFAULT_IMGS = [
+  'https://skypetscol.com/wp-content/uploads/2025/10/1-1.webp',
+  'https://skypetscol.com/wp-content/uploads/2025/10/bg-header-layer3.png',
+  ''
+];
+const HERO_COLORS = ['var(--color-primary)', 'var(--color-secondary)', 'var(--bg-3)'];
+const cfg = JSON.parse(localStorage.getItem('sp_imgs') || '{}');
+const imgs = [cfg.s1||DEFAULT_IMGS[0], cfg.s2||DEFAULT_IMGS[1], cfg.s3||DEFAULT_IMGS[2]];
+let current = 0, timer;
+
+/* ── NAV ── */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 30));
+
+/* ── HERO SLIDER ── */
+const hero = document.getElementById('heroSection');
+const heroPhoto = document.getElementById('heroPhoto');
+const dots = document.querySelectorAll('.hero-dot');
+
+function applySlide(n) {
+  const url = imgs[n];
+  if (url) {
+    document.getElementById('heroPhotoWrap').style.display = '';
+    heroPhoto.src = url;
+    hero.style.background = 'var(--color-primary)';
+  } else {
+    document.getElementById('heroPhotoWrap').style.display = 'none';
+    hero.style.background = HERO_COLORS[n] || 'var(--color-primary)';
+  }
+}
+
+function goTo(n) {
+  dots[current].classList.remove('active');
+  current = (n + imgs.length) % imgs.length;
+  dots[current].classList.add('active');
+  applySlide(current);
+}
+
+function autoPlay() { timer = setInterval(() => goTo(current + 1), 4800); }
+dots.forEach(d => d.addEventListener('click', () => { clearInterval(timer); goTo(+d.dataset.idx); autoPlay(); }));
+applySlide(0);
+autoPlay();
+
+/* ── REVEAL ── */
+document.querySelectorAll('.reveal').forEach(el => {
+  new IntersectionObserver(e => { if (e[0].isIntersecting) e[0].target.classList.add('visible'); }, {threshold:0.12}).observe(el);
+});
+
+/* ── COUNTERS ── */
+let counted = false;
+new IntersectionObserver(e => {
+  if (e[0].isIntersecting && !counted) {
+    counted = true;
+    document.querySelectorAll('.stat-num[data-target]').forEach(el => {
+      const t = +el.dataset.target, step = t/80;
+      let v = 0;
+      const id = setInterval(() => { v += step; if (v >= t) { el.textContent='+'+t; clearInterval(id); return; } el.textContent='+'+Math.round(v); }, 16);
+    });
+  }
+}, {threshold:0.5}).observe(document.querySelector('.stats-strip'));
+
+/* ── ADMIN ── */
+const adminBar = document.getElementById('adminBar');
+const imgManager = document.getElementById('imgManager');
+if (new URLSearchParams(location.search).get('admin')==='1') adminBar.classList.add('visible');
+document.addEventListener('keydown', e => { if (e.ctrlKey&&e.shiftKey&&e.key==='A') adminBar.classList.toggle('visible'); });
+
+function toggleIM() {
+  imgManager.classList.toggle('visible');
+  if (imgManager.classList.contains('visible')) buildIMPanels();
+}
+
+function buildIMPanels() {
+  const body = document.getElementById('imBody'); body.innerHTML = '';
+  ['Slide 1 (principal)','Slide 2','Slide 3'].forEach((label,i) => {
+    const n = i+1;
+    const url = imgs[i];
+    body.innerHTML += `
+      <div>
+        <div class="im-row-label">${label}</div>
+        <div class="im-preview" id="ip${n}" style="background-image:url('${url}');background-size:cover">
+          <div class="im-overlay">
+            <button class="im-sm-btn" onclick="document.getElementById('if${n}').click()">📁 Subir</button>
+            <button class="im-sm-btn" onclick="clearIM(${i})">🗑</button>
+          </div>
+        </div>
+        <div class="im-url-row">
+          <input class="im-url-input" id="iu${n}" placeholder="O pega una URL...">
+          <button class="im-apply" onclick="applyIMUrl(${i})">OK</button>
+        </div>
+        <input type="file" id="if${n}" style="display:none" accept="image/*" onchange="handleIMFile(${i},this)">
+      </div>`;
+  });
+}
+
+function applyIMUrl(i) {
+  const url = document.getElementById('iu'+(i+1)).value.trim();
+  if (!url) return;
+  imgs[i] = url;
+  document.getElementById('ip'+(i+1)).style.backgroundImage = `url('${url}')`;
+  if (i===current) applySlide(current);
+  document.getElementById('iu'+(i+1)).value='';
+}
+
+function handleIMFile(i, input) {
+  const f = input.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = e => { imgs[i]=e.target.result; document.getElementById('ip'+(i+1)).style.backgroundImage=`url('${e.target.result}')`; if(i===current) applySlide(current); };
+  r.readAsDataURL(f);
+}
+
+function clearIM(i) {
+  imgs[i]=''; document.getElementById('ip'+(i+1)).style.backgroundImage='none';
+  if(i===current) applySlide(current);
+}
+
+function saveImgs() {
+  localStorage.setItem('sp_imgs', JSON.stringify({s1:imgs[0],s2:imgs[1],s3:imgs[2]}));
+  const btn = document.querySelector('.im-save');
+  btn.textContent='✅ ¡Guardado!';
+  setTimeout(()=>btn.textContent='💾 Guardar',2000);
+}
+</script>
+</body>
+</html>
