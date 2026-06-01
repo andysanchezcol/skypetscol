@@ -77,6 +77,23 @@ Sitio web estático de SkyPets Colombia (skypetscol.com), empresa de asesoría d
 ## Páginas existentes (no crear de nuevo)
 Todos los archivos HTML están en /pages/ — al modificar una página, editar el archivo correspondiente. No crear archivos nuevos sin confirmar.
 
+## Routing de modelos para subagentes
+
+Cuando se usen subagentes (Agent tool), elegir el modelo según la tarea:
+
+| Modelo | Cuándo usarlo | Ejemplos |
+|--------|---------------|---------|
+| `haiku` | Búsqueda, lectura, tareas rápidas y de bajo costo | Buscar un selector en HTML, grep de símbolo, leer un archivo, verificar que un enlace existe, listar archivos |
+| `sonnet` | Escritura de código, edición de HTML/CSS/JS, tareas normales | Modificar una sección, agregar una card, actualizar estilos, escribir copy |
+| `opus` | Revisión de arquitectura, decisiones críticas, análisis profundo | Revisar estructura del design system, evaluar refactors grandes, auditar accesibilidad o SEO global |
+
+### Reglas de aplicación
+- **Por defecto usar `sonnet`** — es el balance correcto para la mayoría de ediciones.
+- **Forzar `haiku`** cuando el único objetivo es leer/buscar sin escribir nada.
+- **Reservar `opus`** únicamente para preguntas del tipo "¿cómo debería estructurar X?" o revisiones completas de una feature antes de implementarla.
+- **No usar `opus` para ediciones puntuales** aunque sean difíciles — ahí va `sonnet`.
+- Si hay dudas entre haiku y sonnet, elegir haiku solo si la tarea es 100% lectura.
+
 ## Tareas frecuentes
 - **Actualizar texto:** editar directamente el HTML en la sección correspondiente
 - **Cambiar imagen de banner:** buscar `hero-slide-N` y actualizar el `src` o `background-image`
