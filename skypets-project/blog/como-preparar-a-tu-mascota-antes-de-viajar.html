@@ -14,7 +14,6 @@ body{font-family:'Poppins',sans-serif;background:var(--bg1);color:var(--ink);}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:68px;background:rgba(255,250,236,.96);backdrop-filter:blur(16px);border-bottom:var(--border);transition:box-shadow .3s;}
 nav.scrolled{box-shadow:var(--shadow);}
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
-.nav-logo img{height:42px;width:auto;}
 .nav-links{display:flex;align-items:center;gap:32px;list-style:none;}
 .nav-links a{font-size:.88rem;font-weight:500;color:var(--ink);text-decoration:none;transition:color .2s;}
 .nav-links a:hover{color:var(--orange);}
@@ -112,6 +111,34 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
 @media (max-width: 960px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; } }
 @media (max-width: 768px) { .nav-links { display: none; } .nav-cta { display: none; } .nav-hamburger { display: flex; } }
 @media (max-width: 540px) { .footer-grid { grid-template-columns: 1fr; gap: 32px; } .footer-bottom { flex-direction: column; text-align: center; } }
+
+/* ── NAV ── */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 76px; display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(20px,6vw,72px); background: rgba(253,248,243,0.94); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(43,36,24,0.08); transition: box-shadow 0.3s; }
+.nav.scrolled { box-shadow: 0 4px 24px rgba(43,36,24,0.08); }
+.nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; }
+.nav-logo img { height: 56px; width: auto; }
+.nav-brand { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1; }
+.nav-brand .sky  { color: #FF7600; }
+.nav-brand .pets { color: #008D83; }
+.nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+.nav-links a { font-size: 0.875rem; font-weight: 500; color: #2B2418; text-decoration: none; position: relative; padding-bottom: 2px; transition: color 0.2s; }
+.nav-links a::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: #FF7600; border-radius: 2px; transform: scaleX(0); transform-origin: right; transition: transform 0.25s ease; }
+.nav-links a:hover, .nav-links a.active { color: #FF7600; }
+.nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
+.nav-cta { display: inline-flex; align-items: center; gap: 6px; background: #FF7600; color: #fff; font-family: 'Poppins', sans-serif; font-size: 0.875rem; font-weight: 600; padding: 10px 22px; border-radius: 100px; border: none; text-decoration: none; white-space: nowrap; box-shadow: 0 4px 20px rgba(255,118,0,0.38); transition: transform 0.15s, box-shadow 0.15s; }
+.nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,118,0,0.48); }
+.nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 6px; }
+.nav-hamburger span { display: block; width: 24px; height: 2px; background: #2B2418; border-radius: 2px; transition: transform 0.25s, opacity 0.25s; }
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.nav-mobile { display: none; position: fixed; top: 76px; left: 0; right: 0; z-index: 999; background: rgba(253,248,243,0.98); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); flex-direction: column; padding: 28px clamp(20px,6vw,72px); gap: 22px; border-bottom: 1px solid rgba(43,36,24,0.08); box-shadow: 0 16px 48px rgba(43,36,24,0.08); }
+.nav-mobile.open { display: flex; }
+.nav-mobile a { font-size: 1.05rem; font-weight: 500; color: #2B2418; text-decoration: none; transition: color 0.2s; }
+.nav-mobile a:hover { color: #FF7600; }
+.nav-mobile .mob-cta { align-self: flex-start; background: #FF7600; color: #fff; font-size: 0.95rem; font-weight: 600; padding: 12px 28px; border-radius: 100px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(255,118,0,0.38); transition: transform 0.15s; }
+.nav-mobile .mob-cta:hover { transform: translateY(-2px); }
+
 </style>
 </head>
 <body>
