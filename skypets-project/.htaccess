@@ -1,0 +1,12 @@
+Options -Indexes
+
+RewriteEngine On
+
+# Serve .html files without extension
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L]
+
+# Redirect / to index.html
+DirectoryIndex index.html
