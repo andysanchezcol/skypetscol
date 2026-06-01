@@ -193,8 +193,10 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
 .svc-card-footer {
   padding:16px 28px 20px;
   border-top:1.5px solid rgba(43,36,24,.08);
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; flex-wrap:nowrap;
 }
+.svc-badge { white-space:nowrap; flex-shrink:0; }
 .svc-badge {
   display:inline-flex; align-items:center; gap:5px;
   border:1.5px solid var(--ink); border-radius:100px;
@@ -202,13 +204,14 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
 }
 .svc-cta {
   display:inline-flex; align-items:center; gap:6px;
-  background:var(--orange); color:var(--cream);
+  background:#FF7600; color:#fff;
   font-family:'Poppins',sans-serif; font-size:.82rem; font-weight:600;
-  padding:.48rem 1.1rem; border-radius:100px;
-  border:var(--border); text-decoration:none;
-  box-shadow:2px 2px 0 var(--ink); transition:transform .1s,box-shadow .1s;
+  padding:.55rem 1.2rem; border-radius:100px;
+  border:none; text-decoration:none; white-space:nowrap;
+  box-shadow:0 4px 16px rgba(255,118,0,0.38);
+  transition:transform .15s, box-shadow .15s;
 }
-.svc-cta:hover { transform:translate(-1px,-1px); box-shadow:3px 3px 0 var(--ink); }
+.svc-cta:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,118,0,0.48); }
 
 /* ── FREE SERVICE HIGHLIGHT ── */
 .svc-card.free .svc-card-top { background:var(--bg2); }
@@ -515,7 +518,28 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
         </ul>
       </div>
       <div class="svc-card-footer">
-        <span class="svc-badge" style="background:#E0F5F3">📡 ISO 11784</span>
+        <span class="svc-badge" style="background:#E0F5F3">
+          <svg width="14" height="14" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <rect x="7" y="7" width="12" height="12" rx="2" fill="#008D83" stroke="#2B2418" stroke-width="1.5"/>
+            <line x1="7" y1="11" x2="19" y2="11" stroke="#2B2418" stroke-width="0.8"/>
+            <line x1="7" y1="15" x2="19" y2="15" stroke="#2B2418" stroke-width="0.8"/>
+            <line x1="11" y1="7" x2="11" y2="19" stroke="#2B2418" stroke-width="0.8"/>
+            <line x1="15" y1="7" x2="15" y2="19" stroke="#2B2418" stroke-width="0.8"/>
+            <line x1="10" y1="4" x2="10" y2="7" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="13" y1="3" x2="13" y2="7" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="16" y1="4" x2="16" y2="7" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="10" y1="19" x2="10" y2="22" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="13" y1="19" x2="13" y2="23" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="16" y1="19" x2="16" y2="22" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="4" y1="10" x2="7" y2="10" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="3" y1="13" x2="7" y2="13" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="4" y1="16" x2="7" y2="16" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="19" y1="10" x2="22" y2="10" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="19" y1="13" x2="23" y2="13" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="19" y1="16" x2="22" y2="16" stroke="#2B2418" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          ISO 11784
+        </span>
         <a href="https://wa.me/573213556909?text=Hola%2C%20quiero%20información%20sobre%20implantación%20de%20microchip" class="svc-cta">Cotizar →</a>
       </div>
     </div>
@@ -530,9 +554,9 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
         </div>
       </div>
       <div class="svc-card-body">
-        <p class="svc-desc">La prueba de título de anticuerpos contra la rabia (FAVN o ELISA) es indispensable para ingresar a destinos de alta restricción sanitaria. Coordinamos con laboratorios certificados.</p>
+        <p class="svc-desc">La prueba de título de anticuerpos contra la rabia (FAVN o ELISA) es indispensable para ingresar a destinos de alta restricción sanitaria como Europa y Estados Unidos. Coordinamos con laboratorios certificados.</p>
         <ul class="svc-features">
-          <li>Requerido para UE, Japón, Australia, UK y más</li>
+          <li>Requerido para Europa, Estados Unidos y algunos países de Latinoamérica</li>
           <li>Laboratorio certificado por SENASA / OIE</li>
           <li>Tiempos mínimos de 90 días antes del viaje</li>
           <li>Acompañamiento en todo el proceso</li>
