@@ -294,6 +294,10 @@ tr:hover td { background: rgba(0,141,131,0.03); }
       <input type="password" class="form-input" id="adminPass" placeholder="••••••••" autocomplete="current-password">
     </div>
     <button class="btn-login" id="btnLogin" onclick="doLogin()">Ingresar al panel</button>
+    <button class="btn-login" id="btnSession" onclick="useSession()"
+            style="margin-top:10px;background:rgba(0,141,131,0.12);color:#008D83;box-shadow:none;border:1.5px solid #008D83;">
+      Usar sesión activa
+    </button>
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
@@ -859,9 +863,45 @@ function showToast(msg, type = '') {
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-/* ── AUTH STATE (solo para sesión pre-existente al cargar la página) ── */
+/* ── USAR SESIÓN ACTIVA (sin password) ── */
+async function useSession() {
+  const btn = document.getElementById('btnSession');
+  btn.disabled = true; btn.textContent = 'Verificando sesión...';
+  hideLoginMsg();
+  try {
+    showLoginInfo('Leyendo sesión activa...');
+    const { data: { session }, error: sessErr } = await sb.auth.getSession();
+    if (sessErr || !session?.user) {
+      showLoginError('No hay sesión activa. Inicia sesión con correo y contraseña, o haz clic en el link de recuperación de tu email.');
+      return;
+    }
+    showLoginInfo('Verificando permisos...');
+    const { data: profile, error: profileErr } = await sb
+      .from('profiles').select('is_admin,full_name,email').eq('id', session.user.id).single();
+    if (profileErr) { showLoginError('Error al leer perfil: ' + profileErr.message); return; }
+    if (!profile?.is_admin) { showLoginError('La sesión activa no tiene permisos de admin.'); return; }
+    enterAdmin(session.user, profile);
+  } catch(e) {
+    showLoginError('Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Usar sesión activa';
+  }
+}
+
+/* ── AUTO-LOGIN AL CARGAR si hay sesión en localStorage ── */
+(async function() {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      const { data: profile } = await sb.from('profiles').select('is_admin,full_name,email').eq('id', session.user.id).single();
+      if (profile?.is_admin) { enterAdmin(session.user, profile); return; }
+    }
+  } catch(_) {}
+})();
+
+/* ── AUTH STATE ── */
 sb.auth.onAuthStateChange(async (event, session) => {
-  if (_loginBusy) return; // no interferir con doLogin activo
+  if (_loginBusy) return;
   if (event === 'SIGNED_IN' && session?.user) {
     const { data: profile } = await sb.from('profiles').select('is_admin,full_name,email').eq('id', session.user.id).single();
     if (profile?.is_admin) enterAdmin(session.user, profile);
