@@ -267,6 +267,18 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
 @media (max-width: 960px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; } }
 @media (max-width: 768px) { .nav-links { display: none; } .nav-cta { display: none; } .nav-hamburger { display: flex; } }
 @media (max-width: 540px) { .footer-grid { grid-template-columns: 1fr; gap: 32px; } .footer-bottom { flex-direction: column; text-align: center; } }
+
+.nav-portal-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #008D83; color: #fff;
+  font-family: 'Poppins', sans-serif; font-size: 0.875rem; font-weight: 600;
+  padding: 10px 22px; border-radius: 100px; border: none; text-decoration: none;
+  box-shadow: 0 4px 20px rgba(0,141,131,0.30);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.nav-portal-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,141,131,0.40); }
+.nav-portal-btn::after { display: none !important; }
+
 </style>
 </head>
 <body>
@@ -300,6 +312,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
   <a href="/contacto">Contacto</a>
   <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20información%20para%20viajar%20con%20mi%20mascota" class="mob-cta">💬 Cotiza Ahora</a>
 </div>
+  <a href="/portal" style="color:var(--teal);font-weight:600">🐾 Mi Portal</a>
 
 <div class="page-hero">
   <div class="hero-inner">
