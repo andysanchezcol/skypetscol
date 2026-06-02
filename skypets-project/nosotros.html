@@ -52,6 +52,18 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
 .nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
 .nav-cta { display: inline-flex; align-items: center; gap: 6px; background: #FF7600; color: #fff; font-family: 'Poppins', sans-serif; font-size: 0.875rem; font-weight: 600; padding: 10px 22px; border-radius: 100px; border: none; text-decoration: none; white-space: nowrap; box-shadow: 0 4px 20px rgba(255,118,0,0.38); transition: transform 0.15s, box-shadow 0.15s; }
 .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,118,0,0.48); }
+.nav-portal {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #008D83; color: #fff;
+  font-family: 'Poppins', sans-serif; font-size: 0.875rem; font-weight: 600;
+  padding: 10px 22px; border-radius: 100px; border: none;
+  text-decoration: none; white-space: nowrap; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,141,131,0.32);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.nav-portal:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,141,131,0.42); }
+.nav-mobile .mob-portal { align-self: flex-start; background: #008D83; color: #fff; font-size: 0.95rem; font-weight: 600; padding: 12px 28px; border-radius: 100px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,141,131,0.32); transition: transform 0.15s; }
+.nav-mobile .mob-portal:hover { transform: translateY(-2px); }
 .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 6px; }
 .nav-hamburger span { display: block; width: 24px; height: 2px; background: #2B2418; border-radius: 2px; transition: transform 0.25s, opacity 0.25s; }
 .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -353,7 +365,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
 .wa-float { position: fixed; bottom: 24px; right: 24px; z-index: 800; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 16px rgba(37,211,102,0.35); transition: transform 0.15s; }
 .wa-float:hover { transform: translateY(-3px); }
 @media (max-width: 960px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; } }
-@media (max-width: 768px) { .nav-links { display: none; } .nav-cta { display: none; } .nav-hamburger { display: flex; } }
+@media (max-width: 768px) { .nav-links { display: none; } .nav-cta { display: none; } .nav-portal { display: none; } .nav-hamburger { display: flex; } }
 @media (max-width: 540px) { .footer-grid { grid-template-columns: 1fr; gap: 32px; } .footer-bottom { flex-direction: column; text-align: center; } }
 
 .nav-portal-btn {
@@ -384,6 +396,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
     <li><a href="/blog">Blog</a></li>
     <li><a href="/contacto">Contacto</a></li>
   </ul>
+    <a href="/portal" class="nav-portal" id="navPortalBtn">🐾 Mi Portal</a>
   <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20información%20para%20viajar%20con%20mi%20mascota" class="nav-cta">
     💬 Cotiza Ahora
   </a>
@@ -399,8 +412,8 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
   <a href="/blog">Blog</a>
   <a href="/contacto">Contacto</a>
   <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20información%20para%20viajar%20con%20mi%20mascota" class="mob-cta">💬 Cotiza Ahora</a>
+  <a href="/portal" class="mob-portal" id="mobPortalBtn">🐾 Mi Portal</a>
 </div>
-  <a href="/portal" style="color:var(--teal);font-weight:600">🐾 Mi Portal</a>
 
 <!-- HERO -->
 <div class="hero">
@@ -802,5 +815,41 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
     });
   }
 })();
+<script>
+(function(){
+  var SB_URL='https://yicrkuntrsiaonkrfzlm.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpY3JrdW50cnNpYW9ua3JmemxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTgzODUsImV4cCI6MjA5NTg5NDM4NX0.Layg3dN6QF6U6po7zkqbn8393LDvApdp2nGISKcMrU8';
+  var LS_KEY='sb-yicrkuntrsiaonkrfzlm-auth-token';
+  function getToken(){
+    try{
+      var raw=localStorage.getItem(LS_KEY);
+      if(!raw)return null;
+      var d=JSON.parse(raw);
+      var tok=d&&d.access_token;
+      var exp=d&&d.expires_at;
+      if(!tok)return null;
+      if(exp&&Date.now()/1000>exp)return null;
+      return tok;
+    }catch(e){return null;}
+  }
+  function setLogout(btn){
+    if(!btn)return;
+    btn.textContent='\u{1F44B} Cerrar sesión';
+    btn.removeAttribute('href');
+    btn.style.cursor='pointer';
+    btn.addEventListener('click',async function(e){
+      e.preventDefault();
+      var tok=getToken();
+      if(tok){try{await fetch(SB_URL+'/auth/v1/logout',{method:'POST',headers:{'Authorization':'Bearer '+tok,'apikey':SB_KEY}});}catch(_){}}
+      Object.keys(localStorage).filter(function(k){return k.startsWith('sb-');}).forEach(function(k){localStorage.removeItem(k);});
+      window.location.href='/portal';
+    });
+  }
+  if(getToken()){
+    setLogout(document.getElementById('navPortalBtn'));
+    setLogout(document.getElementById('mobPortalBtn'));
+  }
+})();
+</script>
 </body>
 </html>
