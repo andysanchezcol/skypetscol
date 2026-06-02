@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — SkyPets Colombia</title>
+<link rel="icon" type="image/webp" href="/assets/images/Logo_SkyPets.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange: #FF7600;
+  --teal:   #008D83;
+  --yellow: #FFBC00;
+  --bg1:    #F4F6F9;
+  --bg2:    #FFFFFF;
+  --ink:    #1A1F2E;
+  --muted:  #64748B;
+  --border: 1px solid rgba(0,0,0,0.08);
+  --success:#22C55E;
+  --danger: #EF4444;
+  --warning:#F59E0B;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+/* ── LOGIN ── */
+.login-screen {
+  min-height: 100svh; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--teal) 0%, #005f57 100%);
+}
+.login-card {
+  background: white; border-radius: 24px; padding: 48px 40px;
+  width: min(420px, calc(100vw - 32px));
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.login-logo { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 8px; }
+.login-logo img { height: 48px; }
+.login-brand { font-family: 'Fredoka', sans-serif; font-size: 1.8rem; font-weight: 700; }
+.login-brand .sky  { color: var(--orange); }
+.login-brand .pets { color: var(--teal); }
+.login-subtitle { text-align: center; font-size: 0.82rem; color: var(--muted); margin-bottom: 32px; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.form-input {
+  width: 100%; padding: 12px 16px; border-radius: 12px;
+  border: 1.5px solid rgba(0,0,0,0.12); font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif; outline: none; transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--teal); }
+.btn-login {
+  width: 100%; padding: 14px; border-radius: 100px; border: none;
+  background: var(--teal); color: white;
+  font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 600;
+  cursor: pointer; margin-top: 8px;
+  box-shadow: 0 4px 20px rgba(0,141,131,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,141,131,0.45); }
+.btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.login-error { font-size: 0.82rem; color: var(--danger); text-align: center; margin-top: 12px; padding: 10px; background: rgba(239,68,68,0.08); border-radius: 10px; display: none; }
+.login-error.show { display: block; }
+
+/* ── ADMIN SHELL ── */
+.admin-shell { display: none; min-height: 100svh; }
+
+/* Sidebar */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0; width: 240px; z-index: 100;
+  background: var(--ink); display: flex; flex-direction: column;
+}
+.sidebar-logo {
+  padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-logo img { height: 40px; filter: brightness(0) invert(1); opacity: 0.85; }
+.sidebar-logo-text { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; font-weight: 700; }
+.sidebar-logo-text .sky  { color: var(--orange); }
+.sidebar-logo-text .pets { color: #4DD9D3; }
+
+.sidebar-nav { flex: 1; padding: 16px 0; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px; color: rgba(255,255,255,0.55);
+  font-size: 0.875rem; font-weight: 500; cursor: pointer;
+  transition: background 0.15s, color 0.15s; border-radius: 0;
+  background: none; border: none; width: 100%; text-align: left;
+  font-family: 'Poppins', sans-serif;
+}
+.nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.nav-item.active { background: rgba(255,118,0,0.15); color: var(--orange); font-weight: 600; }
+.nav-item svg { flex-shrink: 0; opacity: 0.7; }
+.nav-item.active svg { opacity: 1; }
+
+.sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); }
+.sidebar-user { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-bottom: 10px; }
+.btn-sidebar-logout {
+  width: 100%; padding: 9px 16px; border-radius: 100px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6); font-size: 0.8rem; font-weight: 500;
+  cursor: pointer; font-family: 'Poppins', sans-serif; transition: background 0.2s;
+}
+.btn-sidebar-logout:hover { background: rgba(255,255,255,0.14); color: white; }
+
+/* Main */
+.main { margin-left: 240px; min-height: 100svh; }
+.topbar {
+  background: white; border-bottom: var(--border);
+  padding: 0 32px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; font-weight: 600; color: var(--ink); }
+.topbar-badge {
+  background: rgba(0,141,131,0.10); color: var(--teal);
+  border: 1px solid rgba(0,141,131,0.20); border-radius: 100px;
+  font-size: 0.72rem; font-weight: 600; padding: 4px 12px;
+}
+
+.page-content { padding: 32px; }
+
+/* ── VIEWS ── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* Stats */
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
+.stat-card {
+  background: white; border-radius: 16px; padding: 20px 22px;
+  border: var(--border); box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+}
+.stat-card-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+.stat-card-num { font-family: 'Fredoka', sans-serif; font-size: 2rem; font-weight: 700; line-height: 1; }
+.stat-card-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+/* Table */
+.table-card { background: white; border-radius: 16px; border: var(--border); box-shadow: 0 1px 8px rgba(0,0,0,0.04); overflow: hidden; }
+.table-header { padding: 20px 24px; border-bottom: var(--border); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.table-header h3 { font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600; }
+.search-input {
+  padding: 8px 14px; border-radius: 10px; border: var(--border);
+  font-size: 0.85rem; font-family: 'Poppins', sans-serif; outline: none;
+  min-width: 220px; transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--teal); }
+
+table { width: 100%; border-collapse: collapse; }
+th { padding: 12px 20px; text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; background: rgba(0,0,0,0.02); border-bottom: var(--border); }
+td { padding: 14px 20px; font-size: 0.875rem; border-bottom: 1px solid rgba(0,0,0,0.04); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(0,141,131,0.03); }
+
+.user-cell { display: flex; align-items: center; gap: 10px; }
+.user-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: var(--teal); display: flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 700; color: white;
+}
+.user-name { font-weight: 500; color: var(--ink); }
+.user-email { font-size: 0.75rem; color: var(--muted); }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.7rem; font-weight: 600; padding: 3px 10px; border-radius: 100px;
+}
+.badge-success { background: rgba(34,197,94,0.12); color: #15803d; }
+.badge-warning { background: rgba(245,158,11,0.12); color: #b45309; }
+.badge-danger  { background: rgba(239,68,68,0.10);  color: #dc2626; }
+.badge-gray    { background: rgba(0,0,0,0.07);       color: var(--muted); }
+.badge-teal    { background: rgba(0,141,131,0.10);   color: var(--teal); }
+
+.btn-sm {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 100px; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; font-family: 'Poppins', sans-serif; border: none; transition: all 0.15s;
+}
+.btn-sm-teal   { background: var(--teal); color: white; box-shadow: 0 2px 8px rgba(0,141,131,0.25); }
+.btn-sm-teal:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,141,131,0.35); }
+.btn-sm-red    { background: rgba(239,68,68,0.10); color: var(--danger); }
+.btn-sm-red:hover { background: rgba(239,68,68,0.18); }
+.btn-sm-ghost  { background: rgba(0,0,0,0.06); color: var(--ink); }
+.btn-sm-ghost:hover { background: rgba(0,0,0,0.10); }
+
+.empty-row td { text-align: center; padding: 48px; color: var(--muted); font-size: 0.9rem; }
+
+/* ── UPLOAD MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.45); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 16px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: white; border-radius: 24px; width: min(560px, 100%);
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.20);
+  animation: modal-up 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes modal-up { from { opacity:0; transform:translateY(20px) scale(0.97); } to { opacity:1; transform:none; } }
+
+.modal-head {
+  padding: 24px 28px; border-bottom: var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-head h2 { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; font-weight: 700; }
+.modal-close { background: rgba(0,0,0,0.07); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 1rem; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+.modal-close:hover { background: rgba(0,0,0,0.12); }
+
+.modal-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 18px; }
+
+.select-input {
+  width: 100%; padding: 12px 16px; border-radius: 12px;
+  border: 1.5px solid rgba(0,0,0,0.12); font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif; outline: none; transition: border-color 0.2s;
+  background: white;
+}
+.select-input:focus { border-color: var(--teal); }
+
+/* Drop zone */
+.drop-zone {
+  border: 2px dashed rgba(0,141,131,0.35); border-radius: 16px;
+  padding: 36px 24px; text-align: center; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: rgba(0,141,131,0.03);
+}
+.drop-zone:hover, .drop-zone.drag-over { border-color: var(--teal); background: rgba(0,141,131,0.07); }
+.drop-zone-icon { font-size: 2.5rem; margin-bottom: 10px; }
+.drop-zone p { font-size: 0.9rem; color: var(--muted); font-weight: 300; }
+.drop-zone strong { color: var(--teal); font-weight: 600; }
+.drop-zone input { display: none; }
+.file-selected { font-size: 0.82rem; color: var(--teal); font-weight: 500; margin-top: 8px; }
+
+/* Progress */
+.upload-progress { display: none; }
+.upload-progress.show { display: block; }
+.progress-bar-wrap { background: rgba(0,0,0,0.07); border-radius: 100px; height: 8px; overflow: hidden; margin-top: 8px; }
+.progress-bar { height: 100%; background: var(--teal); border-radius: 100px; transition: width 0.3s; width: 0%; }
+.progress-label { font-size: 0.78rem; color: var(--muted); display: flex; justify-content: space-between; margin-top: 4px; }
+
+.modal-foot { padding: 16px 28px 24px; display: flex; gap: 10px; justify-content: flex-end; }
+.btn-primary {
+  padding: 11px 24px; border-radius: 100px; border: none;
+  background: var(--teal); color: white;
+  font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; box-shadow: 0 4px 16px rgba(0,141,131,0.28);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,141,131,0.38); }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.btn-cancel { padding: 11px 20px; border-radius: 100px; border: var(--border); background: white; color: var(--muted); font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+.btn-cancel:hover { background: var(--bg1); }
+
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 900;
+  background: var(--ink); color: white; padding: 14px 20px; border-radius: 14px;
+  font-size: 0.875rem; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.20);
+  display: none; align-items: center; gap: 10px;
+  animation: toast-in 0.3s ease both;
+}
+.toast.show { display: flex; }
+.toast.success { background: #15803d; }
+.toast.error   { background: var(--danger); }
+@keyframes toast-in { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+
+.spinner { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .sidebar { width: 100%; height: 60px; flex-direction: row; bottom: auto; }
+  .main { margin-left: 0; padding-top: 60px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="https://skypetscol.com/wp-content/uploads/2025/10/cropped-Logo-SkyPets-Travel-500-400x400.webp"
+           alt="SkyPets" onerror="this.style.display='none'">
+      <span class="login-brand"><span class="sky">Sky</span><span class="pets">Pets</span></span>
+    </div>
+    <p class="login-subtitle">Panel de Administración</p>
+    <div class="form-group">
+      <label class="form-label">Correo electrónico</label>
+      <input type="email" class="form-input" id="adminEmail" placeholder="admin@skypetscol.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contraseña</label>
+      <input type="password" class="form-input" id="adminPass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" id="btnLogin" onclick="doLogin()">Ingresar al panel</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ── ADMIN SHELL ── -->
+<div class="admin-shell" id="adminShell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="https://skypetscol.com/wp-content/uploads/2025/10/cropped-Logo-SkyPets-Travel-500-400x400.webp"
+           alt="SkyPets" onerror="this.style.display='none'">
+      <span class="sidebar-logo-text"><span class="sky">Sky</span><span class="pets">Pets</span></span>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showView('dashboard')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" onclick="showView('clientes')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        Clientes
+      </button>
+      <button class="nav-item" onclick="showView('documentos')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        Documentos
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" id="sidebarUser"></div>
+      <button class="btn-sidebar-logout" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <span class="topbar-title" id="topbarTitle">Dashboard</span>
+      <span class="topbar-badge">Admin Panel</span>
+    </div>
+    <div class="page-content">
+
+      <!-- DASHBOARD VIEW -->
+      <div class="view active" id="view-dashboard">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-card-label">Total clientes</div>
+            <div class="stat-card-num" id="st-clients" style="color:var(--teal)">—</div>
+            <div class="stat-card-sub">Registrados</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Total documentos</div>
+            <div class="stat-card-num" id="st-docs" style="color:var(--orange)">—</div>
+            <div class="stat-card-sub">Subidos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Documentos vigentes</div>
+            <div class="stat-card-num" id="st-vigentes" style="color:var(--success)">—</div>
+            <div class="stat-card-sub">Activos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Por vencer</div>
+            <div class="stat-card-num" id="st-vencidos" style="color:var(--danger)">—</div>
+            <div class="stat-card-sub">Vencidos o pendientes</div>
+          </div>
+        </div>
+
+        <!-- Recent docs -->
+        <div class="table-card">
+          <div class="table-header">
+            <h3>Documentos recientes</h3>
+            <button class="btn-sm btn-sm-teal" onclick="openUploadModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Subir documento
+            </button>
+          </div>
+          <table>
+            <thead><tr><th>Documento</th><th>Cliente</th><th>Estado</th><th>Vence</th><th></th></tr></thead>
+            <tbody id="recentDocsBody"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CLIENTES VIEW -->
+      <div class="view" id="view-clientes">
+        <div class="table-card">
+          <div class="table-header">
+            <h3>Clientes registrados</h3>
+            <input type="text" class="search-input" placeholder="🔍 Buscar cliente..." id="clientSearch" oninput="filterClients()">
+          </div>
+          <table>
+            <thead><tr><th>Cliente</th><th>Teléfono</th><th>Ciudad</th><th>Documentos</th><th>Registro</th><th></th></tr></thead>
+            <tbody id="clientsBody"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DOCUMENTOS VIEW -->
+      <div class="view" id="view-documentos">
+        <div class="table-card">
+          <div class="table-header">
+            <h3>Todos los documentos</h3>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <select class="search-input" id="docStatusFilter" onchange="loadAllDocs()" style="min-width:150px">
+                <option value="">Todos los estados</option>
+                <option value="vigente">Vigente</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="vencido">Vencido</option>
+              </select>
+              <button class="btn-sm btn-sm-teal" onclick="openUploadModal()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Subir documento
+              </button>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Documento</th><th>Cliente</th><th>Tipo</th><th>Estado</th><th>Vence</th><th></th></tr></thead>
+            <tbody id="allDocsBody"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ── UPLOAD MODAL ── -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>📄 Subir documento</h2>
+      <button class="modal-close" onclick="closeUploadModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label class="form-label">Cliente *</label>
+        <select class="select-input" id="uploadClient"><option value="">Selecciona un cliente...</option></select>
+      </div>
+      <div>
+        <label class="form-label">Tipo de documento *</label>
+        <select class="select-input" id="uploadType">
+          <option value="">Selecciona el tipo...</option>
+          <option value="certificado_salud">Certificado de Salud</option>
+          <option value="certificado_apoyo_emocional">Certificado de Apoyo Emocional (ESA)</option>
+          <option value="certificado_asistencia_servicio">Certificado de Asistencia y Servicio (SVAN)</option>
+          <option value="cartilla_vacunacion">Cartilla de Vacunación</option>
+          <option value="permiso_importacion">Permiso de Importación</option>
+          <option value="permiso_exportacion">Permiso de Exportación</option>
+          <option value="pasaporte_mascota">Pasaporte de Mascota</option>
+          <option value="microchip_certificado">Certificado de Microchip</option>
+          <option value="prueba_titulacion_rabia">Prueba de Titulación de Rabia</option>
+          <option value="tapete_aerolinea">Tapete Aerolínea</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Nombre del documento *</label>
+        <input type="text" class="form-input" id="uploadName" placeholder="Ej: Certificado ESA — Milo — Jun 2025">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div>
+          <label class="form-label">Fecha de emisión</label>
+          <input type="date" class="form-input" id="uploadIssued">
+        </div>
+        <div>
+          <label class="form-label">Fecha de vencimiento</label>
+          <input type="date" class="form-input" id="uploadExpiry">
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Estado</label>
+        <select class="select-input" id="uploadStatus">
+          <option value="pendiente">Pendiente</option>
+          <option value="vigente" selected>Vigente</option>
+          <option value="vencido">Vencido</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Notas (opcional)</label>
+        <input type="text" class="form-input" id="uploadNotes" placeholder="Observaciones para el cliente...">
+      </div>
+      <div>
+        <label class="form-label">Archivo *</label>
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
+             ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+          <div class="drop-zone-icon">📁</div>
+          <p>Arrastra el archivo aquí o <strong>haz clic para seleccionar</strong></p>
+          <p style="font-size:0.75rem;margin-top:6px">PDF, JPG, PNG — Máx. 10 MB</p>
+          <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.webp" onchange="handleFileSelect(this)">
+          <div class="file-selected" id="fileSelected"></div>
+        </div>
+      </div>
+      <div class="upload-progress" id="uploadProgress">
+        <div style="font-size:0.82rem;font-weight:500;color:var(--ink)">Subiendo documento...</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="progress-label"><span id="progressText">0%</span></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeUploadModal()">Cancelar</button>
+      <button class="btn-primary" id="btnUpload" onclick="doUpload()">Subir documento</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://yicrkuntrsiaonkrfzlm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpY3JrdW50cnNpYW9ua3JmemxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTgzODUsImV4cCI6MjA5NTg5NDM4NX0.Layg3dN6QF6U6po7zkqbn8393LDvApdp2nGISKcMrU8';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const DOC_TYPE_NAMES = {
+  certificado_salud:               'Certificado de Salud',
+  certificado_apoyo_emocional:     'ESA',
+  certificado_asistencia_servicio: 'SVAN',
+  cartilla_vacunacion:             'Vacunación',
+  permiso_importacion:             'Permiso Importación',
+  permiso_exportacion:             'Permiso Exportación',
+  pasaporte_mascota:               'Pasaporte',
+  microchip_certificado:           'Microchip',
+  prueba_titulacion_rabia:         'Serología',
+  tapete_aerolinea:                'Tapete Aerolínea',
+  otro:                            'Otro',
+};
+
+let allClients = [];
+let selectedFile = null;
+
+/* ── AUTH ── */
+async function doLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass  = document.getElementById('adminPass').value;
+  const btn   = document.getElementById('btnLogin');
+  const err   = document.getElementById('loginError');
+  err.classList.remove('show');
+  if (!email || !pass) { showLoginError('Completa todos los campos.'); return; }
+  btn.disabled = true; btn.textContent = 'Verificando...';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) { btn.disabled = false; btn.textContent = 'Ingresar al panel'; showLoginError('Credenciales incorrectas.'); return; }
+  const { data: profile } = await sb.from('profiles').select('is_admin,full_name,email').eq('id', data.user.id).single();
+  if (!profile?.is_admin) {
+    await sb.auth.signOut();
+    btn.disabled = false; btn.textContent = 'Ingresar al panel';
+    showLoginError('No tienes permisos de administrador.');
+    return;
+  }
+  btn.disabled = false; btn.textContent = 'Ingresar al panel';
+  enterAdmin(data.user, profile);
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg; el.classList.add('show');
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  document.getElementById('adminShell').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+function enterAdmin(user, profile) {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminShell').style.display = 'flex';
+  document.getElementById('sidebarUser').textContent = profile.full_name || user.email;
+  loadDashboard();
+  loadClients();
+}
+
+/* ── VIEWS ── */
+const viewTitles = { dashboard: 'Dashboard', clientes: 'Clientes', documentos: 'Documentos' };
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item')[['dashboard','clientes','documentos'].indexOf(name)].classList.add('active');
+  document.getElementById('topbarTitle').textContent = viewTitles[name];
+  if (name === 'documentos') loadAllDocs();
+}
+
+/* ── DASHBOARD ── */
+async function loadDashboard() {
+  const [{ count: clients }, { data: docs }] = await Promise.all([
+    sb.from('profiles').select('*', { count: 'exact', head: true }).eq('is_admin', false),
+    sb.from('documents').select('status'),
+  ]);
+  document.getElementById('st-clients').textContent  = clients || 0;
+  document.getElementById('st-docs').textContent     = docs?.length || 0;
+  document.getElementById('st-vigentes').textContent = docs?.filter(d => d.status === 'vigente').length || 0;
+  document.getElementById('st-vencidos').textContent = docs?.filter(d => ['vencido','pendiente'].includes(d.status)).length || 0;
+  loadRecentDocs();
+}
+
+async function loadRecentDocs() {
+  const { data } = await sb.from('documents').select('*, profiles(full_name,email)').order('created_at', { ascending: false }).limit(8);
+  const tbody = document.getElementById('recentDocsBody');
+  if (!data?.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Sin documentos aún</td></tr>'; return; }
+  tbody.innerHTML = data.map(d => `
+    <tr>
+      <td><strong>${d.name}</strong><div style="font-size:0.72rem;color:var(--muted)">${DOC_TYPE_NAMES[d.type]||d.type}</div></td>
+      <td><div>${d.profiles?.full_name||'—'}</div><div style="font-size:0.72rem;color:var(--muted)">${d.profiles?.email||''}</div></td>
+      <td><span class="badge ${statusBadge(d.status)}">${d.status}</span></td>
+      <td style="font-size:0.82rem">${d.expiry_date ? formatDate(d.expiry_date) : '—'}</td>
+      <td><button class="btn-sm btn-sm-red" onclick="deleteDoc('${d.id}','${d.file_path||''}')">Eliminar</button></td>
+    </tr>`).join('');
+}
+
+/* ── CLIENTS ── */
+async function loadClients() {
+  const { data } = await sb.from('profiles').select('*').eq('is_admin', false).order('created_at', { ascending: false });
+  allClients = data || [];
+  renderClients(allClients);
+  populateClientSelect();
+}
+
+function renderClients(clients) {
+  const tbody = document.getElementById('clientsBody');
+  if (!clients.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--muted)">No hay clientes registrados aún</td></tr>'; return; }
+  tbody.innerHTML = clients.map(c => `
+    <tr>
+      <td>
+        <div class="user-cell">
+          <div class="user-avatar">${(c.full_name||c.email||'?')[0].toUpperCase()}</div>
+          <div><div class="user-name">${c.full_name||'Sin nombre'}</div><div class="user-email">${c.email||''}</div></div>
+        </div>
+      </td>
+      <td style="font-size:0.85rem">${c.phone||'—'}</td>
+      <td style="font-size:0.85rem">${c.city||'—'}</td>
+      <td><button class="btn-sm btn-sm-ghost" onclick="openUploadForClient('${c.id}')">Ver docs</button></td>
+      <td style="font-size:0.78rem;color:var(--muted)">${formatDate(c.created_at)}</td>
+      <td><button class="btn-sm btn-sm-teal" onclick="openUploadForClient('${c.id}')">+ Subir doc</button></td>
+    </tr>`).join('');
+}
+
+function filterClients() {
+  const q = document.getElementById('clientSearch').value.toLowerCase();
+  renderClients(allClients.filter(c =>
+    (c.full_name||'').toLowerCase().includes(q) ||
+    (c.email||'').toLowerCase().includes(q)
+  ));
+}
+
+function populateClientSelect() {
+  const sel = document.getElementById('uploadClient');
+  sel.innerHTML = '<option value="">Selecciona un cliente...</option>';
+  allClients.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = `${c.full_name || 'Sin nombre'} — ${c.email}`;
+    sel.appendChild(opt);
+  });
+}
+
+/* ── ALL DOCS ── */
+async function loadAllDocs() {
+  const status = document.getElementById('docStatusFilter').value;
+  let q = sb.from('documents').select('*, profiles(full_name,email)').order('created_at', { ascending: false });
+  if (status) q = q.eq('status', status);
+  const { data } = await q;
+  const tbody = document.getElementById('allDocsBody');
+  if (!data?.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--muted)">Sin documentos</td></tr>'; return; }
+  tbody.innerHTML = data.map(d => `
+    <tr>
+      <td><strong>${d.name}</strong></td>
+      <td style="font-size:0.82rem">${d.profiles?.full_name||'—'}<div style="font-size:0.7rem;color:var(--muted)">${d.profiles?.email||''}</div></td>
+      <td><span class="badge badge-teal" style="font-size:0.68rem">${DOC_TYPE_NAMES[d.type]||d.type}</span></td>
+      <td><span class="badge ${statusBadge(d.status)}">${d.status}</span></td>
+      <td style="font-size:0.82rem">${d.expiry_date ? formatDate(d.expiry_date) : '—'}</td>
+      <td style="display:flex;gap:6px">
+        ${d.file_path ? `<button class="btn-sm btn-sm-ghost" onclick="previewDoc('${d.file_path}')">Ver</button>` : ''}
+        <button class="btn-sm btn-sm-red" onclick="deleteDoc('${d.id}','${d.file_path||''}')">Eliminar</button>
+      </td>
+    </tr>`).join('');
+}
+
+/* ── UPLOAD MODAL ── */
+function openUploadModal() {
+  document.getElementById('uploadModal').classList.add('open');
+}
+function openUploadForClient(clientId) {
+  openUploadModal();
+  setTimeout(() => { document.getElementById('uploadClient').value = clientId; }, 50);
+}
+function closeUploadModal() {
+  document.getElementById('uploadModal').classList.remove('open');
+  document.getElementById('fileSelected').textContent = '';
+  document.getElementById('uploadProgress').classList.remove('show');
+  selectedFile = null;
+}
+
+/* ── FILE HANDLING ── */
+function handleFileSelect(input) {
+  selectedFile = input.files[0];
+  if (selectedFile) document.getElementById('fileSelected').textContent = `✓ ${selectedFile.name}`;
+}
+function handleDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
+function handleDragLeave()  { document.getElementById('dropZone').classList.remove('drag-over'); }
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag-over');
+  selectedFile = e.dataTransfer.files[0];
+  if (selectedFile) document.getElementById('fileSelected').textContent = `✓ ${selectedFile.name}`;
+}
+
+/* ── UPLOAD ── */
+async function doUpload() {
+  const clientId = document.getElementById('uploadClient').value;
+  const type     = document.getElementById('uploadType').value;
+  const name     = document.getElementById('uploadName').value.trim();
+  const issued   = document.getElementById('uploadIssued').value;
+  const expiry   = document.getElementById('uploadExpiry').value;
+  const status   = document.getElementById('uploadStatus').value;
+  const notes    = document.getElementById('uploadNotes').value.trim();
+
+  if (!clientId) return showToast('Selecciona un cliente', 'error');
+  if (!type)     return showToast('Selecciona el tipo de documento', 'error');
+  if (!name)     return showToast('Escribe el nombre del documento', 'error');
+  if (!selectedFile) return showToast('Selecciona un archivo', 'error');
+  if (selectedFile.size > 10 * 1024 * 1024) return showToast('El archivo supera 10 MB', 'error');
+
+  const btn = document.getElementById('btnUpload');
+  btn.disabled = true; btn.textContent = 'Subiendo...';
+  document.getElementById('uploadProgress').classList.add('show');
+
+  const ext      = selectedFile.name.split('.').pop();
+  const docId    = crypto.randomUUID();
+  const filePath = `${clientId}/${docId}.${ext}`;
+
+  setProgress(30);
+
+  const { error: storageErr } = await sb.storage.from('skypets-docs').upload(filePath, selectedFile, {
+    contentType: selectedFile.type, upsert: false
+  });
+
+  if (storageErr) {
+    btn.disabled = false; btn.textContent = 'Subir documento';
+    document.getElementById('uploadProgress').classList.remove('show');
+    showToast('Error al subir el archivo: ' + storageErr.message, 'error');
+    return;
+  }
+
+  setProgress(70);
+
+  const { data: { session } } = await sb.auth.getSession();
+  const { error: dbErr } = await sb.from('documents').insert({
+    id: docId, owner_id: clientId, type, name,
+    file_path: filePath,
+    issued_date: issued || null,
+    expiry_date: expiry || null,
+    status, notes: notes || null,
+    uploaded_by: session?.user?.id || null,
+  });
+
+  setProgress(100);
+
+  if (dbErr) {
+    await sb.storage.from('skypets-docs').remove([filePath]);
+    btn.disabled = false; btn.textContent = 'Subir documento';
+    document.getElementById('uploadProgress').classList.remove('show');
+    showToast('Error al guardar el registro: ' + dbErr.message, 'error');
+    return;
+  }
+
+  btn.disabled = false; btn.textContent = 'Subir documento';
+  closeUploadModal();
+  showToast('✅ Documento subido exitosamente', 'success');
+  loadDashboard();
+  loadAllDocs();
+}
+
+function setProgress(pct) {
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = pct + '%';
+}
+
+/* ── DELETE ── */
+async function deleteDoc(id, filePath) {
+  if (!confirm('¿Eliminar este documento? Esta acción no se puede deshacer.')) return;
+  if (filePath) await sb.storage.from('skypets-docs').remove([filePath]);
+  await sb.from('documents').delete().eq('id', id);
+  showToast('Documento eliminado', 'success');
+  loadDashboard();
+  loadAllDocs();
+}
+
+/* ── PREVIEW ── */
+async function previewDoc(filePath) {
+  const { data, error } = await sb.storage.from('skypets-docs').createSignedUrl(filePath, 120);
+  if (error || !data?.signedUrl) { showToast('No se pudo generar el enlace', 'error'); return; }
+  window.open(data.signedUrl, '_blank');
+}
+
+/* ── HELPERS ── */
+function statusBadge(s) { return { vigente:'badge-success', pendiente:'badge-warning', vencido:'badge-danger', rechazado:'badge-gray' }[s] || 'badge-gray'; }
+function formatDate(d) { if (!d) return '—'; return new Date(d.includes('T') ? d : d+'T00:00:00').toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' }); }
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+/* ── AUTH STATE ── */
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    const { data: profile } = await sb.from('profiles').select('is_admin,full_name,email').eq('id', session.user.id).single();
+    if (profile?.is_admin) enterAdmin(session.user, profile);
+  }
+});
+</script>
+</body>
+</html>
