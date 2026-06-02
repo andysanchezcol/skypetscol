@@ -526,33 +526,61 @@ let allClients = [];
 let selectedFile = null;
 
 /* ── AUTH ── */
+let _loginBusy = false;
+
 async function doLogin() {
   const email = document.getElementById('adminEmail').value.trim();
   const pass  = document.getElementById('adminPass').value;
   const btn   = document.getElementById('btnLogin');
-  document.getElementById('loginError').classList.remove('show');
+  hideLoginMsg();
   if (!email || !pass) { showLoginError('Completa todos los campos.'); return; }
+
+  _loginBusy = true;
   btn.disabled = true; btn.textContent = 'Verificando...';
+
+  // Timeout de seguridad: 15 segundos
+  const safeguard = setTimeout(() => {
+    btn.disabled = false; btn.textContent = 'Ingresar al panel';
+    showLoginError('Tiempo de espera agotado. Revisa tu conexión a internet.');
+    _loginBusy = false;
+  }, 15000);
+
   try {
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if (error) { showLoginError('Credenciales incorrectas: ' + error.message); return; }
+    showLoginInfo('Conectando con Supabase...');
+    const { data: authData, error: authErr } = await sb.auth.signInWithPassword({ email, password: pass });
 
-    const { data: profile, error: profileErr } = await sb
-      .from('profiles')
-      .select('is_admin,full_name,email')
-      .eq('id', data.user.id)
-      .single();
-
-    if (profileErr) { showLoginError('Error al leer perfil: ' + profileErr.message); return; }
-    if (!profile?.is_admin) {
-      await sb.auth.signOut();
-      showLoginError('Esta cuenta no tiene permisos de administrador.');
+    if (authErr) {
+      showLoginError('Auth error: ' + authErr.message);
       return;
     }
-    enterAdmin(data.user, profile);
+
+    showLoginInfo('Verificando permisos de admin...');
+    const { data: profile, error: profileErr } = await sb
+      .from('profiles')
+      .select('is_admin, full_name, email')
+      .eq('id', authData.user.id)
+      .single();
+
+    if (profileErr) {
+      showLoginError('No se pudo leer tu perfil: ' + profileErr.message + ' (code: ' + profileErr.code + ')');
+      return;
+    }
+
+    if (!profile?.is_admin) {
+      await sb.auth.signOut();
+      showLoginError('Sin permisos de admin. is_admin=' + profile?.is_admin + '. Ejecuta el UPDATE en Supabase SQL Editor.');
+      return;
+    }
+
+    clearTimeout(safeguard);
+    _loginBusy = false;
+    enterAdmin(authData.user, profile);
+
   } catch (e) {
-    showLoginError('Error inesperado: ' + e.message);
+    showLoginError('Excepción: ' + e.message);
   } finally {
+    clearTimeout(safeguard);
+    _loginBusy = false;
     btn.disabled = false;
     btn.textContent = 'Ingresar al panel';
   }
@@ -560,7 +588,22 @@ async function doLogin() {
 
 function showLoginError(msg) {
   const el = document.getElementById('loginError');
-  el.textContent = msg; el.classList.add('show');
+  el.textContent = '⚠ ' + msg;
+  el.style.background = 'rgba(239,68,68,0.08)';
+  el.style.color = '#dc2626';
+  el.classList.add('show');
+}
+
+function showLoginInfo(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = '⟳ ' + msg;
+  el.style.background = 'rgba(0,141,131,0.08)';
+  el.style.color = '#008D83';
+  el.classList.add('show');
+}
+
+function hideLoginMsg() {
+  document.getElementById('loginError').classList.remove('show');
 }
 
 async function doLogout() {
@@ -810,9 +853,10 @@ function showToast(msg, type = '') {
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-/* ── AUTH STATE ── */
+/* ── AUTH STATE (solo para sesión pre-existente al cargar la página) ── */
 sb.auth.onAuthStateChange(async (event, session) => {
-  if (session?.user) {
+  if (_loginBusy) return; // no interferir con doLogin activo
+  if (event === 'SIGNED_IN' && session?.user) {
     const { data: profile } = await sb.from('profiles').select('is_admin,full_name,email').eq('id', session.user.id).single();
     if (profile?.is_admin) enterAdmin(session.user, profile);
   }
