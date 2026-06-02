@@ -302,9 +302,10 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
       <span class="auth-logo-text"><span class="sky">Sky</span><span class="pets">Pets</span></span>
     </div>
 
-    <div class="auth-tabs">
+    <div class="auth-tabs" id="authTabs">
       <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Iniciar sesión</button>
       <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">Crear cuenta</button>
+      <button class="auth-tab" id="tabResend" onclick="switchTab('resend')" style="display:none">Reenviar link</button>
     </div>
 
     <!-- Login -->
@@ -340,6 +341,21 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
         <input type="password" class="form-input" id="regPass" placeholder="Mínimo 6 caracteres">
       </div>
       <button class="btn-auth" id="btnRegister" onclick="doRegister()">Crear mi cuenta</button>
+    </div>
+
+    <!-- Resend verification -->
+    <div id="formResend" style="display:none">
+      <p style="font-size:0.88rem;color:var(--muted);margin-bottom:18px;line-height:1.6;">
+        Ingresa tu correo y te enviaremos un nuevo link de verificación.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="form-input" id="resendEmail" placeholder="tu@email.com" autocomplete="email">
+      </div>
+      <button class="btn-auth" id="btnResend" onclick="doResend()">Reenviar link de verificación</button>
+      <p style="font-size:0.78rem;color:var(--muted);text-align:center;margin-top:14px;">
+        ¿Ya confirmaste tu cuenta? <a href="#" onclick="switchTab('login');return false;" style="color:var(--teal);font-weight:600;">Inicia sesión</a>
+      </p>
     </div>
 
     <div class="auth-msg" id="authMsg"></div>
@@ -442,8 +458,12 @@ hamburger.addEventListener('click', () => {
 function switchTab(tab) {
   document.getElementById('formLogin').style.display    = tab === 'login'    ? '' : 'none';
   document.getElementById('formRegister').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('formResend').style.display   = tab === 'resend'   ? '' : 'none';
   document.getElementById('tabLogin').classList.toggle('active',    tab === 'login');
   document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('tabResend').classList.toggle('active',   tab === 'resend');
+  // Mostrar la pestaña de reenvío solo cuando aplica
+  if (tab === 'resend') document.getElementById('tabResend').style.display = '';
   clearMsg();
 }
 
@@ -608,6 +628,50 @@ document.querySelectorAll('.doc-filter-btn').forEach(btn => {
   });
 });
 
+/* ── URL HASH ERRORS (magic link expirado, acceso denegado, etc.) ── */
+function handleHashError() {
+  const hash = window.location.hash;
+  if (!hash || !hash.includes('error=')) return false;
+
+  const params = new URLSearchParams(hash.replace(/^#/, ''));
+  const code   = params.get('error_code');
+  const desc   = params.get('error_description');
+
+  // Limpiar la URL para que el error no persista al recargar
+  history.replaceState(null, '', window.location.pathname);
+
+  if (code === 'otp_expired') {
+    showAuthScreen();
+    showMsg(
+      '⏰ El link de verificación expiró. Ingresa tu correo y reenvíanos la verificación.',
+      'error'
+    );
+    // Mostrar panel de reenvío
+    switchTab('resend');
+    return true;
+  }
+
+  if (code === 'access_denied' || params.get('error') === 'access_denied') {
+    showAuthScreen();
+    showMsg(desc ? decodeURIComponent(desc.replace(/\+/g, ' ')) : 'Acceso denegado. Intenta iniciar sesión de nuevo.', 'error');
+    return true;
+  }
+
+  return false;
+}
+
+/* ── RESEND VERIFICATION ── */
+async function doResend() {
+  const email = document.getElementById('resendEmail').value.trim();
+  if (!email) return showMsg('Ingresa tu correo electrónico.');
+  const btn = document.getElementById('btnResend');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  const { error } = await sb.auth.resend({ type: 'signup', email });
+  btn.disabled = false; btn.textContent = 'Reenviar link';
+  if (error) showMsg('No pudimos reenviar el correo. ¿Ya confirmaste tu cuenta? Intenta iniciar sesión.');
+  else showMsg('¡Correo enviado! Revisa tu bandeja (y el spam). El link expira en 1 hora.', 'success');
+}
+
 /* ── AUTH STATE ── */
 sb.auth.onAuthStateChange(async (event, session) => {
   if (session?.user) {
@@ -617,6 +681,9 @@ sb.auth.onAuthStateChange(async (event, session) => {
     showAuthScreen();
   }
 });
+
+// Manejar errores de URL hash DESPUÉS de que onAuthStateChange se registre
+handleHashError();
 </script>
 </body>
 </html>
