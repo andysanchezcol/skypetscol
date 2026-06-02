@@ -796,6 +796,21 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
       });
     });
   }
+
+  /* ── FILTRO DE CATEGORÍAS ── */
+  function filterCat(cat) {
+    document.querySelectorAll('.filter-btn').forEach(function(btn) {
+      btn.classList.toggle('active', btn.dataset.cat === cat);
+    });
+    document.querySelectorAll('[data-cat]').forEach(function(card) {
+      if (!card.classList.contains('filter-btn')) {
+        card.style.display = (cat === 'todos' || card.dataset.cat === cat) ? '' : 'none';
+      }
+    });
+  }
+  document.querySelectorAll('.filter-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { filterCat(btn.dataset.cat); });
+  });
 </script>
 <script>
 (function(){
