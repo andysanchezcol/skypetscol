@@ -86,15 +86,40 @@ img { display: block; max-width: 100%; }
 }
 .nav-cta:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
 .nav-portal {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: #008D83; color: #fff;
+  display: inline-flex; align-items: center; gap: 7px;
+  background: transparent; color: #008D83;
+  border: 2px solid #008D83;
   font-family: 'Poppins', sans-serif; font-size: 0.875rem; font-weight: 600;
-  padding: 10px 22px; border-radius: 100px; border: none;
+  padding: 8px 20px; border-radius: 100px;
   text-decoration: none; white-space: nowrap; cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0,141,131,0.32);
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.15s;
 }
-.nav-portal:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,141,131,0.42); }
+.nav-portal:hover { background: #008D83; color: #fff; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,141,131,0.30); }
+.nav-portal-wrap { position: relative; display: inline-flex; }
+.nav-portal-dropdown {
+  display: none; position: absolute; top: calc(100% + 10px); right: 0;
+  background: #fff; border-radius: 14px;
+  border: 1.5px solid rgba(43,36,24,0.10);
+  box-shadow: 0 8px 32px rgba(43,36,24,0.14);
+  min-width: 190px; z-index: 2000; overflow: hidden;
+  animation: navDropIn 0.15s ease;
+}
+@keyframes navDropIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.nav-portal-dropdown a,
+.nav-portal-dropdown button {
+  display: flex; align-items: center; gap: 9px;
+  padding: 12px 18px; font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem; font-weight: 500; color: #2B2418;
+  text-decoration: none; background: none; border: none;
+  width: 100%; text-align: left; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.nav-portal-dropdown a:hover,
+.nav-portal-dropdown button:hover { background: rgba(0,141,131,0.07); color: #008D83; }
+.nav-portal-dropdown hr { border: none; border-top: 1px solid rgba(43,36,24,0.07); margin: 0; }
+.nav-portal-dropdown .dd-logout { color: #E5443A; }
+.nav-portal-dropdown .dd-logout:hover { background: rgba(229,68,58,0.07); color: #E5443A; }
+.nav-portal-wrap.open .nav-portal-dropdown { display: block; }
 .nav-mobile .mob-portal { align-self: flex-start; background: #008D83; color: #fff; font-size: 0.95rem; font-weight: 600; padding: 12px 28px; border-radius: 100px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,141,131,0.32); transition: transform 0.15s; }
 .nav-mobile .mob-portal:hover { transform: translateY(-2px); }
 .nav-cta::after { display: none !important; }
@@ -808,7 +833,7 @@ revealEls.forEach(el => io.observe(el));
   var SB_URL='https://yicrkuntrsiaonkrfzlm.supabase.co';
   var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpY3JrdW50cnNpYW9ua3JmemxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTgzODUsImV4cCI6MjA5NTg5NDM4NX0.Layg3dN6QF6U6po7zkqbn8393LDvApdp2nGISKcMrU8';
   var LS_KEY='sb-yicrkuntrsiaonkrfzlm-auth-token';
-  function getToken(){
+  function getSession(){
     try{
       var raw=localStorage.getItem(LS_KEY);
       if(!raw)return null;
@@ -817,27 +842,45 @@ revealEls.forEach(el => io.observe(el));
       var exp=d&&d.expires_at;
       if(!tok)return null;
       if(exp&&Date.now()/1000>exp)return null;
-      return tok;
+      return {token:tok,email:(d.user&&d.user.email)||''};
     }catch(e){return null;}
   }
-  function setLogout(btn){
-    if(!btn)return;
-    btn.textContent='\u{1F44B} Cerrar sesión';
-    btn.removeAttribute('href');
-    btn.style.cursor='pointer';
-    btn.addEventListener('click',async function(e){
-      e.preventDefault();
-      var tok=getToken();
-      if(tok){try{await fetch(SB_URL+'/auth/v1/logout',{method:'POST',headers:{'Authorization':'Bearer '+tok,'apikey':SB_KEY}});}catch(_){}}
-      Object.keys(localStorage).filter(function(k){return k.startsWith('sb-');}).forEach(function(k){localStorage.removeItem(k);});
-      window.location.href='/portal';
-    });
+  async function doLogout(){
+    var s=getSession();
+    if(s){try{await fetch(SB_URL+'/auth/v1/logout',{method:'POST',headers:{'Authorization':'Bearer '+s.token,'apikey':SB_KEY}});}catch(_){}}
+    Object.keys(localStorage).filter(function(k){return k.startsWith('sb-');}).forEach(function(k){localStorage.removeItem(k);});
+    window.location.href='/portal';
   }
-  if(getToken()){
-    setLogout(document.getElementById('navPortalBtn'));
-    setLogout(document.getElementById('mobPortalBtn'));
+  function activateLoggedIn(s){
+    /* Desktop: wrap btn + add dropdown */
+    var btn=document.getElementById('navPortalBtn');
+    if(btn){
+      var initial=(s.email||'U')[0].toUpperCase();
+      var wrap=document.createElement('div');
+      wrap.className='nav-portal-wrap';
+      btn.parentNode.insertBefore(wrap,btn);
+      wrap.appendChild(btn);
+      btn.innerHTML='<span style="width:22px;height:22px;border-radius:50%;background:#008D83;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;">'+initial+'</span>Mi cuenta<svg width="10" height="7" viewBox="0 0 10 7" style="margin-left:2px" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      var dd=document.createElement('div');
+      dd.className='nav-portal-dropdown';
+      dd.innerHTML='<a href="/portal"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Ver mi portal</a><hr><button class="dd-logout" id="navLogoutBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Cerrar sesión</button>';
+      wrap.appendChild(dd);
+      btn.addEventListener('click',function(e){e.preventDefault();wrap.classList.toggle('open');});
+      document.addEventListener('click',function(e){if(!wrap.contains(e.target))wrap.classList.remove('open');});
+      document.getElementById('navLogoutBtn').addEventListener('click',doLogout);
+    }
+    /* Mobile */
+    var mob=document.getElementById('mobPortalBtn');
+    if(mob){
+      mob.textContent='👋 Cerrar sesión';
+      mob.href='#';
+      mob.addEventListener('click',function(e){e.preventDefault();doLogout();});
+    }
   }
+  var s=getSession();
+  if(s)activateLoggedIn(s);
 })();
 </script>
+
 </body>
 </html>
