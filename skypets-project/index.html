@@ -61,7 +61,7 @@ img { display: block; max-width: 100%; }
 .nav-brand .sky  { color: #FF7600; }
 .nav-brand .pets { color: #008D83; }
 
-.nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+.nav-links { display: flex; align-items: center; gap: 36px; list-style: none; flex: 1; justify-content: center; }
 .nav-links a {
   font-size: 0.875rem; font-weight: 500; color: #2B2418;
   text-decoration: none; position: relative; padding-bottom: 2px;
@@ -121,6 +121,8 @@ img { display: block; max-width: 100%; }
 .nav-portal-dropdown .dd-logout { color: #E5443A; }
 .nav-portal-dropdown .dd-logout:hover { background: rgba(229,68,58,0.07); color: #E5443A; }
 .nav-portal-wrap.open .nav-portal-dropdown { display: block; }
+.nav-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
 .nav-mobile .mob-portal { align-self: flex-start; background: #008D83; color: #fff; font-size: 0.95rem; font-weight: 600; padding: 12px 28px; border-radius: 100px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,141,131,0.32); transition: transform 0.15s; }
 .nav-mobile .mob-portal:hover { transform: translateY(-2px); }
 
@@ -794,7 +796,7 @@ footer {
 
 @media (max-width: 768px) {
   .nav-links { display: none; }
-  .nav-cta { display: none; } .nav-portal { display: none; }
+  .nav-cta { display: none; } .nav-actions { display: none; } .nav-portal { display: none; }
   .nav-hamburger { display: flex; }
   .services-grid { grid-template-columns: 1fr; }
   .svc-featured { grid-column: auto; }
@@ -1045,10 +1047,12 @@ footer {
     <li><a href="/blog">Blog</a></li>
     <li><a href="/contacto">Contacto</a></li>
   </ul>
+  <div class="nav-actions">
     <a href="/portal" class="nav-portal" id="navPortalBtn">🐾 Mi Portal</a>
   <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20información%20para%20viajar%20con%20mi%20mascota" class="nav-cta">
     💬 Cotiza Ahora
   </a>
+  </div>
   <button class="nav-hamburger" id="hamburger" aria-label="Menú" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
