@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Portal — SkyPets Colombia</title>
+<meta name="description" content="Portal de clientes SkyPets. Accede y descarga los documentos de tu mascota.">
+<link rel="icon" type="image/webp" href="/assets/images/Logo_SkyPets.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange: #FF7600;
+  --teal:   #008D83;
+  --yellow: #FFBC00;
+  --bg1:    #FFFAEC;
+  --bg2:    #FFEFC2;
+  --ink:    #2B2418;
+  --cream:  #FFFAEC;
+  --muted:  #6B5540;
+  --success:#71CC1E;
+  --danger: #E5443A;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+/* ── NAV ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: 76px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(20px,6vw,72px);
+  background: rgba(253,248,243,0.96); backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(43,36,24,0.08); transition: box-shadow 0.3s;
+}
+.nav.scrolled { box-shadow: 0 4px 24px rgba(43,36,24,0.08); }
+.nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; }
+.nav-logo img { height: 56px; width: auto; }
+.nav-brand { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; }
+.nav-brand .sky  { color: #FF7600; }
+.nav-brand .pets { color: #008D83; }
+.nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+.nav-links a { font-size: 0.875rem; font-weight: 500; color: var(--ink); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--orange); }
+.nav-portal-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--teal); color: #fff;
+  font-family: 'Poppins', sans-serif; font-size: 0.875rem; font-weight: 600;
+  padding: 10px 22px; border-radius: 100px; border: none; text-decoration: none;
+  box-shadow: 0 4px 20px rgba(0,141,131,0.30);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.nav-portal-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,141,131,0.40); }
+.nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 6px; }
+.nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--ink); border-radius: 2px; transition: transform 0.25s, opacity 0.25s; }
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.nav-mobile { display: none; position: fixed; top: 76px; left: 0; right: 0; z-index: 999; background: rgba(253,248,243,0.98); backdrop-filter: blur(16px); flex-direction: column; padding: 28px clamp(20px,6vw,72px); gap: 22px; border-bottom: 1px solid rgba(43,36,24,0.08); box-shadow: 0 16px 48px rgba(43,36,24,0.08); }
+.nav-mobile.open { display: flex; }
+.nav-mobile a { font-size: 1.05rem; font-weight: 500; color: var(--ink); text-decoration: none; }
+
+/* ── AUTH SCREEN ── */
+.auth-screen {
+  min-height: 100svh; padding-top: 76px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg1);
+}
+.auth-card {
+  background: white; border-radius: 28px;
+  border: 1px solid rgba(43,36,24,0.08);
+  box-shadow: 0 8px 48px rgba(43,36,24,0.10);
+  padding: 48px 40px; width: min(440px, calc(100vw - 32px));
+}
+.auth-logo { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 32px; }
+.auth-logo img { height: 52px; width: auto; }
+.auth-logo-text { font-family: 'Fredoka', sans-serif; font-size: 1.8rem; font-weight: 700; }
+.auth-logo-text .sky  { color: var(--orange); }
+.auth-logo-text .pets { color: var(--teal); }
+
+.auth-tabs { display: flex; gap: 0; border: 1px solid rgba(43,36,24,0.10); border-radius: 12px; overflow: hidden; margin-bottom: 28px; }
+.auth-tab {
+  flex: 1; padding: 10px; text-align: center;
+  font-size: 0.875rem; font-weight: 500; cursor: pointer;
+  background: transparent; border: none; color: var(--muted);
+  font-family: 'Poppins', sans-serif; transition: background 0.2s, color 0.2s;
+}
+.auth-tab.active { background: var(--teal); color: white; font-weight: 600; }
+
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.form-input {
+  width: 100%; padding: 12px 16px; border-radius: 12px;
+  border: 1.5px solid rgba(43,36,24,0.15); font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif; background: var(--bg1);
+  outline: none; transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--teal); background: white; }
+
+.btn-auth {
+  width: 100%; padding: 14px; border-radius: 100px; border: none;
+  background: var(--teal); color: white;
+  font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 600;
+  cursor: pointer; margin-top: 8px;
+  box-shadow: 0 4px 20px rgba(0,141,131,0.30);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-auth:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,141,131,0.40); }
+.btn-auth:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.auth-divider { text-align: center; margin: 20px 0; font-size: 0.8rem; color: var(--muted); position: relative; }
+.auth-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgba(43,36,24,0.08); }
+.auth-divider span { background: white; padding: 0 12px; position: relative; }
+
+.btn-google {
+  width: 100%; padding: 12px; border-radius: 100px;
+  border: 1.5px solid rgba(43,36,24,0.15); background: white;
+  font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-google:hover { background: var(--bg1); border-color: rgba(43,36,24,0.25); }
+
+.auth-msg { font-size: 0.82rem; text-align: center; margin-top: 14px; padding: 10px 14px; border-radius: 10px; display: none; }
+.auth-msg.error   { display: block; background: rgba(229,68,58,0.08); color: var(--danger); }
+.auth-msg.success { display: block; background: rgba(113,204,30,0.10); color: #3a7a0a; }
+
+/* ── DASHBOARD ── */
+.dashboard { display: none; min-height: 100svh; padding-top: 76px; }
+
+.dash-hero {
+  background: var(--teal); padding: 48px clamp(24px,6vw,72px) 40px;
+  border-bottom: 1px solid rgba(43,36,24,0.08);
+}
+.dash-hero-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.dash-welcome h1 { font-family: 'Fredoka', sans-serif; font-size: 2rem; font-weight: 700; color: white; margin-bottom: 4px; }
+.dash-welcome p { font-size: 0.9rem; color: rgba(255,255,255,0.72); font-weight: 300; }
+.btn-logout {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.15); color: white;
+  border: 1.5px solid rgba(255,255,255,0.30); border-radius: 100px;
+  padding: 9px 20px; font-size: 0.85rem; font-weight: 500;
+  cursor: pointer; font-family: 'Poppins', sans-serif;
+  backdrop-filter: blur(8px); transition: background 0.2s;
+}
+.btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+.dash-content { max-width: 1100px; margin: 0 auto; padding: clamp(32px,6vw,64px) clamp(24px,6vw,72px); }
+
+.dash-section-title {
+  font-family: 'Fredoka', sans-serif; font-size: 1.4rem; font-weight: 600;
+  color: var(--ink); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+
+/* Stats */
+.dash-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 40px; }
+.stat-box {
+  background: white; border-radius: 18px; padding: 20px 18px;
+  border: 1px solid rgba(43,36,24,0.07);
+  box-shadow: 0 2px 12px rgba(43,36,24,0.04);
+  text-align: center;
+}
+.stat-box-num { font-family: 'Fredoka', sans-serif; font-size: 2rem; font-weight: 700; color: var(--teal); line-height: 1; }
+.stat-box-lbl { font-size: 0.78rem; color: var(--muted); margin-top: 4px; font-weight: 400; }
+
+/* Filter */
+.doc-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+.doc-filter-btn {
+  padding: 6px 16px; border-radius: 100px; font-size: 0.78rem; font-weight: 600;
+  border: 1.5px solid rgba(43,36,24,0.12); background: white; color: var(--muted);
+  cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.15s;
+}
+.doc-filter-btn.active, .doc-filter-btn:hover { background: var(--teal); color: white; border-color: var(--teal); }
+
+/* Document cards */
+.doc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 16px; }
+
+.doc-card {
+  background: white; border-radius: 18px;
+  border: 1px solid rgba(43,36,24,0.07);
+  box-shadow: 0 2px 12px rgba(43,36,24,0.05);
+  padding: 22px 24px; display: flex; flex-direction: column; gap: 12px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.doc-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(43,36,24,0.10); }
+
+.doc-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.doc-type-icon {
+  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+  background: rgba(0,141,131,0.10);
+}
+.doc-card-meta { flex: 1; }
+.doc-name { font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600; color: var(--ink); line-height: 1.3; margin-bottom: 3px; }
+.doc-type { font-size: 0.72rem; color: var(--muted); font-weight: 400; }
+
+.doc-status {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 3px 10px; border-radius: 100px;
+}
+.doc-status.vigente   { background: rgba(113,204,30,0.12); color: #3a7a0a; }
+.doc-status.pendiente { background: rgba(255,188,0,0.15);  color: #8a5e00; }
+.doc-status.vencido   { background: rgba(229,68,58,0.10);  color: var(--danger); }
+.doc-status.rechazado { background: rgba(43,36,24,0.07);   color: var(--muted); }
+
+.doc-dates { font-size: 0.78rem; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
+.doc-dates span { display: flex; align-items: center; gap: 4px; }
+
+.doc-notes { font-size: 0.82rem; color: var(--muted); font-weight: 300; line-height: 1.5; padding: 10px 12px; background: var(--bg1); border-radius: 10px; }
+
+.btn-download {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--teal); color: white; border: none; border-radius: 100px;
+  padding: 10px 20px; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; font-family: 'Poppins', sans-serif; width: 100%;
+  box-shadow: 0 4px 16px rgba(0,141,131,0.25);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-download:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,141,131,0.35); }
+.btn-download:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-download.no-file { background: rgba(43,36,24,0.06); color: var(--muted); box-shadow: none; cursor: not-allowed; }
+
+.empty-state {
+  text-align: center; padding: 64px 24px;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+}
+.empty-state-icon { font-size: 4rem; opacity: 0.4; }
+.empty-state h3 { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; color: var(--ink); }
+.empty-state p { font-size: 0.9rem; color: var(--muted); font-weight: 300; max-width: 380px; line-height: 1.6; }
+
+.loading-spinner {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 48px; color: var(--muted); font-size: 0.9rem;
+}
+.spinner {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 3px solid rgba(0,141,131,0.2);
+  border-top-color: var(--teal);
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* WhatsApp float */
+.wa-float {
+  position: fixed; bottom: 24px; right: 24px; z-index: 800;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: #25D366; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(37,211,102,0.40); text-decoration: none;
+  transition: transform 0.15s;
+}
+.wa-float:hover { transform: translateY(-2px); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
+  .dash-stats { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .auth-card { padding: 32px 24px; }
+  .dash-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="navbar">
+  <a href="/" class="nav-logo">
+    <img src="https://skypetscol.com/wp-content/uploads/2025/10/cropped-Logo-SkyPets-Travel-500-400x400.webp"
+         alt="SkyPets" onerror="this.style.display='none'">
+    <span class="nav-brand"><span class="sky">Sky</span><span class="pets">Pets</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/servicios">Servicios</a></li>
+    <li><a href="/nosotros">Nosotros</a></li>
+    <li><a href="/blog">Blog</a></li>
+    <li><a href="/contacto">Contacto</a></li>
+    <li><a href="/portal" class="nav-portal-btn">🐾 Mi Portal</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="nav-mobile" id="mobileMenu">
+  <a href="/servicios">Servicios</a>
+  <a href="/nosotros">Nosotros</a>
+  <a href="/blog">Blog</a>
+  <a href="/contacto">Contacto</a>
+  <a href="/portal" style="color:var(--teal);font-weight:600">🐾 Mi Portal</a>
+</div>
+
+<!-- AUTH SCREEN -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="https://skypetscol.com/wp-content/uploads/2025/10/cropped-Logo-SkyPets-Travel-500-400x400.webp"
+           alt="SkyPets" onerror="this.style.display='none'" style="height:48px">
+      <span class="auth-logo-text"><span class="sky">Sky</span><span class="pets">Pets</span></span>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Iniciar sesión</button>
+      <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">Crear cuenta</button>
+    </div>
+
+    <!-- Login -->
+    <div id="formLogin">
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="form-input" id="loginEmail" placeholder="tu@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input type="password" class="form-input" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-auth" id="btnLogin" onclick="doLogin()">Entrar a mi portal</button>
+      <div class="auth-divider"><span>o</span></div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.2l6.8-6.8C35.7 2.3 30.2 0 24 0 14.8 0 6.9 5.4 3 13.3l7.9 6.1C13 14.3 18.1 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.2-.4-4.7H24v9h12.7c-.5 2.9-2.2 5.3-4.6 7l7.2 5.6c4.2-3.9 6.6-9.6 6.6-16.3 0-.3 0-.4.6-.6z"/><path fill="#FBBC05" d="M10.9 28.6A15 15 0 0 1 9.5 24c0-1.6.3-3.2.7-4.6L2.3 13.3A24 24 0 0 0 0 24c0 3.8.9 7.4 2.5 10.6l8.4-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2.2 1.5-5 2.4-8.7 2.4-5.9 0-10.9-4-12.7-9.4l-8.4 6C6.9 42.6 14.8 48 24 48z"/></svg>
+        Continuar con Google
+      </button>
+    </div>
+
+    <!-- Register -->
+    <div id="formRegister" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input type="text" class="form-input" id="regName" placeholder="Tu nombre completo">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="form-input" id="regEmail" placeholder="tu@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input type="password" class="form-input" id="regPass" placeholder="Mínimo 6 caracteres">
+      </div>
+      <button class="btn-auth" id="btnRegister" onclick="doRegister()">Crear mi cuenta</button>
+    </div>
+
+    <div class="auth-msg" id="authMsg"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <div class="dash-hero">
+    <div class="dash-hero-inner">
+      <div class="dash-welcome">
+        <h1>Bienvenido, <span id="userName">amigo peludito</span> 👋</h1>
+        <p>Aquí puedes ver y descargar todos los documentos de tu mascota</p>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+
+  <div class="dash-content">
+    <!-- Stats -->
+    <div class="dash-stats" id="dashStats">
+      <div class="stat-box"><div class="stat-box-num" id="statTotal">—</div><div class="stat-box-lbl">Total documentos</div></div>
+      <div class="stat-box"><div class="stat-box-num" id="statVigente" style="color:var(--success)">—</div><div class="stat-box-lbl">Vigentes</div></div>
+      <div class="stat-box"><div class="stat-box-num" id="statPendiente" style="color:var(--yellow)">—</div><div class="stat-box-lbl">Pendientes</div></div>
+      <div class="stat-box"><div class="stat-box-num" id="statVencido" style="color:var(--danger)">—</div><div class="stat-box-lbl">Vencidos</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="doc-filters" id="docFilters">
+      <button class="doc-filter-btn active" data-filter="all">Todos</button>
+      <button class="doc-filter-btn" data-filter="vigente">✅ Vigentes</button>
+      <button class="doc-filter-btn" data-filter="pendiente">🕐 Pendientes</button>
+      <button class="doc-filter-btn" data-filter="vencido">⚠️ Vencidos</button>
+    </div>
+
+    <!-- Documents -->
+    <div id="docContainer">
+      <div class="loading-spinner"><div class="spinner"></div> Cargando documentos...</div>
+    </div>
+  </div>
+</div>
+
+<!-- WhatsApp -->
+<a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20necesito%20ayuda%20con%20mi%20portal" class="wa-float" aria-label="WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://yicrkuntrsiaonkrfzlm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpY3JrdW50cnNpYW9ua3JmemxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTgzODUsImV4cCI6MjA5NTg5NDM4NX0.Layg3dN6QF6U6po7zkqbn8393LDvApdp2nGISKcMrU8';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const DOC_ICONS = {
+  certificado_salud:              '🏥',
+  certificado_apoyo_emocional:    '💛',
+  certificado_asistencia_servicio:'🦮',
+  cartilla_vacunacion:            '💉',
+  permiso_importacion:            '📥',
+  permiso_exportacion:            '📤',
+  pasaporte_mascota:              '🛂',
+  microchip_certificado:          '📡',
+  prueba_titulacion_rabia:        '🔬',
+  tapete_aerolinea:               '✈️',
+  otro:                           '📄',
+};
+
+const DOC_NAMES = {
+  certificado_salud:              'Certificado de Salud',
+  certificado_apoyo_emocional:    'Certificado de Apoyo Emocional (ESA)',
+  certificado_asistencia_servicio:'Certificado de Asistencia y Servicio (SVAN)',
+  cartilla_vacunacion:            'Cartilla de Vacunación',
+  permiso_importacion:            'Permiso de Importación',
+  permiso_exportacion:            'Permiso de Exportación',
+  pasaporte_mascota:              'Pasaporte de Mascota',
+  microchip_certificado:          'Certificado de Microchip',
+  prueba_titulacion_rabia:        'Prueba de Titulación de Rabia',
+  tapete_aerolinea:               'Tapete Aerolínea',
+  otro:                           'Otro Documento',
+};
+
+let allDocs = [];
+let currentFilter = 'all';
+
+/* ── NAV ── */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 30), { passive: true });
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', () => {
+  const open = mobileMenu.classList.toggle('open');
+  hamburger.classList.toggle('open', open);
+});
+
+/* ── AUTH TABS ── */
+function switchTab(tab) {
+  document.getElementById('formLogin').style.display    = tab === 'login'    ? '' : 'none';
+  document.getElementById('formRegister').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('tabLogin').classList.toggle('active',    tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  clearMsg();
+}
+
+function showMsg(text, type = 'error') {
+  const el = document.getElementById('authMsg');
+  el.textContent = text;
+  el.className = 'auth-msg ' + type;
+}
+function clearMsg() {
+  const el = document.getElementById('authMsg');
+  el.className = 'auth-msg';
+}
+
+/* ── LOGIN ── */
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) return showMsg('Completa todos los campos.');
+  const btn = document.getElementById('btnLogin');
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.disabled = false; btn.textContent = 'Entrar a mi portal';
+  if (error) showMsg('Correo o contraseña incorrectos.');
+}
+
+/* ── REGISTER ── */
+async function doRegister() {
+  const name  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  if (!name || !email || !pass) return showMsg('Completa todos los campos.');
+  if (pass.length < 6) return showMsg('La contraseña debe tener al menos 6 caracteres.');
+  const btn = document.getElementById('btnRegister');
+  btn.disabled = true; btn.textContent = 'Creando cuenta...';
+  const { error } = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
+  btn.disabled = false; btn.textContent = 'Crear mi cuenta';
+  if (error) showMsg(error.message);
+  else showMsg('¡Cuenta creada! Revisa tu correo para confirmar.', 'success');
+}
+
+/* ── GOOGLE ── */
+async function doGoogle() {
+  await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+}
+
+/* ── LOGOUT ── */
+async function doLogout() {
+  await sb.auth.signOut();
+  showAuthScreen();
+}
+
+/* ── UI ── */
+function showAuthScreen() {
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+}
+
+function showDashboard(user, profile) {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  const name = profile?.full_name || user.email.split('@')[0];
+  document.getElementById('userName').textContent = name;
+  loadDocuments(user.id);
+}
+
+/* ── DOCUMENTS ── */
+async function loadDocuments(userId) {
+  const container = document.getElementById('docContainer');
+  container.innerHTML = '<div class="loading-spinner"><div class="spinner"></div> Cargando documentos...</div>';
+
+  const { data, error } = await sb
+    .from('documents')
+    .select('*')
+    .eq('owner_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><h3>Error al cargar</h3><p>No pudimos cargar tus documentos. Intenta de nuevo más tarde.</p></div>';
+    return;
+  }
+
+  allDocs = data || [];
+  updateStats();
+  renderDocs();
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent    = allDocs.length;
+  document.getElementById('statVigente').textContent  = allDocs.filter(d => d.status === 'vigente').length;
+  document.getElementById('statPendiente').textContent= allDocs.filter(d => d.status === 'pendiente').length;
+  document.getElementById('statVencido').textContent  = allDocs.filter(d => d.status === 'vencido').length;
+}
+
+function renderDocs() {
+  const container = document.getElementById('docContainer');
+  const filtered  = currentFilter === 'all' ? allDocs : allDocs.filter(d => d.status === currentFilter);
+
+  if (!filtered.length) {
+    const msg = currentFilter === 'all'
+      ? 'Aún no tienes documentos. SkyPets los cargará aquí una vez procesados.'
+      : `No tienes documentos con estado "${currentFilter}".`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📂</div><h3>Sin documentos</h3><p>${msg}</p></div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="doc-grid">${filtered.map(docCard).join('')}</div>`;
+}
+
+function docCard(doc) {
+  const icon      = DOC_ICONS[doc.type]  || '📄';
+  const typeName  = DOC_NAMES[doc.type]  || 'Documento';
+  const statusLbl = { vigente:'Vigente', pendiente:'Pendiente', vencido:'Vencido', rechazado:'Rechazado' }[doc.status] || doc.status;
+  const issued    = doc.issued_date ? `📅 Emitido: ${formatDate(doc.issued_date)}` : '';
+  const expiry    = doc.expiry_date ? `⏳ Vence: ${formatDate(doc.expiry_date)}`    : '';
+  const hasFile   = !!(doc.file_url || doc.file_path);
+
+  return `
+  <div class="doc-card">
+    <div class="doc-card-top">
+      <div class="doc-type-icon">${icon}</div>
+      <div class="doc-card-meta">
+        <div class="doc-name">${doc.name}</div>
+        <div class="doc-type">${typeName}</div>
+      </div>
+      <span class="doc-status ${doc.status}">${statusLbl}</span>
+    </div>
+    ${issued || expiry ? `<div class="doc-dates">${issued ? `<span>${issued}</span>` : ''}${expiry ? `<span>${expiry}</span>` : ''}</div>` : ''}
+    ${doc.notes ? `<div class="doc-notes">${doc.notes}</div>` : ''}
+    <button class="btn-download ${!hasFile ? 'no-file' : ''}"
+            onclick="${hasFile ? `downloadDoc('${doc.id}','${doc.file_path||''}','${doc.file_url||''}','${doc.name}')` : ''}"
+            ${!hasFile ? 'disabled' : ''}>
+      ${hasFile ? '⬇️ Descargar documento' : '📋 Documento en proceso'}
+    </button>
+  </div>`;
+}
+
+async function downloadDoc(id, filePath, fileUrl, name) {
+  if (fileUrl && !filePath) {
+    window.open(fileUrl, '_blank');
+    return;
+  }
+  if (filePath) {
+    const { data, error } = await sb.storage.from('skypets-docs').createSignedUrl(filePath, 60);
+    if (error || !data?.signedUrl) { alert('No se pudo generar el enlace de descarga. Intenta de nuevo.'); return; }
+    window.open(data.signedUrl, '_blank');
+  }
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+/* ── FILTERS ── */
+document.querySelectorAll('.doc-filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.doc-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderDocs();
+  });
+});
+
+/* ── AUTH STATE ── */
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+    showDashboard(session.user, profile);
+  } else {
+    showAuthScreen();
+  }
+});
+</script>
+</body>
+</html>
