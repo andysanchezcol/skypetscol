@@ -538,12 +538,18 @@ async function doLogin() {
   _loginBusy = true;
   btn.disabled = true; btn.textContent = 'Verificando...';
 
-  // Timeout de seguridad: 15 segundos
+  // Timeout de seguridad: 60 segundos (Supabase free tier puede tardar en arrancar)
+  let countdown = 55;
+  const ticker = setInterval(() => {
+    countdown--;
+    showLoginInfo('Conectando con Supabase' + (countdown < 50 ? ' (el proyecto puede estar arrancando, espera...)' : '...'));
+  }, 1000);
   const safeguard = setTimeout(() => {
+    clearInterval(ticker);
     btn.disabled = false; btn.textContent = 'Ingresar al panel';
-    showLoginError('Tiempo de espera agotado. Revisa tu conexión a internet.');
+    showLoginError('Sin respuesta de Supabase en 60s. El proyecto puede estar pausado — entra al Dashboard de Supabase y verifica que el proyecto esté activo.');
     _loginBusy = false;
-  }, 15000);
+  }, 60000);
 
   try {
     showLoginInfo('Conectando con Supabase...');
