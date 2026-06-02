@@ -1053,18 +1053,36 @@ async function useSession() {
   }
 }
 
-/* ── AUTO-LOGIN AL CARGAR si hay sesión en localStorage ── */
-(async function() {
+/* ── AUTO-LOGIN AL CARGAR ── */
+// Lee directamente de localStorage para evitar la llamada de red que se cuelga.
+// El SDK ya tiene los headers de auth configurados desde localStorage en init.
+(async function autoLogin() {
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session?.user) {
-      const { data: profile } = await sb.from('profiles').select('is_admin,full_name,email').eq('id', session.user.id).single();
-      if (profile?.is_admin) { enterAdmin(session.user, profile); return; }
-    }
+    const LS_KEY = 'sb-yicrkuntrsiaonkrfzlm-auth-token';
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+
+    const stored  = JSON.parse(raw);
+    const token   = stored?.access_token;
+    const exp     = stored?.expires_at;
+    const user    = stored?.user;
+
+    if (!token || !user?.id) return;
+    // Si el token expiró, no intentar — evita llamada de red colgante
+    if (exp && Date.now() / 1000 > exp - 30) return;
+
+    // Token válido: consultar perfil (la API de DB sí funciona)
+    const { data: profile } = await sb
+      .from('profiles')
+      .select('is_admin,full_name,email')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.is_admin) enterAdmin(user, profile);
   } catch(_) {}
 })();
 
-/* ── AUTH STATE ── */
+/* ── AUTH STATE (para cuando el magic link redirige con token en URL) ── */
 sb.auth.onAuthStateChange(async (event, session) => {
   if (_loginBusy) return;
   if (event === 'SIGNED_IN' && session?.user) {
