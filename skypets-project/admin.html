@@ -530,21 +530,32 @@ async function doLogin() {
   const email = document.getElementById('adminEmail').value.trim();
   const pass  = document.getElementById('adminPass').value;
   const btn   = document.getElementById('btnLogin');
-  const err   = document.getElementById('loginError');
-  err.classList.remove('show');
+  document.getElementById('loginError').classList.remove('show');
   if (!email || !pass) { showLoginError('Completa todos los campos.'); return; }
   btn.disabled = true; btn.textContent = 'Verificando...';
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if (error) { btn.disabled = false; btn.textContent = 'Ingresar al panel'; showLoginError('Credenciales incorrectas.'); return; }
-  const { data: profile } = await sb.from('profiles').select('is_admin,full_name,email').eq('id', data.user.id).single();
-  if (!profile?.is_admin) {
-    await sb.auth.signOut();
-    btn.disabled = false; btn.textContent = 'Ingresar al panel';
-    showLoginError('No tienes permisos de administrador.');
-    return;
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) { showLoginError('Credenciales incorrectas: ' + error.message); return; }
+
+    const { data: profile, error: profileErr } = await sb
+      .from('profiles')
+      .select('is_admin,full_name,email')
+      .eq('id', data.user.id)
+      .single();
+
+    if (profileErr) { showLoginError('Error al leer perfil: ' + profileErr.message); return; }
+    if (!profile?.is_admin) {
+      await sb.auth.signOut();
+      showLoginError('Esta cuenta no tiene permisos de administrador.');
+      return;
+    }
+    enterAdmin(data.user, profile);
+  } catch (e) {
+    showLoginError('Error inesperado: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Ingresar al panel';
   }
-  btn.disabled = false; btn.textContent = 'Ingresar al panel';
-  enterAdmin(data.user, profile);
 }
 
 function showLoginError(msg) {
