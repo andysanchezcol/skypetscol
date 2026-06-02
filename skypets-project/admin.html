@@ -412,7 +412,13 @@ tr:hover td { background: rgba(0,141,131,0.03); }
         <div class="table-card">
           <div class="table-header">
             <h3>Clientes registrados</h3>
-            <input type="text" class="search-input" placeholder="🔍 Buscar cliente..." id="clientSearch" oninput="filterClients()">
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <input type="text" class="search-input" placeholder="🔍 Buscar cliente..." id="clientSearch" oninput="filterClients()">
+              <button class="btn-sm btn-sm-teal" onclick="openCreateClientModal()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nuevo cliente
+              </button>
+            </div>
           </div>
           <table>
             <thead><tr><th>Cliente</th><th>Teléfono</th><th>Ciudad</th><th>Documentos</th><th>Registro</th><th></th></tr></thead>
@@ -448,6 +454,43 @@ tr:hover td { background: rgba(0,141,131,0.03); }
 
     </div>
   </main>
+</div>
+
+<!-- ── CREATE CLIENT MODAL ── -->
+<div class="modal-overlay" id="createClientModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>👤 Nuevo cliente</h2>
+      <button class="modal-close" onclick="closeCreateClientModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label class="form-label">Nombre completo *</label>
+        <input type="text" class="form-input" id="newClientName" placeholder="María García">
+      </div>
+      <div>
+        <label class="form-label">Correo electrónico *</label>
+        <input type="email" class="form-input" id="newClientEmail" placeholder="maria@email.com">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div>
+          <label class="form-label">Teléfono</label>
+          <input type="tel" class="form-input" id="newClientPhone" placeholder="+57 300 000 0000">
+        </div>
+        <div>
+          <label class="form-label">Ciudad</label>
+          <input type="text" class="form-input" id="newClientCity" placeholder="Bogotá">
+        </div>
+      </div>
+      <div style="background:rgba(0,141,131,0.06);border-radius:12px;padding:14px 16px;font-size:0.82rem;color:var(--muted);line-height:1.6;">
+        📧 Se enviará un email de bienvenida al cliente para que confirme su cuenta y establezca su contraseña.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeCreateClientModal()">Cancelar</button>
+      <button class="btn-primary" id="btnCreateClient" onclick="createClient()">Crear cliente</button>
+    </div>
+  </div>
 </div>
 
 <!-- ── UPLOAD MODAL ── -->
@@ -729,6 +772,68 @@ async function loadRecentDocs() {
 }
 
 /* ── CLIENTS ── */
+/* ── CREATE CLIENT ── */
+function openCreateClientModal() {
+  document.getElementById('createClientModal').classList.add('open');
+  document.getElementById('newClientName').value = '';
+  document.getElementById('newClientEmail').value = '';
+  document.getElementById('newClientPhone').value = '';
+  document.getElementById('newClientCity').value = '';
+}
+
+function closeCreateClientModal() {
+  document.getElementById('createClientModal').classList.remove('open');
+}
+
+async function createClient() {
+  const name  = document.getElementById('newClientName').value.trim();
+  const email = document.getElementById('newClientEmail').value.trim();
+  const phone = document.getElementById('newClientPhone').value.trim();
+  const city  = document.getElementById('newClientCity').value.trim();
+
+  if (!name)  return showToast('El nombre es obligatorio', 'error');
+  if (!email) return showToast('El correo es obligatorio', 'error');
+
+  const btn = document.getElementById('btnCreateClient');
+  btn.disabled = true; btn.textContent = 'Creando...';
+
+  try {
+    // Crear usuario — con email confirmation ON, no afecta la sesión del admin
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password: crypto.randomUUID(), // contraseña temporal aleatoria
+      options: {
+        data: { full_name: name },
+        emailRedirectTo: window.location.origin + '/portal'
+      }
+    });
+
+    if (error) { showToast('Error al crear usuario: ' + error.message, 'error'); return; }
+
+    // Si el trigger no creó el perfil aún, lo creamos/actualizamos manualmente
+    if (data.user) {
+      await sb.from('profiles').upsert({
+        id: data.user.id,
+        email,
+        full_name: name,
+        phone:    phone || null,
+        city:     city  || null,
+        is_admin: false
+      });
+    }
+
+    closeCreateClientModal();
+    showToast('✅ Cliente creado. Se envió un email de bienvenida a ' + email, 'success');
+    loadClients();
+    loadDashboard();
+
+  } catch(e) {
+    showToast('Error inesperado: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Crear cliente';
+  }
+}
+
 async function loadClients() {
   const { data } = await sb.from('profiles').select('*').eq('is_admin', false).order('created_at', { ascending: false });
   allClients = data || [];
