@@ -74,7 +74,7 @@ if (!reduceMotion) {
  * Escala sutil al hacer clic en CTAs.
  */
 if (!reduceMotion) {
-  document.querySelectorAll(".btn, a[href*='wa.me']").forEach((btn) => {
+  document.querySelectorAll(".btn").forEach((btn) => {
     btn.addEventListener("mousedown", () => {
       animate(btn, { scale: 0.95 }, { duration: 0.1, easing: "ease-out" });
     });
