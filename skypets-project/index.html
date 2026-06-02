@@ -373,17 +373,52 @@ img { display: block; max-width: 100%; }
 .stat-lbl { font-size: 0.8rem; color: #6B5540; font-weight: 400; line-height: 1.4; }
 
 /* ══════════════════════════════════════════
-   PHOTO WALL CAROUSEL
+   PHOTO WALL CAROUSEL — Liquid Glass
 ══════════════════════════════════════════ */
 .photowall-section {
-  background: var(--bg1);
-  padding: clamp(64px,9vw,110px) 0 clamp(56px,8vw,96px);
+  position: relative;
+  padding: clamp(72px,10vw,120px) 0 clamp(64px,9vw,100px);
   overflow: hidden;
+  background: linear-gradient(160deg, #fff8ee 0%, #fff3d6 40%, #e8f7f6 100%);
 }
+
+/* Orbes de fondo */
+.photowall-section::before,
+.photowall-section::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.photowall-section::before {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(255,118,0,0.18) 0%, transparent 70%);
+  top: -100px; left: -100px;
+}
+.photowall-section::after {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(0,141,131,0.15) 0%, transparent 70%);
+  bottom: -80px; right: -80px;
+}
+.pw-orb-yellow {
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(255,188,0,0.14) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(60px);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .photowall-header {
+  position: relative; z-index: 1;
   text-align: center;
   padding: 0 clamp(24px,6vw,72px);
-  margin-bottom: 48px;
+  margin-bottom: 52px;
 }
 .photowall-header .section-desc { max-width: 520px; margin: 0 auto; }
 
@@ -394,33 +429,44 @@ img { display: block; max-width: 100%; }
   overflow: hidden;
   cursor: grab;
   user-select: none;
+  z-index: 1;
 }
 .pw-stage:active { cursor: grabbing; }
 
 /* Track */
 .pw-track {
   display: flex;
-  gap: 24px;
-  padding: 20px clamp(24px,6vw,72px) 28px;
+  gap: 20px;
+  padding: 24px clamp(24px,6vw,72px) 32px;
   will-change: transform;
-  transition: transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94);
+  transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
 }
 .pw-track.is-dragging { transition: none; }
 
-/* Card */
+/* Card — Liquid Glass */
 .pw-card {
   flex-shrink: 0;
-  width: clamp(260px, 30vw, 320px);
-  background: #fff;
-  border: 2px solid var(--ink);
-  border-radius: 20px;
+  width: clamp(260px, 28vw, 310px);
+  background: rgba(255,255,255,0.38);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 5px 5px 0 var(--ink);
-  transition: transform 0.25s, box-shadow 0.25s;
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow:
+    0 8px 32px rgba(43,36,24,0.08),
+    0 2px 8px rgba(43,36,24,0.04),
+    inset 0 1px 0 rgba(255,255,255,0.8),
+    inset 0 -1px 0 rgba(255,255,255,0.3);
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease, opacity 0.4s ease;
 }
 .pw-card:hover {
-  transform: translate(-3px,-3px);
-  box-shadow: 8px 8px 0 var(--ink);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow:
+    0 24px 56px rgba(43,36,24,0.12),
+    0 8px 20px rgba(43,36,24,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 -1px 0 rgba(255,255,255,0.4);
 }
 
 /* Image area */
@@ -429,44 +475,54 @@ img { display: block; max-width: 100%; }
   width: 100%;
   aspect-ratio: 4/3;
   overflow: hidden;
-  background: var(--bg2);
 }
 .pw-img-wrap img {
   width: 100%; height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.6s ease;
 }
-.pw-card:hover .pw-img-wrap img { transform: scale(1.05); }
+.pw-card:hover .pw-img-wrap img { transform: scale(1.07); }
 
-/* Placeholder (mientras no hay foto) */
+/* Placeholder */
 .pw-img-placeholder {
   width: 100%; height: 100%;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 10px;
-  background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+  background: linear-gradient(135deg,
+    rgba(255,188,0,0.18) 0%,
+    rgba(255,118,0,0.12) 50%,
+    rgba(0,141,131,0.12) 100%);
 }
-.pw-upload-icon { font-size: 2.8rem; opacity: 0.6; }
+.pw-upload-icon { font-size: 3rem; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.12)); }
 .pw-upload-label {
-  font-size: 0.72rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 1.5px;
-  color: var(--muted); opacity: 0.7;
+  font-size: 0.68rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: rgba(43,36,24,0.45);
 }
 
-/* Badge */
+/* Badge — glass pill */
 .pw-badge {
   position: absolute; top: 12px; right: 12px;
-  background: var(--ink); color: var(--cream);
-  font-size: 0.68rem; font-weight: 600;
-  padding: 4px 10px; border-radius: 100px;
-  letter-spacing: 0.5px;
-  border: 1.5px solid var(--ink);
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--ink);
+  font-size: 0.67rem; font-weight: 600;
+  padding: 5px 12px; border-radius: 100px;
+  letter-spacing: 0.3px;
+  border: 1px solid rgba(255,255,255,0.8);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
 /* Info */
 .pw-info {
-  padding: 16px 18px;
-  display: flex; flex-direction: column; gap: 4px;
+  padding: 18px 20px 20px;
+  display: flex; flex-direction: column; gap: 5px;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255,255,255,0.5);
 }
 .pw-name {
   font-family: 'Fredoka', sans-serif;
@@ -474,63 +530,78 @@ img { display: block; max-width: 100%; }
   color: var(--ink);
 }
 .pw-dest {
-  font-size: 0.78rem; font-weight: 500;
+  font-size: 0.76rem; font-weight: 500;
   color: var(--muted);
+  letter-spacing: 0.2px;
 }
 
 /* Fades laterales */
 .pw-fade {
-  position: absolute; top: 0; bottom: 0; width: 80px;
+  position: absolute; top: 0; bottom: 0; width: 100px;
   pointer-events: none; z-index: 2;
 }
-.pw-fade-l { left: 0; background: linear-gradient(to right, var(--bg1), transparent); }
-.pw-fade-r { right: 0; background: linear-gradient(to left, var(--bg1), transparent); }
+.pw-fade-l { left: 0; background: linear-gradient(to right, rgba(255,248,238,0.95), transparent); }
+.pw-fade-r { right: 0; background: linear-gradient(to left, rgba(232,247,246,0.95), transparent); }
 
-/* Flechas */
+/* Flechas — glass buttons */
 .pw-arrow {
   position: absolute; top: 50%; transform: translateY(-50%);
-  z-index: 10; width: 44px; height: 44px;
-  border-radius: 50%; border: 2px solid var(--ink);
-  background: #fff; color: var(--ink);
+  z-index: 10; width: 46px; height: 46px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.8);
+  color: var(--ink);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; box-shadow: 3px 3px 0 var(--ink);
-  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(43,36,24,0.10), inset 0 1px 0 rgba(255,255,255,0.9);
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
 }
 .pw-arrow:hover {
-  background: var(--orange); color: #fff;
-  transform: translateY(-50%) translate(-2px,-2px);
-  box-shadow: 5px 5px 0 var(--ink);
+  background: rgba(255,118,0,0.85);
+  backdrop-filter: blur(16px);
+  color: #fff;
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 8px 24px rgba(255,118,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
 }
-.pw-arrow-l { left: clamp(8px,2vw,24px); }
-.pw-arrow-r { right: clamp(8px,2vw,24px); }
+.pw-arrow-l { left: clamp(12px,2.5vw,28px); }
+.pw-arrow-r { right: clamp(12px,2.5vw,28px); }
 
 /* Dots */
 .pw-dots {
   display: flex; align-items: center; justify-content: center;
-  gap: 8px; margin-top: 28px;
+  gap: 8px; margin-top: 32px;
+  position: relative; z-index: 1;
 }
 .pw-dot {
-  width: 8px; height: 8px; border-radius: 100px;
-  background: rgba(43,36,24,0.2); border: none; cursor: pointer;
-  transition: width 0.3s, background 0.3s;
-  padding: 0;
+  width: 7px; height: 7px; border-radius: 100px;
+  background: rgba(43,36,24,0.15);
+  border: 1px solid rgba(43,36,24,0.08);
+  cursor: pointer; padding: 0;
+  transition: width 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.3s;
 }
 .pw-dot.active {
-  width: 28px;
-  background: var(--orange);
+  width: 32px;
+  background: linear-gradient(90deg, var(--orange), #ffaa44);
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(255,118,0,0.35);
 }
 
 /* CTA */
 .pw-cta {
   text-align: center;
-  margin-top: 40px;
+  margin-top: 44px;
   padding: 0 clamp(24px,6vw,72px);
+  position: relative; z-index: 1;
 }
 
 @media(max-width:768px) {
-  .pw-card { width: clamp(220px,72vw,280px); }
+  .pw-card { width: clamp(230px,74vw,285px); }
   .pw-arrow { display: none; }
-  .pw-fade { width: 40px; }
+  .pw-fade { width: 48px; }
+  .photowall-section::before { width: 300px; height: 300px; }
+  .photowall-section::after  { width: 250px; height: 250px; }
 }
 
 /* ══════════════════════════════════════════
@@ -1304,6 +1375,7 @@ footer {
 
 <!-- ══ PHOTO CAROUSEL ══ -->
 <section class="photowall-section">
+  <div class="pw-orb-yellow"></div>
   <div class="photowall-header reveal">
     <div class="section-eyebrow"><span class="section-eyebrow-line"></span>La comunidad SkyPets</div>
     <h2 class="section-title">Peluditos que ya <span class="ac">volaron con nosotros</span> ✈️</h2>
