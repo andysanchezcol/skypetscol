@@ -45,7 +45,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
 .nav-brand { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1; }
 .nav-brand .sky  { color: #FF7600; }
 .nav-brand .pets { color: #008D83; }
-.nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+.nav-links { display: flex; align-items: center; gap: 36px; list-style: none; flex: 1; justify-content: center; }
 .nav-links a { font-size: 0.875rem; font-weight: 500; color: #2B2418; text-decoration: none; position: relative; padding-bottom: 2px; transition: color 0.2s; }
 .nav-links a::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: #FF7600; border-radius: 2px; transform: scaleX(0); transform-origin: right; transition: transform 0.25s ease; }
 .nav-links a:hover, .nav-links a.active { color: #FF7600; }
@@ -87,6 +87,8 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
 .nav-portal-dropdown .dd-logout { color: #E5443A; }
 .nav-portal-dropdown .dd-logout:hover { background: rgba(229,68,58,0.07); color: #E5443A; }
 .nav-portal-wrap.open .nav-portal-dropdown { display: block; }
+.nav-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
 .nav-mobile .mob-portal { align-self: flex-start; background: #008D83; color: #fff; font-size: 0.95rem; font-weight: 600; padding: 12px 28px; border-radius: 100px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,141,131,0.32); transition: transform 0.15s; }
 .nav-mobile .mob-portal:hover { transform: translateY(-2px); }
 .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 6px; }
@@ -324,7 +326,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
 .wa-float { position: fixed; bottom: 24px; right: 24px; z-index: 800; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 16px rgba(37,211,102,0.35); transition: transform 0.15s; }
 .wa-float:hover { transform: translateY(-3px); }
 @media (max-width: 960px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; } }
-@media (max-width: 768px) { .nav-links { display: none; } .nav-cta { display: none; } .nav-portal { display: none; } .nav-hamburger { display: flex; } }
+@media (max-width: 768px) { .nav-links { display: none; } .nav-cta { display: none; } .nav-actions { display: none; } .nav-portal { display: none; } .nav-hamburger { display: flex; } }
 @media (max-width: 540px) { .footer-grid { grid-template-columns: 1fr; gap: 32px; } .footer-bottom { flex-direction: column; text-align: center; } }
 
 .nav-portal-btn {
@@ -355,10 +357,12 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
     <li><a href="/blog">Blog</a></li>
     <li><a href="/contacto">Contacto</a></li>
   </ul>
+  <div class="nav-actions">
     <a href="/portal" class="nav-portal" id="navPortalBtn">🐾 Mi Portal</a>
   <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20información%20para%20viajar%20con%20mi%20mascota" class="nav-cta">
     💬 Cotiza Ahora
   </a>
+  </div>
   <button class="nav-hamburger" id="hamburger" aria-label="Menú" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
