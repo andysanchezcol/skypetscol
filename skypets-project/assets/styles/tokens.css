@@ -2,6 +2,7 @@
    SKYPETS DESIGN SYSTEM — CSS TOKENS v1.0
    ───────────────────────────────────────── */
 :root {
+  color-scheme: light only;
   --orange:#FF7600; --teal:#008D83; --yellow:#FFBC00;
   --success:#71CC1E; --danger:#E5443A;
   --bg1:#FFFAEC; --bg2:#FFEFC2; --bg3:#FFE7A6;
