@@ -21,9 +21,9 @@
   --ink:     #2B2418;
   --cream:   #FFFAEC;
   --muted:   #6B5540;
-  --border:  2px solid #2B2418;
-  --shadow:  4px 4px 0 #2B2418;
-  --shadowL: 6px 6px 0 #2B2418;
+  --border:  1px solid rgba(43,36,24,0.10);
+  --shadow:  0 4px 20px rgba(43,36,24,0.08);
+  --shadowL: 0 12px 36px rgba(43,36,24,0.12);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -138,7 +138,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   border:var(--border); text-decoration:none;
   box-shadow:var(--shadow); transition:transform .1s,box-shadow .1s; white-space:nowrap;
 }
-.btn:hover { transform:translate(-2px,-2px); box-shadow:var(--shadowL); }
+.btn:hover { transform:translateY(-5px); box-shadow:var(--shadowL); }
 .btn-yellow { background:var(--yellow); color:var(--ink); }
 .btn-teal   { background:var(--teal); color:var(--cream); }
 .btn-ink    { background:var(--ink); color:var(--cream); }
@@ -177,7 +177,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   display:inline-block; font-size:.7rem; font-weight:700;
   text-transform:uppercase; letter-spacing:2.5px; color:var(--ink);
   background:var(--yellow); border:var(--border); border-radius:100px;
-  padding:.22rem .85rem; box-shadow:2px 2px 0 var(--ink); margin-bottom:14px;
+  padding:.22rem .85rem; box-shadow:0 2px 8px rgba(43,36,24,0.08); margin-bottom:14px;
 }
 .section-title {
   font-family:'Fredoka',sans-serif;
@@ -202,7 +202,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
 .historia-text .highlight {
   display:inline; background:var(--yellow); padding:2px 6px;
   border-radius:4px; font-weight:600; color:var(--ink);
-  border:1.5px solid var(--ink);
+  border:1px solid rgba(43,36,24,0.10);
 }
 
 .historia-visual { display:flex; flex-direction:column; gap:14px; }
@@ -212,11 +212,11 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   padding:18px 20px; box-shadow:var(--shadow);
   transition:transform .15s, box-shadow .15s;
 }
-.timeline-item:hover { transform:translate(-2px,-2px); box-shadow:var(--shadowL); }
+.timeline-item:hover { transform:translateY(-5px); box-shadow:var(--shadowL); }
 .timeline-dot {
   width:36px; height:36px; border-radius:50%; flex-shrink:0;
   border:var(--border); display:flex; align-items:center; justify-content:center;
-  font-size:1rem; box-shadow:2px 2px 0 var(--ink);
+  font-size:1rem; box-shadow:0 2px 8px rgba(43,36,24,0.08);
 }
 .timeline-year {
   font-family:'Fredoka',sans-serif; font-size:.7rem; font-weight:700;
@@ -249,7 +249,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   background:var(--yellow); border:var(--border);
   display:flex; align-items:center; justify-content:center;
   font-size:1.4rem; margin-bottom:18px;
-  box-shadow:2px 2px 0 var(--ink);
+  box-shadow:0 2px 8px rgba(43,36,24,0.08);
 }
 .proposito-card h3 {
   font-family:'Fredoka',sans-serif; font-size:1.15rem; font-weight:600;
@@ -271,7 +271,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   padding:24px 20px; box-shadow:var(--shadow);
   transition:transform .15s, box-shadow .15s;
 }
-.valor-card:hover { transform:translate(-2px,-2px); box-shadow:var(--shadowL); }
+.valor-card:hover { transform:translateY(-5px); box-shadow:var(--shadowL); }
 .valor-emoji { font-size:1.8rem; margin-bottom:12px; display:block; }
 .valor-card h4 {
   font-family:'Fredoka',sans-serif; font-size:1rem; font-weight:600;
@@ -290,7 +290,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   overflow:hidden; box-shadow:var(--shadow);
   transition:transform .15s, box-shadow .15s;
 }
-.team-card:hover { transform:translate(-2px,-2px); box-shadow:var(--shadowL); }
+.team-card:hover { transform:translateY(-5px); box-shadow:var(--shadowL); }
 
 /* Avatar ilustrado */
 .team-avatar {
@@ -648,7 +648,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
         <div class="team-body">
           <span class="team-role">Cofundador</span>
           <div class="team-name">Andrés Sánchez</div>
-          <div style="display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1.5px solid var(--ink);border-radius:100px;padding:.2rem .75rem;font-size:.7rem;font-weight:700;color:var(--ink);margin-bottom:12px">🚀 CEO & Marketing</div>
+          <div style="display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid rgba(43,36,24,0.10);border-radius:100px;padding:.2rem .75rem;font-size:.7rem;font-weight:700;color:var(--ink);margin-bottom:12px">🚀 CEO & Marketing</div>
           <p class="team-quote">Construí SkyPets porque creí que viajar con tu mascota debería ser tan fácil como reservar tu tiquete.</p>
         </div>
       </div>
@@ -680,7 +680,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
         <div class="team-body">
           <span class="team-role">Cofundadora</span>
           <div class="team-name">Viviana Mora</div>
-          <div style="display:inline-flex;align-items:center;gap:6px;background:#E0F5F3;border:1.5px solid var(--ink);border-radius:100px;padding:.2rem .75rem;font-size:.7rem;font-weight:700;color:var(--ink);margin-bottom:12px">🩺 Médico Veterinaria</div>
+          <div style="display:inline-flex;align-items:center;gap:6px;background:#E0F5F3;border:1px solid rgba(43,36,24,0.10);border-radius:100px;padding:.2rem .75rem;font-size:.7rem;font-weight:700;color:var(--ink);margin-bottom:12px">🩺 Médico Veterinaria</div>
           <p class="team-quote">Como veterinaria sé que cada peludito es único. Mi trabajo es asegurarme de que llegue a destino sano, feliz y sin sustos.</p>
         </div>
       </div>
@@ -708,7 +708,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
         <div class="team-body">
           <span class="team-role">Asesora</span>
           <div class="team-name">Nathali Garzón</div>
-          <div style="display:inline-flex;align-items:center;gap:6px;background:var(--bg2);border:1.5px solid var(--ink);border-radius:100px;padding:.2rem .75rem;font-size:.7rem;font-weight:700;color:var(--ink);margin-bottom:12px">💡 Asesora Experta</div>
+          <div style="display:inline-flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid rgba(43,36,24,0.10);border-radius:100px;padding:.2rem .75rem;font-size:.7rem;font-weight:700;color:var(--ink);margin-bottom:12px">💡 Asesora Experta</div>
           <p class="team-quote">Me apasiona acompañar a las familias en cada detalle del viaje. No hay pregunta pequeña cuando se trata de tu mejor amigo.</p>
         </div>
       </div>
@@ -735,7 +735,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
         <div class="team-body">
           <span class="team-role">Asesora</span>
           <div class="team-name">Vanesa Mora</div>
-          <div style="display:inline-flex;align-items:center;gap:6px;background:#FFF0E6;border:1.5px solid var(--ink);border-radius:100px;padding:.2rem .75rem;font-size:.7rem;font-weight:700;color:var(--ink);margin-bottom:12px">💡 Asesora Experta</div>
+          <div style="display:inline-flex;align-items:center;gap:6px;background:#FFF0E6;border:1px solid rgba(43,36,24,0.10);border-radius:100px;padding:.2rem .75rem;font-size:.7rem;font-weight:700;color:var(--ink);margin-bottom:12px">💡 Asesora Experta</div>
           <p class="team-quote">Disfruto convertir trámites complicados en algo simple. Si hay un camino más fácil para tu peludito, lo vamos a encontrar.</p>
         </div>
       </div>

@@ -21,9 +21,9 @@
   --ink:     #2B2418;
   --cream:   #FFFAEC;
   --muted:   #6B5540;
-  --border:  2px solid #2B2418;
-  --shadow:  4px 4px 0 #2B2418;
-  --shadowL: 6px 6px 0 #2B2418;
+  --border:  1px solid rgba(43,36,24,0.10);
+  --shadow:  0 4px 20px rgba(43,36,24,0.08);
+  --shadowL: 0 12px 36px rgba(43,36,24,0.12);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -159,13 +159,13 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   transition:transform .15s, box-shadow .15s;
   margin-bottom:14px;
 }
-.channel-card:hover { transform:translate(-2px,-2px); box-shadow:var(--shadowL); }
+.channel-card:hover { transform:translateY(-5px); box-shadow:var(--shadowL); }
 
 .channel-icon {
   width:52px; height:52px; border-radius:50%; flex-shrink:0;
   border:var(--border); display:flex; align-items:center;
   justify-content:center; font-size:1.4rem;
-  box-shadow:2px 2px 0 var(--ink);
+  box-shadow:0 2px 8px rgba(43,36,24,0.08);
 }
 .channel-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:3px; }
 .channel-value { font-family:'Fredoka',sans-serif; font-size:1.05rem; font-weight:600; color:var(--ink); }
@@ -173,7 +173,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
 .channel-arrow {
   margin-left:auto; flex-shrink:0;
   width:32px; height:32px; border-radius:50%;
-  background:var(--bg2); border:1.5px solid var(--ink);
+  background:var(--bg2); border:1px solid rgba(43,36,24,0.10);
   display:flex; align-items:center; justify-content:center;
   font-size:.85rem; transition:background .15s;
 }
@@ -201,7 +201,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   display:inline-flex; align-items:center; gap:6px;
   background:var(--success); border:var(--border); border-radius:100px;
   padding:.25rem .85rem; font-size:.75rem; font-weight:700; color:var(--ink);
-  box-shadow:2px 2px 0 var(--ink); margin-top:14px;
+  box-shadow:0 2px 8px rgba(43,36,24,0.08); margin-top:14px;
 }
 
 /* Socials */
@@ -213,7 +213,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   text-decoration:none; box-shadow:var(--shadow);
   transition:transform .1s, box-shadow .1s;
 }
-.social-pill:hover { transform:translate(-1px,-1px); box-shadow:3px 3px 0 var(--ink); }
+.social-pill:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(43,36,24,0.10); }
 
 /* ── FORM CARD ── */
 .form-card {
@@ -256,7 +256,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   transition:transform .1s, box-shadow .1s;
   display:flex; align-items:center; justify-content:center; gap:8px;
 }
-.form-submit:hover { transform:translate(-2px,-2px); box-shadow:var(--shadowL); }
+.form-submit:hover { transform:translateY(-5px); box-shadow:var(--shadowL); }
 .form-note { font-size:.72rem; color:var(--muted); text-align:center; font-weight:300; }
 
 /* ── FAQ STRIP ── */
@@ -269,7 +269,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   display:inline-block; font-size:.7rem; font-weight:700;
   text-transform:uppercase; letter-spacing:2.5px; color:var(--ink);
   background:var(--yellow); border:var(--border); border-radius:100px;
-  padding:.22rem .85rem; box-shadow:2px 2px 0 var(--ink); margin-bottom:14px;
+  padding:.22rem .85rem; box-shadow:0 2px 8px rgba(43,36,24,0.08); margin-bottom:14px;
 }
 .section-title {
   font-family:'Fredoka',sans-serif; font-size:clamp(1.8rem,3vw,2.4rem);
@@ -293,7 +293,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
 .faq-q:hover { background:var(--bg1); }
 .faq-icon {
   width:28px; height:28px; border-radius:50%; flex-shrink:0;
-  background:var(--bg2); border:1.5px solid var(--ink);
+  background:var(--bg2); border:1px solid rgba(43,36,24,0.10);
   display:flex; align-items:center; justify-content:center;
   font-size:.85rem; font-weight:700; transition:background .2s, transform .2s;
 }
