@@ -195,12 +195,93 @@ img { display: block; max-width: 100%; }
 .hero-slide {
   position: absolute; inset: 0;
   background-size: cover; background-position: center center;
-  opacity: 0; transition: opacity 1.2s ease;
-  will-change: opacity;
+  opacity: 0; transition: opacity 1.4s ease;
+  will-change: opacity, transform;
+  transform: scale(1.08);
 }
-.hero-slide.active { opacity: 1; }
+.hero-slide.active {
+  opacity: 1;
+  animation: kenBurns 8s ease-out forwards;
+}
 .hero-slide-3 {
   background: linear-gradient(135deg, #005f57 0%, #008D83 55%, #00a595 100%);
+}
+
+/* Ken Burns zoom suave */
+@keyframes kenBurns {
+  from { transform: scale(1.08); }
+  to   { transform: scale(1.0); }
+}
+
+/* Partículas de huellitas */
+.hero-particles {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none; overflow: hidden;
+}
+.hero-paw {
+  position: absolute;
+  opacity: 0;
+  animation: floatPaw linear infinite;
+  will-change: transform, opacity;
+}
+@keyframes floatPaw {
+  0%   { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.6); }
+  10%  { opacity: 0.18; }
+  80%  { opacity: 0.12; }
+  100% { opacity: 0; transform: translateY(-110vh) rotate(25deg) scale(1); }
+}
+
+/* Texto animado — word swap */
+.hero-word-swap {
+  display: inline-block;
+  position: relative;
+  color: #F5935A;
+}
+.hero-word-swap .word {
+  display: inline-block;
+  position: absolute; left: 0; top: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  white-space: nowrap;
+}
+.hero-word-swap .word.active {
+  opacity: 1; transform: translateY(0); position: relative;
+}
+
+/* Barra de progreso del slider */
+.hero-progress {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 3px; z-index: 10;
+  background: rgba(255,255,255,0.12);
+}
+.hero-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #FF7600, #FFBC00);
+  width: 0%;
+  transition: width linear;
+}
+
+/* Scroll indicator */
+.hero-scroll-hint {
+  position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%);
+  z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  opacity: 0.55; animation: fadeUp 1s 1.2s ease both;
+}
+.hero-scroll-hint span {
+  font-size: 0.68rem; color: #fff; letter-spacing: 0.12em; text-transform: uppercase;
+  font-family: 'Poppins', sans-serif; font-weight: 400;
+}
+.hero-scroll-hint svg { animation: bounce 1.8s ease-in-out infinite; }
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide { animation: none; transform: scale(1); }
+  .hero-paw   { animation: none; display: none; }
+  .hero-scroll-hint svg { animation: none; }
 }
 
 .hero-overlay {
@@ -1373,28 +1454,30 @@ footer {
 
 <!-- ══ HERO ══ -->
 <section class="hero" id="heroSection">
-  <!-- Slides -->
-  <div class="hero-slide active"
-       style="background-image:url('assets/images/hero-slide-1.webp')">
-  </div>
-  <div class="hero-slide"
-       style="background-image:url('assets/images/hero-slide-2.webp')">
-  </div>
-  <div class="hero-slide"
-       style="background-image:url('assets/images/hero-slide-3.webp')">
-  </div>
+  <!-- Slides con Ken Burns -->
+  <div class="hero-slide active" style="background-image:url('assets/images/hero-slide-1.webp')"></div>
+  <div class="hero-slide"        style="background-image:url('assets/images/hero-slide-2.webp')"></div>
+  <div class="hero-slide"        style="background-image:url('assets/images/hero-slide-3.webp')"></div>
 
   <!-- Overlay -->
   <div class="hero-overlay"></div>
 
+  <!-- Partículas huellitas -->
+  <div class="hero-particles" id="heroPaws" aria-hidden="true"></div>
+
   <!-- Content -->
   <div class="hero-content">
     <div class="hero-badge">
-      ✈️&nbsp; Expertos en viajes con mascotas — Bogotá
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Expertos en viajes con mascotas — Bogotá
     </div>
     <h1 class="hero-title">
       Tu peludito<br>
-      vuela en <span class="hero-accent">cabina.</span><br>
+      vuela en <span class="hero-word-swap" id="heroWordSwap">
+        <span class="word active">cabina.</span>
+        <span class="word">seguro.</span>
+        <span class="word">feliz.</span>
+      </span><br>
       Tú disfrutas el viaje.
     </h1>
     <p class="hero-sub">
@@ -1413,6 +1496,15 @@ footer {
     <button class="hero-dot active" data-idx="0" aria-label="Slide 1"></button>
     <button class="hero-dot" data-idx="1" aria-label="Slide 2"></button>
     <button class="hero-dot" data-idx="2" aria-label="Slide 3"></button>
+  </div>
+
+  <!-- Barra de progreso -->
+  <div class="hero-progress"><div class="hero-progress-bar" id="heroProgressBar"></div></div>
+
+  <!-- Scroll hint -->
+  <div class="hero-scroll-hint">
+    <span>Explorar</span>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
 </section>
 
@@ -2355,5 +2447,87 @@ if (statsEl) {
 </script>
 
 <script type="module" src="/assets/scripts/motion-animations.js"></script>
+<script>
+/* ── Hero Cinematic ──────────────────────────────────────── */
+(function(){
+  var SLIDE_DURATION = 5200; // ms por slide
+
+  /* 1. Partículas huellitas flotantes */
+  var pawContainer = document.getElementById('heroPaws');
+  var pawSVG = '<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" fill="rgba(255,255,255,0.7)"><ellipse cx="30" cy="38" rx="13" ry="11"/><ellipse cx="17" cy="29" rx="6" ry="8"/><ellipse cx="43" cy="29" rx="6" ry="8"/><ellipse cx="22" cy="18" rx="5" ry="6"/><ellipse cx="38" cy="18" rx="5" ry="6"/></svg>';
+  if (pawContainer && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    for (var i = 0; i < 9; i++) {
+      (function(i){
+        var el = document.createElement('div');
+        el.className = 'hero-paw';
+        var size = 14 + Math.random() * 22;
+        var delay = Math.random() * 14;
+        var dur   = 14 + Math.random() * 16;
+        el.style.cssText = [
+          'width:' + size + 'px',
+          'height:' + size + 'px',
+          'left:' + (Math.random() * 95) + '%',
+          'bottom:-60px',
+          'animation-delay:' + delay + 's',
+          'animation-duration:' + dur + 's',
+        ].join(';');
+        el.innerHTML = pawSVG;
+        pawContainer.appendChild(el);
+      })(i);
+    }
+  }
+
+  /* 2. Word swap en el título */
+  var wordSwap = document.getElementById('heroWordSwap');
+  if (wordSwap) {
+    var words = wordSwap.querySelectorAll('.word');
+    var wIdx = 0;
+    setInterval(function(){
+      words[wIdx].classList.remove('active');
+      wIdx = (wIdx + 1) % words.length;
+      words[wIdx].classList.add('active');
+    }, SLIDE_DURATION);
+  }
+
+  /* 3. Barra de progreso */
+  var bar = document.getElementById('heroProgressBar');
+  if (bar) {
+    function startProgress() {
+      bar.style.transition = 'none';
+      bar.style.width = '0%';
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          bar.style.transition = 'width ' + (SLIDE_DURATION / 1000) + 's linear';
+          bar.style.width = '100%';
+        });
+      });
+    }
+    startProgress();
+    // Reinicia la barra cuando cambia el slide
+    var observer = new MutationObserver(function(mutations){
+      mutations.forEach(function(m){
+        if (m.target.classList.contains('active')) startProgress();
+      });
+    });
+    document.querySelectorAll('.hero-slide').forEach(function(s){
+      observer.observe(s, { attributes: true, attributeFilter: ['class'] });
+    });
+  }
+
+  /* 4. Ken Burns — reiniciar animación en cada slide activo */
+  document.querySelectorAll('.hero-slide').forEach(function(slide){
+    var obs = new MutationObserver(function(){
+      if (slide.classList.contains('active')) {
+        slide.style.animation = 'none';
+        requestAnimationFrame(function(){
+          slide.style.animation = '';
+        });
+      }
+    });
+    obs.observe(slide, { attributes: true, attributeFilter: ['class'] });
+  });
+
+})();
+</script>
 </body>
 </html>
