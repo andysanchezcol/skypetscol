@@ -677,30 +677,51 @@ async function doResend() {
   else showMsg('¡Correo enviado! Revisa tu bandeja (y el spam). El link expira en 1 hora.', 'success');
 }
 
-/* ── AUTH STATE (magic link / OAuth redirect) ── */
-sb.auth.onAuthStateChange(async (event, session) => {
-  if (session?.user) {
-    const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
-    showDashboard(session.user, profile);
-  }
-  // No llamar showAuthScreen() en else — evita mostrar login cuando
-  // el token refresh falla por red. El IIFE de abajo lo maneja.
-});
+/* ── SESSION INIT — único punto de entrada para mostrar dashboard o login ── */
+let _dashShown = false;
 
-/* ── AUTO-LOGIN desde localStorage (sin llamadas de red al auth) ── */
-(async function() {
+async function initPortalSession() {
+  // 1. Leer token de localStorage directamente (sin red)
   try {
     const raw = localStorage.getItem('sb-yicrkuntrsiaonkrfzlm-auth-token');
-    if (!raw) return;
-    const stored = JSON.parse(raw);
-    const { access_token, expires_at, user } = stored || {};
-    if (!access_token || !user?.id) return;
-    if (expires_at && Date.now() / 1000 > expires_at - 30) return; // expirado
-    // Token válido — consultar perfil (DB funciona aunque auth-endpoint no)
-    const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
-    if (profile) showDashboard(user, profile);
+    if (raw) {
+      const stored  = JSON.parse(raw);
+      const token   = stored?.access_token;
+      const exp     = stored?.expires_at;
+      const user    = stored?.user;
+      const valid   = token && user?.id && (!exp || Date.now() / 1000 < exp - 30);
+      if (valid) {
+        const { data: profile } = await sb
+          .from('profiles').select('*').eq('id', user.id).single();
+        // Mostrar con o sin perfil (fallback a email)
+        _dashShown = true;
+        showDashboard(user, profile || { full_name: user.user_metadata?.full_name || user.email });
+        return;
+      }
+    }
   } catch(_) {}
-})();
+
+  // 2. Sin sesión válida → mostrar login
+  showAuthScreen();
+}
+
+/* ── AUTH STATE — solo para OAuth / magic link redirect con token en URL ── */
+sb.auth.onAuthStateChange(async (event, session) => {
+  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
+    if (_dashShown) return; // ya está en dashboard, no re-procesar
+    const { data: profile } = await sb
+      .from('profiles').select('*').eq('id', session.user.id).single();
+    _dashShown = true;
+    showDashboard(session.user, profile);
+  }
+  if (event === 'SIGNED_OUT') {
+    _dashShown = false;
+    showAuthScreen();
+  }
+});
+
+// Iniciar
+initPortalSession();
 
 // Manejar errores de URL hash DESPUÉS de que onAuthStateChange se registre
 handleHashError();
