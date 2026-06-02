@@ -2481,7 +2481,7 @@ if (statsEl) {
 
   /* 1. Partículas huellitas flotantes */
   var pawContainer = document.getElementById('heroPaws');
-  var pawSVG = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="rgba(255,255,255,0.75)"><path d="M50 55 C38 55 28 63 28 73 C28 83 38 90 50 90 C62 90 72 83 72 73 C72 63 62 55 50 55Z"/><ellipse cx="28" cy="44" rx="9" ry="12" transform="rotate(-15 28 44)"/><ellipse cx="72" cy="44" rx="9" ry="12" transform="rotate(15 72 44)"/><ellipse cx="38" cy="26" rx="7" ry="9" transform="rotate(-8 38 26)"/><ellipse cx="62" cy="26" rx="7" ry="9" transform="rotate(8 62 26)"/></svg>';
+  var pawSVG = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="rgba(255,255,255,0.75)"><!-- Almohadilla central --><path d="M50 88 C34 88 22 78 22 65 C22 54 30 47 40 46 C43 45 47 44 50 44 C53 44 57 45 60 46 C70 47 78 54 78 65 C78 78 66 88 50 88Z"/><!-- Dedo superior izquierdo --><ellipse cx="33" cy="32" rx="10" ry="13" transform="rotate(-10 33 32)"/><!-- Dedo superior derecho --><ellipse cx="67" cy="32" rx="10" ry="13" transform="rotate(10 67 32)"/><!-- Dedo lateral izquierdo --><ellipse cx="17" cy="52" rx="8.5" ry="11" transform="rotate(-20 17 52)"/><!-- Dedo lateral derecho --><ellipse cx="83" cy="52" rx="8.5" ry="11" transform="rotate(20 83 52)"/></svg>';
   if (pawContainer && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     for (var i = 0; i < 9; i++) {
       (function(i){
