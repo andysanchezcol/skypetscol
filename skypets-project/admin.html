@@ -284,19 +284,47 @@ tr:hover td { background: rgba(0,141,131,0.03); }
       <span class="login-brand"><span class="sky">Sky</span><span class="pets">Pets</span></span>
     </div>
     <p class="login-subtitle">Panel de Administración</p>
-    <div class="form-group">
-      <label class="form-label">Correo electrónico</label>
-      <input type="email" class="form-input" id="adminEmail" placeholder="admin@skypetscol.com" autocomplete="email">
+
+    <!-- MAGIC LINK (principal) -->
+    <div id="formMagicLink">
+      <div class="form-group">
+        <label class="form-label">Correo electrónico del administrador</label>
+        <input type="email" class="form-input" id="adminEmail"
+               placeholder="andres.sanchez@skypetscol.com" autocomplete="email">
+      </div>
+      <button class="btn-login" id="btnMagic" onclick="sendMagicLink()">
+        ✉️ Enviar link de acceso
+      </button>
+      <p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5;">
+        Recibirás un email con el link — haz clic en él para entrar directamente.
+      </p>
+      <div style="margin-top:16px;text-align:center">
+        <button onclick="showPasswordForm()" style="background:none;border:none;font-size:0.75rem;color:var(--muted);cursor:pointer;text-decoration:underline;font-family:'Poppins',sans-serif;">
+          Ingresar con contraseña
+        </button>
+      </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Contraseña</label>
-      <input type="password" class="form-input" id="adminPass" placeholder="••••••••" autocomplete="current-password">
+
+    <!-- CONTRASEÑA (secundario / oculto) -->
+    <div id="formPassword" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="form-input" id="adminEmailPwd"
+               placeholder="andres.sanchez@skypetscol.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input type="password" class="form-input" id="adminPass"
+               placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-login" id="btnLogin" onclick="doLogin()">Ingresar al panel</button>
+      <div style="margin-top:12px;text-align:center">
+        <button onclick="showMagicLinkForm()" style="background:none;border:none;font-size:0.75rem;color:var(--muted);cursor:pointer;text-decoration:underline;font-family:'Poppins',sans-serif;">
+          ← Volver a link de acceso
+        </button>
+      </div>
     </div>
-    <button class="btn-login" id="btnLogin" onclick="doLogin()">Ingresar al panel</button>
-    <button class="btn-login" id="btnSession" onclick="useSession()"
-            style="margin-top:10px;background:rgba(0,141,131,0.12);color:#008D83;box-shadow:none;border:1.5px solid #008D83;">
-      Usar sesión activa
-    </button>
+
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
@@ -527,11 +555,45 @@ const DOC_TYPE_NAMES = {
 let allClients = [];
 let selectedFile = null;
 
+/* ── FORM TOGGLE ── */
+function showPasswordForm() {
+  document.getElementById('formMagicLink').style.display = 'none';
+  document.getElementById('formPassword').style.display = 'block';
+  hideLoginMsg();
+}
+function showMagicLinkForm() {
+  document.getElementById('formPassword').style.display = 'none';
+  document.getElementById('formMagicLink').style.display = 'block';
+  hideLoginMsg();
+}
+
+/* ── MAGIC LINK ── */
+async function sendMagicLink() {
+  const email = document.getElementById('adminEmail').value.trim();
+  if (!email) { showLoginError('Escribe tu correo electrónico.'); return; }
+  const btn = document.getElementById('btnMagic');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  hideLoginMsg();
+  try {
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin + '/admin' }
+    });
+    if (error) { showLoginError('Error: ' + error.message); return; }
+    showLoginInfo('✅ Link enviado a ' + email + '. Revisa tu bandeja (y spam). Haz clic en el link para entrar.');
+    btn.textContent = 'Reenviar link';
+  } catch(e) {
+    showLoginError('Error inesperado: ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 /* ── AUTH ── */
 let _loginBusy = false;
 
 async function doLogin() {
-  const email = document.getElementById('adminEmail').value.trim();
+  const email = document.getElementById('adminEmailPwd').value.trim();
   const pass  = document.getElementById('adminPass').value;
   const btn   = document.getElementById('btnLogin');
   hideLoginMsg();
