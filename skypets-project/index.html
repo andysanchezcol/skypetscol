@@ -373,6 +373,167 @@ img { display: block; max-width: 100%; }
 .stat-lbl { font-size: 0.8rem; color: #6B5540; font-weight: 400; line-height: 1.4; }
 
 /* ══════════════════════════════════════════
+   PHOTO WALL CAROUSEL
+══════════════════════════════════════════ */
+.photowall-section {
+  background: var(--bg1);
+  padding: clamp(64px,9vw,110px) 0 clamp(56px,8vw,96px);
+  overflow: hidden;
+}
+.photowall-header {
+  text-align: center;
+  padding: 0 clamp(24px,6vw,72px);
+  margin-bottom: 48px;
+}
+.photowall-header .section-desc { max-width: 520px; margin: 0 auto; }
+
+/* Stage */
+.pw-stage {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+}
+.pw-stage:active { cursor: grabbing; }
+
+/* Track */
+.pw-track {
+  display: flex;
+  gap: 24px;
+  padding: 20px clamp(24px,6vw,72px) 28px;
+  will-change: transform;
+  transition: transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.pw-track.is-dragging { transition: none; }
+
+/* Card */
+.pw-card {
+  flex-shrink: 0;
+  width: clamp(260px, 30vw, 320px);
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 5px 5px 0 var(--ink);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.pw-card:hover {
+  transform: translate(-3px,-3px);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+/* Image area */
+.pw-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: var(--bg2);
+}
+.pw-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.pw-card:hover .pw-img-wrap img { transform: scale(1.05); }
+
+/* Placeholder (mientras no hay foto) */
+.pw-img-placeholder {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+}
+.pw-upload-icon { font-size: 2.8rem; opacity: 0.6; }
+.pw-upload-label {
+  font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--muted); opacity: 0.7;
+}
+
+/* Badge */
+.pw-badge {
+  position: absolute; top: 12px; right: 12px;
+  background: var(--ink); color: var(--cream);
+  font-size: 0.68rem; font-weight: 600;
+  padding: 4px 10px; border-radius: 100px;
+  letter-spacing: 0.5px;
+  border: 1.5px solid var(--ink);
+}
+
+/* Info */
+.pw-info {
+  padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.pw-name {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.05rem; font-weight: 600;
+  color: var(--ink);
+}
+.pw-dest {
+  font-size: 0.78rem; font-weight: 500;
+  color: var(--muted);
+}
+
+/* Fades laterales */
+.pw-fade {
+  position: absolute; top: 0; bottom: 0; width: 80px;
+  pointer-events: none; z-index: 2;
+}
+.pw-fade-l { left: 0; background: linear-gradient(to right, var(--bg1), transparent); }
+.pw-fade-r { right: 0; background: linear-gradient(to left, var(--bg1), transparent); }
+
+/* Flechas */
+.pw-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  z-index: 10; width: 44px; height: 44px;
+  border-radius: 50%; border: 2px solid var(--ink);
+  background: #fff; color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.pw-arrow:hover {
+  background: var(--orange); color: #fff;
+  transform: translateY(-50%) translate(-2px,-2px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.pw-arrow-l { left: clamp(8px,2vw,24px); }
+.pw-arrow-r { right: clamp(8px,2vw,24px); }
+
+/* Dots */
+.pw-dots {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-top: 28px;
+}
+.pw-dot {
+  width: 8px; height: 8px; border-radius: 100px;
+  background: rgba(43,36,24,0.2); border: none; cursor: pointer;
+  transition: width 0.3s, background 0.3s;
+  padding: 0;
+}
+.pw-dot.active {
+  width: 28px;
+  background: var(--orange);
+}
+
+/* CTA */
+.pw-cta {
+  text-align: center;
+  margin-top: 40px;
+  padding: 0 clamp(24px,6vw,72px);
+}
+
+@media(max-width:768px) {
+  .pw-card { width: clamp(220px,72vw,280px); }
+  .pw-arrow { display: none; }
+  .pw-fade { width: 40px; }
+}
+
+/* ══════════════════════════════════════════
    SECTION COMMONS
 ══════════════════════════════════════════ */
 .section { padding: clamp(72px,10vw,120px) clamp(24px,6vw,72px); }
@@ -1141,6 +1302,134 @@ footer {
   </div>
 </div>
 
+<!-- ══ PHOTO CAROUSEL ══ -->
+<section class="photowall-section">
+  <div class="photowall-header reveal">
+    <div class="section-eyebrow"><span class="section-eyebrow-line"></span>La comunidad SkyPets</div>
+    <h2 class="section-title">Peluditos que ya <span class="ac">volaron con nosotros</span> ✈️</h2>
+    <p class="section-desc">Cada foto es una historia de confianza, amor y aventura compartida.</p>
+  </div>
+
+  <!-- Track infinito -->
+  <div class="pw-stage">
+    <div class="pw-track" id="pwTrack">
+
+      <!-- CARD 1 -->
+      <div class="pw-card" data-index="0">
+        <div class="pw-img-wrap">
+          <div class="pw-img-placeholder">
+            <span class="pw-upload-icon">📸</span>
+            <span class="pw-upload-label">Foto próximamente</span>
+          </div>
+          <div class="pw-badge">Cabina ✈️</div>
+        </div>
+        <div class="pw-info">
+          <span class="pw-name">Luna & familia García</span>
+          <span class="pw-dest">🇪🇸 Bogotá → Madrid</span>
+        </div>
+      </div>
+
+      <!-- CARD 2 -->
+      <div class="pw-card" data-index="1">
+        <div class="pw-img-wrap">
+          <div class="pw-img-placeholder">
+            <span class="pw-upload-icon">🐾</span>
+            <span class="pw-upload-label">Foto próximamente</span>
+          </div>
+          <div class="pw-badge">Serología 🧬</div>
+        </div>
+        <div class="pw-info">
+          <span class="pw-name">Mochi & familia Ruiz</span>
+          <span class="pw-dest">🇯🇵 Bogotá → Tokio</span>
+        </div>
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="pw-card" data-index="2">
+        <div class="pw-img-wrap">
+          <div class="pw-img-placeholder">
+            <span class="pw-upload-icon">🐶</span>
+            <span class="pw-upload-label">Foto próximamente</span>
+          </div>
+          <div class="pw-badge">Cabina ✈️</div>
+        </div>
+        <div class="pw-info">
+          <span class="pw-name">Coco & familia López</span>
+          <span class="pw-dest">🇺🇸 Bogotá → Miami</span>
+        </div>
+      </div>
+
+      <!-- CARD 4 -->
+      <div class="pw-card" data-index="3">
+        <div class="pw-img-wrap">
+          <div class="pw-img-placeholder">
+            <span class="pw-upload-icon">🐱</span>
+            <span class="pw-upload-label">Foto próximamente</span>
+          </div>
+          <div class="pw-badge">Pet Nanny 🐾</div>
+        </div>
+        <div class="pw-info">
+          <span class="pw-name">Nala & familia Torres</span>
+          <span class="pw-dest">🇦🇺 Bogotá → Sídney</span>
+        </div>
+      </div>
+
+      <!-- CARD 5 -->
+      <div class="pw-card" data-index="4">
+        <div class="pw-img-wrap">
+          <div class="pw-img-placeholder">
+            <span class="pw-upload-icon">🐕</span>
+            <span class="pw-upload-label">Foto próximamente</span>
+          </div>
+          <div class="pw-badge">Cabina ✈️</div>
+        </div>
+        <div class="pw-info">
+          <span class="pw-name">Bruno & familia Mora</span>
+          <span class="pw-dest">🇩🇪 Bogotá → Berlín</span>
+        </div>
+      </div>
+
+      <!-- CARD 6 -->
+      <div class="pw-card" data-index="5">
+        <div class="pw-img-wrap">
+          <div class="pw-img-placeholder">
+            <span class="pw-upload-icon">🐩</span>
+            <span class="pw-upload-label">Foto próximamente</span>
+          </div>
+          <div class="pw-badge">Serología 🧬</div>
+        </div>
+        <div class="pw-info">
+          <span class="pw-name">Frida & familia Cano</span>
+          <span class="pw-dest">🇨🇦 Bogotá → Toronto</span>
+        </div>
+      </div>
+
+    </div><!-- /pw-track -->
+
+    <!-- Fades laterales -->
+    <div class="pw-fade pw-fade-l"></div>
+    <div class="pw-fade pw-fade-r"></div>
+
+    <!-- Controles -->
+    <button class="pw-arrow pw-arrow-l" id="pwPrev" aria-label="Anterior">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="pw-arrow pw-arrow-r" id="pwNext" aria-label="Siguiente">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+  <!-- Dots -->
+  <div class="pw-dots" id="pwDots"></div>
+
+  <!-- CTA compartir -->
+  <div class="pw-cta reveal">
+    <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20compartir%20la%20foto%20de%20mi%20peludito%20viajero%20🐾✈️" class="btn btn-orange">
+      📸 Comparte la foto de tu peludito
+    </a>
+  </div>
+</section>
+
 <!-- ══ SERVICES ══ -->
 <section class="section services-section" id="servicios">
   <div class="section-inner">
@@ -1558,6 +1847,77 @@ function closeMob() {
   hamburger.classList.remove('open');
   hamburger.setAttribute('aria-expanded', 'false');
 }
+
+/* ── PHOTO WALL CAROUSEL ── */
+(function(){
+  const track   = document.getElementById('pwTrack');
+  const dotsEl  = document.getElementById('pwDots');
+  const btnPrev = document.getElementById('pwPrev');
+  const btnNext = document.getElementById('pwNext');
+  if (!track) return;
+
+  const cards   = track.querySelectorAll('.pw-card');
+  const total   = cards.length;
+  let current   = 0;
+  let autoTimer;
+
+  // Build dots
+  cards.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'pw-dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Ir a foto ' + (i+1));
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  });
+
+  function getOffset(idx) {
+    const card     = cards[idx];
+    const stage    = track.parentElement;
+    const stageW   = stage.offsetWidth;
+    const cardW    = card.offsetWidth;
+    const cardLeft = card.offsetLeft;
+    return -(cardLeft - (stageW / 2) + (cardW / 2));
+  }
+
+  function goTo(idx) {
+    current = (idx + total) % total;
+    track.style.transform = `translateX(${getOffset(current)}px)`;
+    dotsEl.querySelectorAll('.pw-dot').forEach((d, i) =>
+      d.classList.toggle('active', i === current)
+    );
+    // card scale effect
+    cards.forEach((c, i) => {
+      c.style.transform = '';
+      c.style.opacity   = i === current ? '1' : '0.72';
+    });
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  btnNext.addEventListener('click', () => { next(); resetAuto(); });
+  btnPrev.addEventListener('click', () => { prev(); resetAuto(); });
+
+  function resetAuto() {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(next, 3800);
+  }
+
+  // Drag / swipe
+  let dragStart = null, dragDelta = 0;
+  track.addEventListener('mousedown',  e => { dragStart = e.clientX; track.classList.add('is-dragging'); });
+  track.addEventListener('mousemove',  e => { if(dragStart===null) return; dragDelta = e.clientX - dragStart; track.style.transform = `translateX(${getOffset(current)+dragDelta}px)`; });
+  track.addEventListener('mouseup',    e => { if(dragStart===null) return; if(dragDelta < -60) next(); else if(dragDelta > 60) prev(); else goTo(current); dragStart=null; dragDelta=0; track.classList.remove('is-dragging'); resetAuto(); });
+  track.addEventListener('mouseleave', () => { if(dragStart!==null){ goTo(current); dragStart=null; dragDelta=0; track.classList.remove('is-dragging'); } });
+
+  track.addEventListener('touchstart', e => { dragStart = e.touches[0].clientX; }, {passive:true});
+  track.addEventListener('touchmove',  e => { if(dragStart===null) return; dragDelta = e.touches[0].clientX - dragStart; track.style.transform = `translateX(${getOffset(current)+dragDelta}px)`; }, {passive:true});
+  track.addEventListener('touchend',   () => { if(dragDelta < -50) next(); else if(dragDelta > 50) prev(); else goTo(current); dragStart=null; dragDelta=0; resetAuto(); });
+
+  // Init
+  goTo(0);
+  resetAuto();
+})();
 
 /* ── HERO SLIDER ── */
 const slides = document.querySelectorAll('.hero-slide');
