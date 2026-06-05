@@ -29,12 +29,20 @@ Sitio web estático de SkyPets Colombia (skypetscol.com), empresa de asesoría d
 - **Poppins** (300/400/500/600) → body, UI, labels, botones
 - Cargar desde Google Fonts: `family=Fredoka:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600`
 
-## Estilo visual (Design System sticker)
-- Bordes: `2px solid #2B2418` en todos los elementos interactivos
-- Sombra: `4px 4px 0 #2B2418` (cards normales), `6px 6px 0 #2B2418` (hover)
-- Hover: `transform: translate(-2px, -2px)` + sombra mayor
+## Estilo visual — Liquidglass (desde index.html, estándar del proyecto)
+- **NO usar** bordes sólidos `2px solid #2B2418` ni sombras neobrutalist `4px 4px 0 #2B2418`
+- **Botones**: pill (`border-radius:100px`), sin border sólido, `backdrop-filter:blur(12px)`, sombra con color de acento
+  ```css
+  /* Botón principal naranja */
+  background: rgba(255,118,0,0.9); box-shadow: 0 4px 20px rgba(255,118,0,0.38);
+  backdrop-filter: blur(12px); transition: transform 0.2s, box-shadow 0.2s;
+  /* Hover */
+  transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,118,0,0.52);
+  ```
+- **Cards**: `background: rgba(255,255,255,0.75); backdrop-filter: blur(16px); border: 1.5px solid rgba(43,36,24,0.1); box-shadow: 0 8px 32px rgba(43,36,24,0.1);`
+- **Toggles / selectors**: `border: 1.5px solid rgba(43,36,24,0.14); background: rgba(255,250,236,0.55); backdrop-filter: blur(8px)`; cuando selected → color sólido + `box-shadow: 0 4px 16px rgba(color,0.32)`
+- **Sombras suaves** (no ink): siempre con alpha `rgba(43,36,24,0.08~0.14)` o con color de acento
 - Bordes redondeados: sm=10px, md=16px, lg=24px, xl=36px
-- Botones: siempre pill (border-radius:100px) + border + shadow
 
 ## Estructura de archivos
 ```
