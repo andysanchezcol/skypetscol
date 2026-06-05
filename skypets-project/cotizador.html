@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cotizador Pet Nanny — SkyPets</title>
+  <link rel="manifest" href="cotizador-manifest.json">
+  <meta name="theme-color" content="#008D83">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SkyPets Cotizador">
+  <link rel="apple-touch-icon" href="assets/images/Logo_SkyPets.webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange:  #FF7600;
+      --teal:    #008D83;
+      --yellow:  #FFBC00;
+      --success: #71CC1E;
+      --danger:  #E5443A;
+      --bg1:     #FFFAEC;
+      --bg2:     #FFEFC2;
+      --bg3:     #FFE7A6;
+      --ink:     #2B2418;
+      --cream:   #FFFAEC;
+      --muted:   #6B5540;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg1);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--teal);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 3px solid var(--ink);
+    }
+
+    header img {
+      height: 44px;
+      width: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--ink);
+      object-fit: cover;
+    }
+
+    header .title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.1;
+    }
+
+    header .subtitle {
+      font-size: 12px;
+      color: rgba(255,250,236,0.8);
+      font-weight: 300;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    /* Paso indicator */
+    .steps {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .step-dot {
+      flex: 1;
+      height: 6px;
+      border-radius: 100px;
+      background: var(--bg3);
+      border: 1.5px solid var(--ink);
+      transition: background 0.3s;
+    }
+
+    .step-dot.active { background: var(--orange); }
+    .step-dot.done   { background: var(--success); }
+
+    /* Cards */
+    .card {
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(43,36,24,0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(43,36,24,0.1);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--teal);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title .step-num {
+      background: var(--teal);
+      color: white;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      border: 2px solid var(--ink);
+      flex-shrink: 0;
+    }
+
+    /* Form elements */
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    select, input[type="text"], input[type="number"], input[type="date"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--bg1);
+      appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 14px;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(255,118,0,0.15);
+    }
+
+    .select-wrap {
+      position: relative;
+    }
+
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-70%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: 16px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Airline badge */
+    .airline-restriction {
+      display: none;
+      background: var(--bg3);
+      border: 1.5px solid var(--yellow);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--ink);
+      margin-top: -8px;
+      margin-bottom: 14px;
+    }
+
+    .airline-restriction.show { display: block; }
+
+    /* Tipo viaje toggle */
+    .tipo-viaje {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .tipo-btn {
+      flex: 1;
+      padding: 12px;
+      border: 1.5px solid rgba(43,36,24,0.14);
+      border-radius: 10px;
+      background: rgba(255,250,236,0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .tipo-btn.selected {
+      background: var(--teal);
+      color: white;
+      border-color: var(--teal);
+      box-shadow: 0 4px 16px rgba(0,141,131,0.32);
+    }
+
+    /* Google Flights link */
+    .gf-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg2);
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      padding: 12px 14px;
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 14px;
+      transition: all 0.2s;
+    }
+
+    .gf-link:hover {
+      background: var(--bg3);
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .gf-icon {
+      font-size: 20px;
+    }
+
+    /* Días selector */
+    .dias-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .dia-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1.5px solid rgba(43,36,24,0.14);
+      border-radius: 10px;
+      background: rgba(255,250,236,0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .dia-btn.selected {
+      background: var(--orange);
+      color: white;
+      border-color: var(--orange);
+      box-shadow: 0 4px 16px rgba(255,118,0,0.32);
+    }
+
+    /* Viaticos breakdown (visible) */
+    .viaticos-info {
+      background: var(--bg2);
+      border: 1.5px solid var(--bg3);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+    }
+
+    .viaticos-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      color: var(--muted);
+    }
+
+    .viaticos-row.total {
+      border-top: 1.5px solid var(--ink);
+      margin-top: 6px;
+      padding-top: 8px;
+      font-weight: 600;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    /* Resultado */
+    .resultado {
+      display: none;
+      background: var(--teal);
+      border: 2px solid var(--ink);
+      border-radius: 20px;
+      box-shadow: 6px 6px 0 var(--ink);
+      padding: 28px 20px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .resultado.show { display: block; }
+
+    .resultado .label-r {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,250,236,0.8);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .resultado .precio {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--yellow);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .resultado .precio-usd {
+      font-size: 16px;
+      color: rgba(255,250,236,0.7);
+      margin-bottom: 20px;
+    }
+
+    .resultado .nota {
+      font-size: 11px;
+      color: rgba(255,250,236,0.6);
+      margin-top: 12px;
+    }
+
+    /* Botones — liquidglass */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 100px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      position: relative;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(1px); }
+
+    .btn-orange {
+      background: rgba(255, 118, 0, 0.9);
+      color: white;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(255,118,0,0.38);
+    }
+
+    .btn-orange:hover { box-shadow: 0 8px 28px rgba(255,118,0,0.52); }
+
+    .btn-whatsapp {
+      background: rgba(37, 211, 102, 0.9);
+      color: white;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(37,211,102,0.38);
+      display: none;
+      margin-top: 12px;
+    }
+
+    .btn-whatsapp.show { display: block; }
+    .btn-whatsapp:hover { box-shadow: 0 8px 28px rgba(37,211,102,0.5); }
+
+    .btn-reset {
+      background: rgba(255,239,194,0.7);
+      color: var(--ink);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 2px 12px rgba(43,36,24,0.1);
+      margin-top: 10px;
+      display: none;
+    }
+
+    .btn-reset.show { display: block; }
+    .btn-reset:hover { background: rgba(255,231,166,0.85); }
+
+    /* TRM */
+    .trm-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .trm-wrap input {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .btn-trm {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(43,36,24,0.14);
+      background: rgba(255,250,236,0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      color: var(--teal);
+    }
+
+    .btn-trm:hover { background: var(--teal); color: white; }
+    .btn-trm.loading { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .currency-badge {
+      background: rgba(43,36,24,0.8);
+      color: var(--cream);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      border: none;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* Info tooltip */
+    .info-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg3);
+      border: 1.5px solid var(--yellow);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* Section hidden */
+    .section-hidden { display: none; }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 2px dashed var(--bg3);
+      margin: 14px 0;
+    }
+
+    /* Hospedaje toggle */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 26px;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--bg3);
+      border: 2px solid var(--ink);
+      border-radius: 100px;
+      transition: 0.3s;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--ink);
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .toggle input:checked + .toggle-slider { background: var(--success); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(22px); background: white; }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="assets/images/logo-skypets.webp" alt="SkyPets" onerror="this.style.display='none'">
+  <div>
+    <div class="title">🐾 Cotizador Pet Nanny</div>
+    <div class="subtitle">Uso interno · SkyPets Colombia</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="steps">
+    <div class="step-dot active" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+  </div>
+
+  <!-- PASO 1: RUTA -->
+  <div class="card" id="paso1">
+    <div class="card-title">
+      <span class="step-num">1</span> Datos del viaje
+    </div>
+
+    <label>Tipo de viaje</label>
+    <div class="tipo-viaje">
+      <button class="tipo-btn selected" onclick="setTipo('nacional')" id="btn-nac">🇨🇴 Nacional</button>
+      <button class="tipo-btn" onclick="setTipo('internacional')" id="btn-int">✈️ Internacional</button>
+    </div>
+
+    <label>Ciudad origen</label>
+    <div class="select-wrap">
+      <select id="origen">
+        <option value="">Selecciona ciudad origen</option>
+        <option>Bogotá (BOG)</option>
+        <option>Medellín (MDE)</option>
+        <option>Cali (CLO)</option>
+        <option>Barranquilla (BAQ)</option>
+        <option>Cartagena (CTG)</option>
+        <option>Bucaramanga (BGA)</option>
+        <option>Pereira (PEI)</option>
+        <option>Manizales (MZL)</option>
+        <option>Santa Marta (SMR)</option>
+      </select>
+    </div>
+
+    <label id="label-destino">Ciudad destino</label>
+    <div class="select-wrap">
+      <select id="destino" onchange="onDestinoChange()">
+        <option value="">Selecciona destino</option>
+      </select>
+    </div>
+
+    <label>Fecha del vuelo</label>
+    <input type="date" id="fecha-vuelo" min="">
+
+    <button class="btn btn-orange" onclick="irPaso2()">Siguiente →</button>
+  </div>
+
+  <!-- PASO 2: TIQUETES Y VIÁTICOS -->
+  <div class="card section-hidden" id="paso2">
+    <div class="card-title">
+      <span class="step-num">2</span> Tiquetes y estadía
+    </div>
+
+    <a class="gf-link" id="gf-link" href="#" target="_blank" onclick="abrirGoogleFlights(event)">
+      <span class="gf-icon">✈️</span>
+      <div>
+        <div style="font-weight:600">Buscar en Google Flights</div>
+        <div style="font-size:11px;color:var(--muted)" id="gf-ruta-text">Ruta seleccionada</div>
+      </div>
+      <span style="margin-left:auto;font-size:18px">↗</span>
+    </a>
+
+    <label id="label-tq-ida">Precio IDA + VUELTA — total Google Flights (COP)</label>
+    <input type="number" id="tiquete-ida" placeholder="Ej: 1700000" oninput="calcular()">
+
+    <div id="wrap-mismo-dia" class="section-hidden">
+      <div class="toggle-row">
+        <span class="toggle-label">¿Vuelo regreso mismo día?</span>
+        <label class="toggle">
+          <input type="checkbox" id="mismo-dia" checked onchange="onMismoDia()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- estadía internacional: 4 días fijos -->
+    <div id="wrap-info-int" class="section-hidden">
+      <div class="info-chip">🗓️ Estadía estimada: <strong style="margin-left:4px">4 días · 3 noches</strong></div>
+    </div>
+
+    <div id="wrap-hospedaje-nacional" class="section-hidden">
+      <div class="toggle-row">
+        <span class="toggle-label">¿Requiere hospedaje?</span>
+        <label class="toggle">
+          <input type="checkbox" id="requiere-hospedaje" onchange="calcular()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <label>Aerolínea</label>
+    <div class="select-wrap">
+      <select id="aerolinea" onchange="onAerolineaChange()">
+        <option value="">Selecciona aerolínea</option>
+        <option value="Avianca" data-tipo="general">Avianca</option>
+        <option value="Latam" data-tipo="general">Latam</option>
+        <option value="Wingo" data-tipo="general">Wingo</option>
+        <option value="Copa Airlines" data-tipo="general">Copa Airlines</option>
+        <option value="United Airlines" data-tipo="general">United Airlines</option>
+        <option value="Clic" data-tipo="general">Clic</option>
+        <option value="Viva Aerobús" data-tipo="general">Viva Aerobús</option>
+        <option value="KLM" data-tipo="general">KLM</option>
+        <option value="Satena" data-tipo="general">Satena</option>
+        <option value="Air France" data-tipo="certificado" data-nota="Solo certificado de asistencia emocional">Air France</option>
+        <option value="Iberia" data-tipo="certificado" data-nota="Solo certificado de asistencia emocional">Iberia</option>
+        <option value="AeroMéxico" data-tipo="psiquiatria" data-nota="Solo apoyo psiquiátrico — requiere documentación especial">AeroMéxico</option>
+      </select>
+    </div>
+    <div class="airline-restriction" id="airline-note"></div>
+
+    <label id="trm-label">TRM del día (COP → USD)</label>
+    <div class="trm-wrap">
+      <input type="number" id="trm" value="4200" placeholder="4200" oninput="calcular()">
+      <span class="currency-badge" id="trm-badge">USD</span>
+      <button class="btn-trm" onclick="cargarTRM()" id="btn-trm" title="Cargar tasa actual automáticamente">↻</button>
+    </div>
+    <div id="trm-fuente" style="font-size:11px;color:var(--muted);margin-top:-10px;margin-bottom:14px;display:none"></div>
+
+    <!-- viáticos calculados internamente, no mostrados al asesor -->
+
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-orange" style="background:var(--bg2);color:var(--ink);flex:0 0 auto;width:auto;padding:16px 20px" onclick="irPaso1()">← Atrás</button>
+      <button class="btn btn-orange" onclick="irPaso3()" style="flex:1">Ver cotización →</button>
+    </div>
+  </div>
+
+  <!-- PASO 3: RESULTADO -->
+  <div class="section-hidden" id="paso3">
+    <div class="resultado show" id="resultado-card">
+      <div class="label-r">Precio estimado pet nanny</div>
+      <div class="precio" id="precio-final">—</div>
+      <div class="precio-usd" id="precio-usd-ref"></div>
+      <div style="display:flex;gap:16px;justify-content:center;margin-top:16px;flex-wrap:wrap">
+        <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:10px 16px;font-size:12px;color:rgba(255,250,236,0.9)">
+          <div style="font-weight:600">Aerolínea</div>
+          <div id="res-aerolinea">—</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:10px 16px;font-size:12px;color:rgba(255,250,236,0.9)">
+          <div style="font-weight:600">Ruta</div>
+          <div id="res-ruta">—</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:10px 16px;font-size:12px;color:rgba(255,250,236,0.9)">
+          <div style="font-weight:600">Duración</div>
+          <div id="res-duracion">—</div>
+        </div>
+      </div>
+      <div class="nota">* Cotización estimada · Sujeta a disponibilidad de tiquetes</div>
+    </div>
+
+    <a class="btn btn-whatsapp show" id="btn-whatsapp" href="#" target="_blank">
+      💬 Enviar cotización por WhatsApp
+    </a>
+
+    <button class="btn btn-reset show" onclick="reiniciar()">🔄 Nueva cotización</button>
+  </div>
+
+</div>
+
+<script>
+  // ─── DATOS ───────────────────────────────────────────────────────────────
+
+  const TIPO_VIAJE = { tipo: 'nacional', dias: 3 };
+
+  const DESTINOS_NACIONALES = [
+    'Bogotá (BOG)', 'Medellín (MDE)', 'Cali (CLO)', 'Barranquilla (BAQ)',
+    'Cartagena (CTG)', 'Bucaramanga (BGA)', 'Pereira (PEI)',
+    'Manizales (MZL)', 'Santa Marta (SMR)', 'Cucuta (CUC)',
+    'Pasto (PSO)', 'Montería (MTR)', 'Leticia (LET)', 'San Andrés (ADZ)'
+  ];
+
+  const DESTINOS_INTERNACIONALES = [
+    { ciudad: 'Ciudad de México (MEX)', pais: 'Mexico',         moneda: 'USD' },
+    { ciudad: 'Cancún (CUN)',           pais: 'Mexico',         moneda: 'USD' },
+    { ciudad: 'Guadalajara (GDL)',      pais: 'Mexico',         moneda: 'USD' },
+    { ciudad: 'Miami (MIA)',            pais: 'USA',            moneda: 'USD' },
+    { ciudad: 'Nueva York (JFK)',       pais: 'USA',            moneda: 'USD' },
+    { ciudad: 'Los Ángeles (LAX)',      pais: 'USA',            moneda: 'USD' },
+    { ciudad: 'Houston (IAH)',          pais: 'USA',            moneda: 'USD' },
+    { ciudad: 'Chicago (ORD)',          pais: 'USA',            moneda: 'USD' },
+    { ciudad: 'Toronto (YYZ)',          pais: 'Canada',         moneda: 'USD' },
+    { ciudad: 'Vancouver (YVR)',        pais: 'Canada',         moneda: 'USD' },
+    { ciudad: 'Madrid (MAD)',           pais: 'España',         moneda: 'EUR' },
+    { ciudad: 'Barcelona (BCN)',        pais: 'España',         moneda: 'EUR' },
+    { ciudad: 'París (CDG)',            pais: 'Francia',        moneda: 'EUR' },
+    { ciudad: 'Ámsterdam (AMS)',        pais: 'Países Bajos',   moneda: 'EUR' },
+    { ciudad: 'Lisboa (LIS)',           pais: 'Portugal',       moneda: 'EUR' },
+    { ciudad: 'Roma (FCO)',             pais: 'Italia',         moneda: 'EUR' },
+    { ciudad: 'Frankfurt (FRA)',        pais: 'Alemania',       moneda: 'EUR' },
+    { ciudad: 'Ciudad de Panamá (PTY)', pais: 'Panama',        moneda: 'USD' },
+    { ciudad: 'Lima (LIM)',             pais: 'Peru',           moneda: 'USD' },
+    { ciudad: 'Santiago (SCL)',         pais: 'Chile',          moneda: 'USD' },
+    { ciudad: 'Buenos Aires (EZE)',     pais: 'Argentina',      moneda: 'USD' },
+    { ciudad: 'São Paulo (GRU)',        pais: 'Brasil',         moneda: 'USD' },
+    { ciudad: 'Quito (UIO)',            pais: 'Ecuador',        moneda: 'USD' },
+    { ciudad: 'Guayaquil (GYE)',        pais: 'Ecuador',        moneda: 'USD' },
+    { ciudad: 'La Paz (LPB)',           pais: 'Bolivia',        moneda: 'USD' },
+    { ciudad: 'Montevideo (MVD)',       pais: 'Uruguay',        moneda: 'USD' },
+    { ciudad: 'Asunción (ASU)',         pais: 'Paraguay',       moneda: 'USD' },
+    { ciudad: 'Santo Domingo (SDQ)',    pais: 'Rep. Dominicana',moneda: 'USD' },
+    { ciudad: 'San José (SJO)',         pais: 'Costa Rica',     moneda: 'USD' },
+    { ciudad: 'Caracas (CCS)',          pais: 'Venezuela',      moneda: 'USD' },
+  ];
+
+  // Viáticos diarios en USD por país/región
+  // Comidas (desayuno ~25%, almuerzo ~35%, cena ~30%, hidratación ~10%)
+  const VIATICOS = {
+    'Colombia':        { comidas: 12,  hospedaje: 40  },
+    'Mexico':          { comidas: 30,  hospedaje: 75  },
+    'USA':             { comidas: 65,  hospedaje: 140 },
+    'España':          { comidas: 52,  hospedaje: 110 },
+    'Francia':         { comidas: 58,  hospedaje: 130 },
+    'Países Bajos':    { comidas: 55,  hospedaje: 125 },
+    'Panama':          { comidas: 28,  hospedaje: 65  },
+    'Peru':            { comidas: 22,  hospedaje: 55  },
+    'Chile':           { comidas: 28,  hospedaje: 70  },
+    'Argentina':       { comidas: 18,  hospedaje: 45  },
+    'Brasil':          { comidas: 32,  hospedaje: 75  },
+    'Ecuador':         { comidas: 20,  hospedaje: 50  },
+    'Bolivia':         { comidas: 16,  hospedaje: 45  },
+    'Uruguay':         { comidas: 30,  hospedaje: 65  },
+    'Paraguay':        { comidas: 18,  hospedaje: 45  },
+    'Rep. Dominicana': { comidas: 25,  hospedaje: 70  },
+    'Costa Rica':      { comidas: 28,  hospedaje: 65  },
+    'Venezuela':       { comidas: 25,  hospedaje: 55  },
+    'default':         { comidas: 25,  hospedaje: 60  }
+  };
+
+  const MARGEN = 0.25;
+
+  // ─── ESTADO ──────────────────────────────────────────────────────────────
+
+  let state = {
+    tipo: 'nacional',
+    dias: 3,
+    hospedajeNacional: false,
+    mismoDia: true,
+    paisDestino: null,
+    moneda: 'COP',
+    resultadoCOP: 0,
+    resultadoExtranjero: 0
+  };
+
+  // ─── INIT ─────────────────────────────────────────────────────────────────
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha-vuelo').min = hoy;
+    poblarDestinos('nacional');
+  });
+
+  // ─── TIPO VIAJE ───────────────────────────────────────────────────────────
+
+  function setTipo(tipo) {
+    state.tipo = tipo;
+    state.moneda = tipo === 'nacional' ? 'COP' : 'USD';
+    document.getElementById('btn-nac').classList.toggle('selected', tipo === 'nacional');
+    document.getElementById('btn-int').classList.toggle('selected', tipo === 'internacional');
+    document.getElementById('label-destino').textContent = tipo === 'nacional' ? 'Ciudad destino' : 'Ciudad / País destino';
+    poblarDestinos(tipo);
+    actualizarTRM();
+  }
+
+  function poblarDestinos(tipo) {
+    const sel = document.getElementById('destino');
+    sel.innerHTML = '<option value="">Selecciona destino</option>';
+    if (tipo === 'nacional') {
+      DESTINOS_NACIONALES.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c; o.textContent = c;
+        o.dataset.pais = 'Colombia';
+        sel.appendChild(o);
+      });
+    } else {
+      DESTINOS_INTERNACIONALES.forEach(d => {
+        const o = document.createElement('option');
+        o.value = d.ciudad; o.textContent = d.ciudad;
+        o.dataset.pais = d.pais;
+        o.dataset.moneda = d.moneda;
+        sel.appendChild(o);
+      });
+    }
+  }
+
+  function onDestinoChange() {
+    const sel = document.getElementById('destino');
+    const opt = sel.options[sel.selectedIndex];
+    const monedaAnterior = state.moneda;
+    state.paisDestino = opt ? opt.dataset.pais : null;
+    state.moneda = (opt && opt.dataset.moneda) ? opt.dataset.moneda : 'COP';
+    actualizarTRM();
+    // Auto-cargar tasa si cambia la moneda extranjera
+    if (state.tipo === 'internacional' && state.moneda !== monedaAnterior) {
+      cargarTRM();
+    }
+  }
+
+  function actualizarTRM() {
+    const badge  = document.getElementById('trm-badge');
+    const label  = document.getElementById('trm-label');
+    const inp    = document.getElementById('trm');
+    const btnTrm = document.getElementById('btn-trm');
+    const fuente = document.getElementById('trm-fuente');
+    if (state.tipo === 'nacional') {
+      badge.textContent = 'COP';
+      label.textContent = 'Tiquetes en COP — sin conversión';
+      inp.value = '1';
+      inp.disabled = true;
+      btnTrm.style.display = 'none';
+      fuente.style.display = 'none';
+    } else if (state.moneda === 'EUR') {
+      badge.textContent = 'EUR';
+      label.textContent = 'TRM del día (COP → EUR)';
+      inp.disabled = false;
+      btnTrm.style.display = '';
+      if (!inp.value || inp.value === '1' || inp.value === '4200') inp.value = '4600';
+    } else {
+      badge.textContent = 'USD';
+      label.textContent = 'TRM del día (COP → USD)';
+      inp.disabled = false;
+      btnTrm.style.display = '';
+      if (!inp.value || inp.value === '1' || inp.value === '4600') inp.value = '4200';
+    }
+    calcular();
+  }
+
+  async function cargarTRM() {
+    if (state.tipo === 'nacional') return;
+    const btn = document.getElementById('btn-trm');
+    const fuente = document.getElementById('trm-fuente');
+    btn.classList.add('loading');
+    try {
+      const base = state.moneda === 'EUR' ? 'eur' : 'usd';
+      const r = await fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${base}.json`);
+      const data = await r.json();
+      const tasa = Math.round(data[base]['cop']);
+      document.getElementById('trm').value = tasa;
+      fuente.textContent = `✓ Tasa cargada: 1 ${state.moneda} = ${tasa.toLocaleString('es-CO')} COP · Fuente: Frankfurter/ECB`;
+      fuente.style.display = 'block';
+      calcular();
+    } catch(err) {
+      fuente.textContent = '⚠️ No se pudo cargar la tasa. Ingresa la TRM manualmente.';
+      fuente.style.display = 'block';
+    }
+    btn.classList.remove('loading');
+  }
+
+  // ─── AEROLÍNEA ────────────────────────────────────────────────────────────
+
+  function onAerolineaChange() {
+    const sel = document.getElementById('aerolinea');
+    const opt = sel.options[sel.selectedIndex];
+    const note = document.getElementById('airline-note');
+    if (opt && opt.dataset.nota) {
+      note.textContent = '⚠️ ' + opt.dataset.nota;
+      note.classList.add('show');
+    } else {
+      note.classList.remove('show');
+    }
+  }
+
+  // ─── MISMO DÍA ────────────────────────────────────────────────────────────
+
+  function onMismoDia() {
+    state.mismoDia = document.getElementById('mismo-dia').checked;
+    calcular();
+  }
+
+  // ─── DÍAS ─────────────────────────────────────────────────────────────────
+
+  function setDias(n) {
+    state.dias = n;
+    document.getElementById('d3').classList.toggle('selected', n === 3);
+    document.getElementById('d4').classList.toggle('selected', n === 4);
+    calcular();
+  }
+
+  // ─── GOOGLE FLIGHTS ───────────────────────────────────────────────────────
+
+  function getIATA(city) {
+    const m = city.match(/\(([A-Z]{3})\)/);
+    return m ? m[1] : city.replace(/\(.*\)/, '').trim();
+  }
+
+  function sumarDias(fechaISO, dias) {
+    const d = new Date(fechaISO + 'T12:00:00');
+    d.setDate(d.getDate() + dias);
+    return d.toISOString().split('T')[0];
+  }
+
+  function abrirGoogleFlights(e) {
+    e.preventDefault();
+    const origen  = document.getElementById('origen').value;
+    const destino = document.getElementById('destino').value;
+    const fecha   = document.getElementById('fecha-vuelo').value;
+    if (!origen || !destino) {
+      alert('Selecciona origen y destino primero.');
+      return;
+    }
+    const orig = getIATA(origen);
+    const dest = getIATA(destino);
+
+    let query;
+    if (fecha) {
+      const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const fd = new Date(fecha + 'T12:00:00');
+      const diasExtra = state.tipo === 'nacional' ? (state.mismoDia ? 0 : 1) : 3;
+      query = `flights ${orig} to ${dest} ${months[fd.getMonth()]} ${fd.getDate()} ${fd.getFullYear()}`;
+      if (diasExtra > 0) {
+        const fv = new Date(fecha + 'T12:00:00');
+        fv.setDate(fv.getDate() + diasExtra);
+        query += ` return ${months[fv.getMonth()]} ${fv.getDate()} ${fv.getFullYear()}`;
+      }
+    } else {
+      query = `flights ${orig} to ${dest}`;
+    }
+
+    // google.com/search activa el widget de vuelos pre-cargado con ruta y fecha
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+  }
+
+  // ─── CALCULAR ─────────────────────────────────────────────────────────────
+
+  function calcular() {
+    const trm    = parseFloat(document.getElementById('trm').value) || 1;
+    const tqCOP  = parseFloat(document.getElementById('tiquete-ida').value) || 0;
+    const pais   = state.paisDestino || 'default';
+    const vt     = VIATICOS[pais] || VIATICOS['default'];
+
+    if (state.tipo === 'nacional') {
+      const hospedaje = document.getElementById('requiere-hospedaje')?.checked;
+      state.hospedajeNacional = hospedaje;
+      const noches = hospedaje ? 1 : 0;
+      const dias   = hospedaje ? 2 : 1;
+      // Nacional: todo en COP, viáticos × 1000 (COP)
+      const viaticosNal = (vt.comidas * dias + vt.hospedaje * noches) * 1000;
+      const costo = tqCOP + viaticosNal;
+      state.resultadoCOP = Math.ceil(costo * (1 + MARGEN) / 1000) * 1000;
+      state.resultadoExtranjero = 0;
+    } else {
+      // Internacional: tiquete ingresado en COP (como muestra Google Flights)
+      // → convertir a moneda extranjera, sumar viáticos, aplicar margen
+      const dias   = 4;
+      const noches = 3;
+      const tqForeign    = tqCOP / trm;
+      const viaticosExt  = vt.comidas * dias + vt.hospedaje * noches;
+      const costoForeign = tqForeign + viaticosExt;
+      const precioForeign = costoForeign * (1 + MARGEN);
+      state.resultadoExtranjero = Math.ceil(precioForeign * 100) / 100;
+      state.resultadoCOP = Math.ceil(precioForeign * trm / 1000) * 1000;
+    }
+  }
+
+  // ─── NAVEGACIÓN PASOS ─────────────────────────────────────────────────────
+
+  function irPaso1() {
+    show('paso1'); hide('paso2'); hide('paso3');
+    setDot(1);
+  }
+
+  function irPaso2() {
+    const origen   = document.getElementById('origen').value;
+    const destino  = document.getElementById('destino').value;
+    const aerolinea = document.getElementById('aerolinea').value;
+    const fecha    = document.getElementById('fecha-vuelo').value;
+
+    if (!origen)  return alert('Selecciona la ciudad de origen.');
+    if (!destino) return alert('Selecciona el destino.');
+    if (!fecha)   return alert('Selecciona la fecha del vuelo.');
+
+    const origenCod  = origen.match(/\(([^)]+)\)/)?.[1] || origen;
+    const destinoCod = destino.match(/\(([^)]+)\)/)?.[1] || destino;
+    document.getElementById('gf-ruta-text').textContent = `${origenCod} → ${destinoCod} · ${formatFecha(fecha)}`;
+
+    const isNacional = state.tipo === 'nacional';
+    document.getElementById('wrap-mismo-dia').classList.toggle('section-hidden', !isNacional);
+    document.getElementById('wrap-info-int').classList.toggle('section-hidden', isNacional);
+    document.getElementById('wrap-hospedaje-nacional').classList.toggle('section-hidden', !isNacional);
+
+    // Actualizar label de tiquete según tipo
+    document.getElementById('label-tq-ida').textContent = isNacional
+      ? 'Precio IDA + VUELTA — total Google Flights (COP)'
+      : 'Precio IDA + VUELTA — total Google Flights (COP, como aparece en pantalla)';
+    actualizarTRM();
+    if (state.tipo === 'internacional') cargarTRM();
+
+    hide('paso1'); show('paso2'); hide('paso3');
+    setDot(2);
+    calcular();
+  }
+
+  function irPaso3() {
+    const tqIda = parseFloat(document.getElementById('tiquete-ida').value) || 0;
+    if (tqIda <= 0) return alert('Ingresa el precio del tiquete de ida.');
+
+    calcular();
+
+    const origen    = document.getElementById('origen').value;
+    const destino   = document.getElementById('destino').value;
+    const aerolinea = document.getElementById('aerolinea').value;
+    const fecha     = document.getElementById('fecha-vuelo').value;
+
+    const precioCOP  = state.resultadoCOP;
+    const precioExt  = state.resultadoExtranjero;
+    const moneda     = state.moneda;
+    const trm        = parseFloat(document.getElementById('trm').value) || 1;
+
+    let precioTexto, precioRef, precioWA;
+    if (state.tipo === 'nacional') {
+      precioTexto = '$' + precioCOP.toLocaleString('es-CO') + ' COP';
+      precioRef   = '';
+      precioWA    = `$${precioCOP.toLocaleString('es-CO')} COP`;
+    } else if (moneda === 'EUR') {
+      const extFmt = precioExt.toLocaleString('es-CO', {minimumFractionDigits:0, maximumFractionDigits:2});
+      precioTexto = `€${extFmt}`;
+      precioRef   = `≈ $${precioCOP.toLocaleString('es-CO')} COP`;
+      precioWA    = `€${extFmt} (≈ $${precioCOP.toLocaleString('es-CO')} COP)`;
+    } else {
+      const extFmt = precioExt.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:2});
+      precioTexto = `USD ${extFmt}`;
+      precioRef   = `≈ $${precioCOP.toLocaleString('es-CO')} COP`;
+      precioWA    = `USD ${extFmt} (≈ $${precioCOP.toLocaleString('es-CO')} COP)`;
+    }
+
+    document.getElementById('precio-final').textContent   = precioTexto;
+    document.getElementById('precio-usd-ref').textContent = precioRef;
+    document.getElementById('res-aerolinea').textContent  = aerolinea;
+    document.getElementById('res-ruta').textContent       = `${origen.replace(/\(.*\)/,'').trim()} → ${destino.replace(/\(.*\)/,'').trim()}`;
+    document.getElementById('res-duracion').textContent   =
+      state.tipo === 'nacional'
+        ? (state.mismoDia ? 'Mismo día' : '1-2 días')
+        : '4 días · 3 noches';
+
+    // WhatsApp — sin emojis para evitar caracteres ? al encodear
+    const aerolineaWA = document.getElementById('aerolinea').value || 'Por confirmar';
+    const msg = encodeURIComponent(
+      `*Cotizacion Pet Nanny - SkyPets Colombia*\n\n` +
+      `Ruta: ${origen.replace(/\(.*\)/,'').trim()} - ${destino.replace(/\(.*\)/,'').trim()}\n` +
+      `Fecha: ${formatFecha(fecha)}\n` +
+      `Aerolinea: ${aerolineaWA}\n` +
+      `Precio estimado: ${precioWA}\n` +
+      `_El valor en COP se liquida a la TRM del dia de pago._\n\n` +
+      `_Cotizacion estimada. Sujeta a disponibilidad de tiquetes._\n\n` +
+      `*IMPORTANTE:* Este valor corresponde unicamente al servicio del Pet Nanny. No incluye certificados, examenes ni documentos requeridos para el viaje.\n\n` +
+      `Si tu peludito no se encuentra en Bogota, se adiciona un valor de $500.000 COP para cubrir el desplazamiento del Pet Nanny hasta su ciudad.\n\n` +
+      `Mayor informacion: SkyPets Colombia | +57 321 355 6909`
+    );
+    document.getElementById('btn-whatsapp').href = `https://wa.me/?text=${msg}`;
+
+    hide('paso1'); hide('paso2'); show('paso3');
+    setDot(3);
+  }
+
+  function reiniciar() {
+    document.getElementById('origen').value       = '';
+    document.getElementById('destino').value      = '';
+    document.getElementById('aerolinea').value    = '';
+    document.getElementById('fecha-vuelo').value  = '';
+    document.getElementById('tiquete-ida').value  = '';
+    document.getElementById('trm').value          = '4200';
+    document.getElementById('airline-note').classList.remove('show');
+    state = { tipo: 'nacional', dias: 3, hospedajeNacional: false, mismoDia: true, paisDestino: null, moneda: 'COP', resultadoCOP: 0, resultadoExtranjero: 0 };
+    setTipo('nacional');
+    irPaso1();
+  }
+
+  // ─── HELPERS ─────────────────────────────────────────────────────────────
+
+  function show(id) { document.getElementById(id).classList.remove('section-hidden'); }
+  function hide(id) { document.getElementById(id).classList.add('section-hidden'); }
+  function formatFecha(f) {
+    if (!f) return '';
+    const [y,m,d] = f.split('-');
+    const meses = ['','ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    return `${d} ${meses[parseInt(m)]} ${y}`;
+  }
+  function setDot(n) {
+    [1,2,3].forEach(i => {
+      const d = document.getElementById('dot'+i);
+      d.classList.remove('active','done');
+      if (i < n) d.classList.add('done');
+      else if (i === n) d.classList.add('active');
+    });
+  }
+  // ─── SERVICE WORKER (PWA) ────────────────────────────────────────────────
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('cotizador-sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
