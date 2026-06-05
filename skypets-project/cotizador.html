@@ -600,7 +600,7 @@
     <a class="gf-link" id="gf-link" href="#" target="_blank" onclick="abrirGoogleFlights(event)">
       <span class="gf-icon">✈️</span>
       <div>
-        <div style="font-weight:600">Buscar en Google Flights</div>
+        <div style="font-weight:600" id="gf-titulo">Buscar vuelos</div>
         <div style="font-size:11px;color:var(--muted)" id="gf-ruta-text">Ruta seleccionada</div>
       </div>
       <span style="margin-left:auto;font-size:18px">↗</span>
@@ -952,19 +952,13 @@
     let url;
 
     if (state.tipo === 'nacional') {
-      // Nacional → Google Flights en español con nombres de ciudad colombianos
-      const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-      let q = `vuelos de ${origNombre} a ${destNombre}`;
+      // Nacional → Despegar.com.co con IATA y fechas (deep-link confiable)
       if (fecha) {
-        const fd = new Date(fecha + 'T12:00:00');
-        q += ` ${fd.getDate()} ${meses[fd.getMonth()]} ${fd.getFullYear()}`;
-        if (!state.mismoDia) {
-          const fv = new Date(fecha + 'T12:00:00');
-          fv.setDate(fv.getDate() + 1);
-          q += ` regreso ${fv.getDate()} ${meses[fv.getMonth()]} ${fv.getFullYear()}`;
-        }
+        const fechaVuelta = state.mismoDia ? fecha : sumarDias(fecha, 1);
+        url = `https://www.despegar.com.co/vuelos/colombia/resultados/${orig}/${dest}/${fecha}/${fechaVuelta}/1/0/0/`;
+      } else {
+        url = `https://www.despegar.com.co/vuelos/colombia/resultados/${orig}/${dest}/`;
       }
-      url = `https://www.google.com/travel/flights?hl=es&gl=co&q=${encodeURIComponent(q)}`;
     } else {
       // Internacional → Google Search en inglés con IATA — activa el widget de vuelos
       const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -1034,6 +1028,7 @@
     const origenCod  = origen.match(/\(([^)]+)\)/)?.[1] || origen;
     const destinoCod = destino.match(/\(([^)]+)\)/)?.[1] || destino;
     document.getElementById('gf-ruta-text').textContent = `${origenCod} → ${destinoCod} · ${formatFecha(fecha)}`;
+    document.getElementById('gf-titulo').textContent = isNacional ? 'Buscar en Despegar.com.co' : 'Buscar en Google Flights';
 
     const isNacional = state.tipo === 'nacional';
     document.getElementById('wrap-mismo-dia').classList.toggle('section-hidden', !isNacional);
