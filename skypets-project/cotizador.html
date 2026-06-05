@@ -998,12 +998,16 @@
     let url;
 
     if (state.tipo === 'nacional') {
-      // Nacional → Despegar.com.co con IATA y fechas (deep-link confiable)
+      // Nacional → Skyscanner (funciona en desktop y móvil, URL confiable)
+      const origL = orig.toLowerCase();
+      const destL = dest.toLowerCase();
       if (fecha) {
         const fechaVuelta = state.mismoDia ? fecha : sumarDias(fecha, 1);
-        url = `https://www.despegar.com.co/vuelos/colombia/resultados/${orig}/${dest}/${fecha}/${fechaVuelta}/1/0/0/`;
+        const fIda    = fecha.replace(/-/g, '');
+        const fVuelta = fechaVuelta.replace(/-/g, '');
+        url = `https://www.skyscanner.com.co/vuelos/${origL}/${destL}/${fIda}/${fVuelta}/`;
       } else {
-        url = `https://www.despegar.com.co/vuelos/colombia/resultados/${orig}/${dest}/`;
+        url = `https://www.skyscanner.com.co/vuelos/${origL}/${destL}/`;
       }
     } else {
       // Internacional → Google Search en inglés con IATA — activa el widget de vuelos
@@ -1075,7 +1079,7 @@
     const origenCod  = origen.match(/\(([^)]+)\)/)?.[1] || origen;
     const destinoCod = destino.match(/\(([^)]+)\)/)?.[1] || destino;
     document.getElementById('gf-ruta-text').textContent = `${origenCod} → ${destinoCod} · ${formatFecha(fecha)}`;
-    document.getElementById('gf-titulo').textContent = isNacional ? 'Buscar en Despegar.com.co' : 'Buscar en Google Flights';
+    document.getElementById('gf-titulo').textContent = isNacional ? 'Buscar en Skyscanner' : 'Buscar en Google Flights';
     document.getElementById('wrap-mismo-dia').classList.toggle('section-hidden', !isNacional);
     document.getElementById('wrap-info-int').classList.toggle('section-hidden', isNacional);
     document.getElementById('wrap-hospedaje-nacional').classList.toggle('section-hidden', !isNacional);
