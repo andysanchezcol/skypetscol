@@ -148,7 +148,7 @@
       border: 2px solid var(--ink);
       border-radius: 10px;
       font-family: 'Poppins', sans-serif;
-      font-size: 14px;
+      font-size: 16px; /* mínimo 16px para evitar zoom automático en iOS */
       color: var(--ink);
       background: var(--bg1);
       appearance: none;
@@ -475,6 +475,43 @@
       margin-bottom: 14px;
     }
 
+    /* Date input */
+    .date-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .date-wrap input[type="date"] {
+      width: 100%;
+      padding: 14px 14px 14px 44px;
+      margin-bottom: 0;
+      min-height: 52px;
+      font-size: 16px; /* evita zoom en iOS */
+    }
+
+    .date-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .date-hint {
+      position: absolute;
+      left: 44px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: var(--muted);
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .date-hint.hidden { display: none; }
+
     /* Section hidden */
     .section-hidden { display: none; }
 
@@ -586,7 +623,11 @@
     </div>
 
     <label>Fecha del vuelo</label>
-    <input type="date" id="fecha-vuelo" min="">
+    <div class="date-wrap">
+      <span class="date-icon">📅</span>
+      <input type="date" id="fecha-vuelo" min="">
+      <span class="date-hint" id="fecha-hint">Toca para seleccionar fecha</span>
+    </div>
 
     <button class="btn btn-orange" onclick="irPaso2()">Siguiente →</button>
   </div>
@@ -792,7 +833,12 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     const hoy = new Date().toISOString().split('T')[0];
-    document.getElementById('fecha-vuelo').min = hoy;
+    const fechaInput = document.getElementById('fecha-vuelo');
+    fechaInput.min = hoy;
+    fechaInput.addEventListener('change', () => {
+      const hint = document.getElementById('fecha-hint');
+      hint.classList.toggle('hidden', !!fechaInput.value);
+    });
     poblarDestinos('nacional');
   });
 
