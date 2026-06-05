@@ -1071,12 +1071,11 @@
     if (!destino) return alert('Selecciona el destino.');
     if (!fecha)   return alert('Selecciona la fecha del vuelo.');
 
+    const isNacional = state.tipo === 'nacional';
     const origenCod  = origen.match(/\(([^)]+)\)/)?.[1] || origen;
     const destinoCod = destino.match(/\(([^)]+)\)/)?.[1] || destino;
     document.getElementById('gf-ruta-text').textContent = `${origenCod} → ${destinoCod} · ${formatFecha(fecha)}`;
     document.getElementById('gf-titulo').textContent = isNacional ? 'Buscar en Despegar.com.co' : 'Buscar en Google Flights';
-
-    const isNacional = state.tipo === 'nacional';
     document.getElementById('wrap-mismo-dia').classList.toggle('section-hidden', !isNacional);
     document.getElementById('wrap-info-int').classList.toggle('section-hidden', isNacional);
     document.getElementById('wrap-hospedaje-nacional').classList.toggle('section-hidden', !isNacional);
