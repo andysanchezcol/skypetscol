@@ -947,23 +947,39 @@
     const orig = getIATA(origen);
     const dest = getIATA(destino);
 
-    let query;
-    if (fecha) {
-      const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-      const fd = new Date(fecha + 'T12:00:00');
-      const diasExtra = state.tipo === 'nacional' ? (state.mismoDia ? 0 : 1) : 3;
-      query = `flights ${orig} to ${dest} ${months[fd.getMonth()]} ${fd.getDate()} ${fd.getFullYear()}`;
-      if (diasExtra > 0) {
-        const fv = new Date(fecha + 'T12:00:00');
-        fv.setDate(fv.getDate() + diasExtra);
-        query += ` return ${months[fv.getMonth()]} ${fv.getDate()} ${fv.getFullYear()}`;
+    const origNombre = origen.replace(/\([^)]+\)/, '').trim();
+    const destNombre = destino.replace(/\([^)]+\)/, '').trim();
+    let url;
+
+    if (state.tipo === 'nacional') {
+      // Nacional → Google Flights en español con nombres de ciudad colombianos
+      const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      let q = `vuelos de ${origNombre} a ${destNombre}`;
+      if (fecha) {
+        const fd = new Date(fecha + 'T12:00:00');
+        q += ` ${fd.getDate()} ${meses[fd.getMonth()]} ${fd.getFullYear()}`;
+        if (!state.mismoDia) {
+          const fv = new Date(fecha + 'T12:00:00');
+          fv.setDate(fv.getDate() + 1);
+          q += ` regreso ${fv.getDate()} ${meses[fv.getMonth()]} ${fv.getFullYear()}`;
+        }
       }
+      url = `https://www.google.com/travel/flights?hl=es&gl=co&q=${encodeURIComponent(q)}`;
     } else {
-      query = `flights ${orig} to ${dest}`;
+      // Internacional → Google Search en inglés con IATA — activa el widget de vuelos
+      const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      let q = `flights ${orig} to ${dest}`;
+      if (fecha) {
+        const fd = new Date(fecha + 'T12:00:00');
+        q += ` ${months[fd.getMonth()]} ${fd.getDate()} ${fd.getFullYear()}`;
+        const fv = new Date(fecha + 'T12:00:00');
+        fv.setDate(fv.getDate() + 3);
+        q += ` return ${months[fv.getMonth()]} ${fv.getDate()} ${fv.getFullYear()}`;
+      }
+      url = `https://www.google.com/search?q=${encodeURIComponent(q)}`;
     }
 
-    // google.com/search activa el widget de vuelos pre-cargado con ruta y fecha
-    window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+    window.open(url, '_blank');
   }
 
   // ─── CALCULAR ─────────────────────────────────────────────────────────────
