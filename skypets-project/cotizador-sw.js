@@ -1,7 +1,7 @@
 const CACHE = 'skypets-cotizador-v1';
 const ASSETS = [
-  '/skypetscol/cotizador.html',
-  '/skypetscol/assets/images/Logo_SkyPets.webp'
+  '/skypetscol/skypets-project/cotizador.html',
+  '/skypetscol/skypets-project/assets/images/Logo_SkyPets.webp'
 ];
 
 self.addEventListener('install', e => {
