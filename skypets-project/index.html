@@ -1680,7 +1680,7 @@ footer {
       <!-- CARD 1 -->
       <div class="pw-card" data-index="0">
         <div class="pw-img-wrap">
-          <video src="/assets/images/cliente-marina.mp4" muted loop playsinline preload="none"></video>
+          <video src="/assets/images/cliente-marina.mp4" autoplay muted loop playsinline preload="auto"></video>
           <div class="pw-badge">Cabina ✈️</div>
           <div class="pw-info">
             <span class="pw-name">Marina, Molly & Macarena</span>
@@ -1692,7 +1692,7 @@ footer {
       <!-- CARD 2 -->
       <div class="pw-card" data-index="1">
         <div class="pw-img-wrap">
-          <video src="/assets/images/cliente-venus.mp4" muted loop playsinline preload="none"></video>
+          <video src="/assets/images/cliente-venus.mp4" autoplay muted loop playsinline preload="auto"></video>
           <div class="pw-badge">Cabina ✈️</div>
           <div class="pw-info">
             <span class="pw-name">Venus & Pulgas</span>
@@ -1704,7 +1704,7 @@ footer {
       <!-- CARD 3 -->
       <div class="pw-card" data-index="2">
         <div class="pw-img-wrap">
-          <video src="/assets/images/cliente-oro.mp4" muted loop playsinline preload="none"></video>
+          <video src="/assets/images/cliente-oro.mp4" autoplay muted loop playsinline preload="auto"></video>
           <div class="pw-badge">Cabina ✈️</div>
           <div class="pw-info">
             <span class="pw-name">Oro & Jose</span>
@@ -1728,7 +1728,7 @@ footer {
       <!-- CARD 5 -->
       <div class="pw-card" data-index="4">
         <div class="pw-img-wrap">
-          <video src="/assets/images/cliente-ghost.mp4" muted loop playsinline preload="none"></video>
+          <video src="/assets/images/cliente-ghost.mp4" autoplay muted loop playsinline preload="auto"></video>
           <div class="pw-badge">Cabina ✈️</div>
           <div class="pw-info">
             <span class="pw-name">Ghost</span>
@@ -2268,6 +2268,9 @@ function closeMob() {
   // Init
   goTo(0);
   resetAuto();
+  // Asegurar que el primer video empiece
+  const firstVid = cards[0] && cards[0].querySelector('video');
+  if (firstVid) firstVid.play().catch(()=>{});
 
   // Play/pause videos based on viewport visibility
   const videoObs = new IntersectionObserver(entries => {
