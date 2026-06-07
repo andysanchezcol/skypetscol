@@ -639,11 +639,14 @@ img { display: block; max-width: 100%; }
 }
 .photowall-header .section-desc { max-width: 520px; margin: 0 auto; }
 
-/* Stage */
+/* Stage — 3D Coverflow */
 .pw-stage {
   position: relative;
   width: 100%;
-  overflow: hidden;
+  height: clamp(440px, 58vw, 550px);
+  perspective: 1500px;
+  perspective-origin: 50% 44%;
+  overflow: visible;
   cursor: grab;
   user-select: none;
   z-index: 1;
@@ -652,28 +655,29 @@ img { display: block; max-width: 100%; }
 
 /* Track */
 .pw-track {
-  display: flex;
-  gap: 20px;
-  padding: 24px clamp(24px,6vw,72px) 32px;
-  will-change: transform;
-  transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
 }
-.pw-track.is-dragging { transition: none; }
 
-/* Card — Luxury Liquid Glass */
+/* Card — 3D Coverflow */
 .pw-card {
-  flex-shrink: 0;
-  width: clamp(260px, 28vw, 310px);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(235px, 23vw, 280px);
   border-radius: 28px;
   overflow: hidden;
-  position: relative;
   border: 1px solid rgba(255,255,255,0.55);
   box-shadow:
     0 8px 32px rgba(43,36,24,0.10),
     0 2px 8px rgba(43,36,24,0.05),
     inset 0 1px 0 rgba(255,255,255,0.75);
-  transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease, opacity 0.4s ease;
+  transition: transform 0.65s cubic-bezier(0.34,1.15,0.64,1), opacity 0.55s ease, box-shadow 0.5s;
   cursor: pointer;
+  will-change: transform, opacity;
+  transform-origin: center center;
 }
 /* Glow halo behind each card */
 .pw-card::before {
@@ -707,11 +711,19 @@ img { display: block; max-width: 100%; }
   opacity: 0;
   transition: opacity 0.4s ease;
 }
-.pw-card:hover { transform: translateY(-10px) scale(1.025); }
 .pw-card:hover::before { opacity: 1; }
 .pw-card:hover::after  { opacity: 1; }
 .pw-card:hover .pw-img-wrap video,
 .pw-card:hover .pw-img-wrap img { transform: scale(1.04); }
+/* Card activa (centro) */
+.pw-card.pw-active {
+  box-shadow:
+    0 24px 60px rgba(43,36,24,0.18),
+    0 4px 14px rgba(43,36,24,0.09),
+    0 0 0 1.5px rgba(255,118,0,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+}
+.pw-card.pw-active::before { opacity: 1; }
 
 /* Image/video area — full bleed */
 .pw-img-wrap {
@@ -876,7 +888,8 @@ img { display: block; max-width: 100%; }
 }
 
 @media(max-width:768px) {
-  .pw-card { width: clamp(230px,74vw,285px); }
+  .pw-stage { height: clamp(380px, 82vw, 470px); }
+  .pw-card { width: clamp(200px, 68vw, 250px); }
   .pw-arrow { display: none; }
   .pw-fade { width: 48px; }
   .photowall-section::before { width: 300px; height: 300px; }
@@ -2182,91 +2195,128 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 
-/* ── PHOTO WALL CAROUSEL ── */
+/* ── PHOTO WALL — 3D Coverflow Infinito ── */
 (function(){
-  const track   = document.getElementById('pwTrack');
-  const dotsEl  = document.getElementById('pwDots');
+  const stage  = document.querySelector('.pw-stage');
+  const track  = document.getElementById('pwTrack');
+  const dotsEl = document.getElementById('pwDots');
   const btnPrev = document.getElementById('pwPrev');
   const btnNext = document.getElementById('pwNext');
-  if (!track) return;
+  if (!track || !stage) return;
 
-  const cards   = track.querySelectorAll('.pw-card');
-  const total   = cards.length;
-  let current   = 0;
+  const cards = Array.from(track.querySelectorAll('.pw-card'));
+  const total = cards.length;
+  let current = 0;
   let autoTimer;
 
-  // Build dots
+  /* Dots */
   cards.forEach((_, i) => {
     const d = document.createElement('button');
     d.className = 'pw-dot' + (i === 0 ? ' active' : '');
     d.setAttribute('aria-label', 'Ir a foto ' + (i+1));
-    d.addEventListener('click', () => goTo(i));
+    d.addEventListener('click', () => { goTo(i); resetAuto(); });
     dotsEl.appendChild(d);
   });
 
-  function getOffset(idx) {
-    const card     = cards[idx];
-    const stage    = track.parentElement;
-    const stageW   = stage.offsetWidth;
-    const cardW    = card.offsetWidth;
-    const cardLeft = card.offsetLeft;
-    return -(cardLeft - (stageW / 2) + (cardW / 2));
+  /* Offset normalizado al rango [-floor(N/2), ceil(N/2)] para loop infinito */
+  function normOff(idx) {
+    let off = ((idx - current) % total + total) % total;
+    if (off > Math.floor(total / 2)) off -= total;
+    return off;
   }
 
-  function goTo(idx) {
-    current = (idx + total) % total;
-    track.style.transform = `translateX(${getOffset(current)}px)`;
+  /* Aplica posiciones 3D a todas las cards */
+  function applyLayout() {
+    const cw  = cards[0].offsetWidth || 260;
+    const gap = cw * 1.02; /* espacio entre centros de cards */
+
+    cards.forEach((card, i) => {
+      const off    = normOff(i);
+      const absOff = Math.abs(off);
+
+      const xPx    = off * gap;
+      const ry     = -(off * 52);          /* rotación Y: cards laterales miran al centro */
+      const tz     = -(absOff * 70);       /* Z: cards laterales retroceden */
+      const scale  = Math.max(0.58, 1 - absOff * 0.13);
+      const opacity = absOff >= 3 ? 0 : Math.max(0.28, 1 - absOff * 0.28);
+      const zi     = 10 - absOff * 2;
+
+      card.style.transform = `translateX(calc(-50% + ${xPx}px)) translateY(-50%) rotateY(${ry}deg) translateZ(${tz}px) scale(${scale})`;
+      card.style.opacity   = opacity;
+      card.style.zIndex    = zi;
+
+      /* Video: solo reproduce el central */
+      const vid = card.querySelector('video');
+      if (off === 0) {
+        card.classList.add('pw-active');
+        if (vid) vid.play().catch(() => {});
+      } else {
+        card.classList.remove('pw-active');
+        if (vid) vid.pause();
+      }
+    });
+
+    /* Dots */
     dotsEl.querySelectorAll('.pw-dot').forEach((d, i) =>
       d.classList.toggle('active', i === current)
     );
-    // card scale + video play effect
-    cards.forEach((c, i) => {
-      c.style.transform = i === current ? 'scale(1.04)' : 'scale(0.97)';
-      c.style.opacity   = i === current ? '1' : '0.68';
-      const vid = c.querySelector('video');
-      if (vid) { if (i === current) vid.play().catch(()=>{}); else vid.pause(); }
-    });
+  }
+
+  function goTo(idx) {
+    current = ((idx % total) + total) % total;
+    applyLayout();
   }
 
   function next() { goTo(current + 1); }
   function prev() { goTo(current - 1); }
 
-  btnNext.addEventListener('click', () => { next(); resetAuto(); });
-  btnPrev.addEventListener('click', () => { prev(); resetAuto(); });
+  btnNext && btnNext.addEventListener('click', () => { next(); resetAuto(); });
+  btnPrev && btnPrev.addEventListener('click', () => { prev(); resetAuto(); });
 
   function resetAuto() {
     clearInterval(autoTimer);
-    autoTimer = setInterval(next, 3800);
+    autoTimer = setInterval(next, 4200);
   }
 
-  // Drag / swipe
+  /* Swipe / drag */
   let dragStart = null, dragDelta = 0;
-  track.addEventListener('mousedown',  e => { dragStart = e.clientX; track.classList.add('is-dragging'); });
-  track.addEventListener('mousemove',  e => { if(dragStart===null) return; dragDelta = e.clientX - dragStart; track.style.transform = `translateX(${getOffset(current)+dragDelta}px)`; });
-  track.addEventListener('mouseup',    e => { if(dragStart===null) return; if(dragDelta < -60) next(); else if(dragDelta > 60) prev(); else goTo(current); dragStart=null; dragDelta=0; track.classList.remove('is-dragging'); resetAuto(); });
-  track.addEventListener('mouseleave', () => { if(dragStart!==null){ goTo(current); dragStart=null; dragDelta=0; track.classList.remove('is-dragging'); } });
+  const THRESHOLD = 52;
 
-  track.addEventListener('touchstart', e => { dragStart = e.touches[0].clientX; }, {passive:true});
-  track.addEventListener('touchmove',  e => { if(dragStart===null) return; dragDelta = e.touches[0].clientX - dragStart; track.style.transform = `translateX(${getOffset(current)+dragDelta}px)`; }, {passive:true});
-  track.addEventListener('touchend',   () => { if(dragDelta < -50) next(); else if(dragDelta > 50) prev(); else goTo(current); dragStart=null; dragDelta=0; resetAuto(); });
+  stage.addEventListener('mousedown',  e => { dragStart = e.clientX; stage.style.cursor = 'grabbing'; });
+  stage.addEventListener('mousemove',  e => { if (dragStart !== null) dragDelta = e.clientX - dragStart; });
+  stage.addEventListener('mouseup',    () => {
+    if (dragStart === null) return;
+    if (dragDelta < -THRESHOLD) next(); else if (dragDelta > THRESHOLD) prev();
+    dragStart = null; dragDelta = 0; stage.style.cursor = 'grab'; resetAuto();
+  });
+  stage.addEventListener('mouseleave', () => { dragStart = null; dragDelta = 0; stage.style.cursor = 'grab'; });
 
-  // Init
+  stage.addEventListener('touchstart', e => { dragStart = e.touches[0].clientX; }, { passive: true });
+  stage.addEventListener('touchmove',  e => { if (dragStart !== null) dragDelta = e.touches[0].clientX - dragStart; }, { passive: true });
+  stage.addEventListener('touchend',   () => {
+    if (dragDelta < -THRESHOLD) next(); else if (dragDelta > THRESHOLD) prev();
+    dragStart = null; dragDelta = 0; resetAuto();
+  });
+
+  /* Pausa cuando la sección no está en vista */
+  const secObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        resetAuto();
+        const vid = cards[current] && cards[current].querySelector('video');
+        if (vid) vid.play().catch(() => {});
+      } else {
+        clearInterval(autoTimer);
+        cards.forEach(c => { const v = c.querySelector('video'); if (v) v.pause(); });
+      }
+    });
+  }, { threshold: 0.25 });
+  const section = stage.closest('.photowall-section') || stage;
+  secObs.observe(section);
+
+  /* Init */
   goTo(0);
   resetAuto();
-  // Asegurar que el primer video empiece
-  const firstVid = cards[0] && cards[0].querySelector('video');
-  if (firstVid) firstVid.play().catch(()=>{});
-
-  // Play/pause videos based on viewport visibility
-  const videoObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      const vid = e.target.querySelector('video');
-      if (!vid) return;
-      if (e.isIntersecting) { vid.play().catch(()=>{}); }
-      else { vid.pause(); }
-    });
-  }, { threshold: 0.4 });
-  cards.forEach(c => videoObs.observe(c));
 })();
 
 /* ── HERO SLIDER ── */
