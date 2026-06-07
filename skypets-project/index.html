@@ -921,126 +921,144 @@ img { display: block; max-width: 100%; }
 /* ══════════════════════════════════════════
    SERVICES
 ══════════════════════════════════════════ */
-/* Services section — rich ambient background */
+/* ══ SERVICES — Dark premium section ══ */
 .services-section {
-  background: #FFFAEC;
+  background: linear-gradient(160deg, #021f1d 0%, #011a17 50%, #0a1f18 100%);
   position: relative;
   overflow: hidden;
 }
+/* Ambient orbs */
 .services-section::before {
   content: '';
   position: absolute;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(0,141,131,0.09) 0%, transparent 70%);
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(0,141,131,0.18) 0%, transparent 65%);
   border-radius: 50%; filter: blur(80px);
-  top: -100px; left: -200px; pointer-events: none;
+  top: -150px; left: -200px; pointer-events: none; z-index: 0;
 }
 .services-section::after {
   content: '';
   position: absolute;
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(255,118,0,0.08) 0%, transparent 70%);
+  width: 550px; height: 550px;
+  background: radial-gradient(circle, rgba(255,118,0,0.12) 0%, transparent 65%);
   border-radius: 50%; filter: blur(80px);
-  bottom: -80px; right: -100px; pointer-events: none;
+  bottom: -100px; right: -100px; pointer-events: none; z-index: 0;
+}
+/* Noise texture overlay */
+.services-section .section-inner::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: 0.4;
 }
 
 .services-top {
   display: flex; align-items: flex-end; justify-content: space-between;
-  gap: 24px; margin-bottom: 48px; flex-wrap: wrap;
+  gap: 24px; margin-bottom: 52px; flex-wrap: wrap;
   position: relative; z-index: 1;
 }
 .services-top-left { max-width: 520px; }
+/* Override text colors for dark section */
+.services-section .section-eyebrow { color: rgba(0,210,196,0.85); }
+.services-section .section-eyebrow-line { background: rgba(0,210,196,0.7); }
+.services-section .section-title { color: #fff; }
+.services-section .section-desc { color: rgba(255,255,255,0.6); }
 
 /* Bento grid */
 .services-grid {
   display: grid;
   grid-template-columns: 1.1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 20px;
+  grid-template-rows: auto auto;
+  gap: 16px;
   position: relative; z-index: 1;
 }
 
-/* Base card — Liquid Glass */
+/* Base card — dark glass */
 .svc-card {
-  background: rgba(255,255,255,0.62);
-  backdrop-filter: blur(20px) saturate(1.5);
-  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  background: rgba(255,255,255,0.055);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
   border-radius: 24px;
   padding: 32px 28px;
-  box-shadow:
-    0 4px 24px rgba(43,36,24,0.07),
-    0 1px 4px rgba(43,36,24,0.04),
-    inset 0 1px 0 rgba(255,255,255,0.85);
-  border: 1px solid rgba(255,255,255,0.75);
-  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease;
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+  transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease, border-color 0.3s;
   position: relative; overflow: hidden;
 }
-/* Accent top line per card */
+.svc-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255,255,255,0.18);
+  box-shadow: 0 24px 56px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+/* Colored accent top border per card */
 .svc-card::before {
   content: '';
   position: absolute;
-  top: 0; left: 24px; right: 24px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(0,141,131,0.35), transparent);
-  border-radius: 0 0 2px 2px;
-  transition: opacity 0.3s;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(0,141,131,0.6) 50%, transparent 100%);
+  border-radius: 24px 24px 0 0;
 }
-.svc-card:hover {
-  transform: translateY(-7px);
-  box-shadow:
-    0 20px 52px rgba(43,36,24,0.10),
-    0 4px 12px rgba(43,36,24,0.05),
-    inset 0 1px 0 rgba(255,255,255,0.9);
+.svc-card:hover::before { background: linear-gradient(90deg, transparent 0%, rgba(0,210,196,0.9) 50%, transparent 100%); }
+
+/* Decorative large number */
+.svc-num {
+  position: absolute; top: 20px; right: 24px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 5.5rem; font-weight: 700; line-height: 1;
+  color: rgba(255,255,255,0.04);
+  pointer-events: none; user-select: none;
+  letter-spacing: -4px;
 }
-.svc-card:hover::before { opacity: 1.5; }
 
 /* Featured card — teal premium, spans both rows */
 .svc-featured {
   grid-column: 1; grid-row: 1 / 3;
-  background: linear-gradient(160deg, #00a89e 0%, #008D83 45%, #006b63 100%);
+  background: linear-gradient(155deg,
+    rgba(0,168,158,0.22) 0%,
+    rgba(0,141,131,0.14) 50%,
+    rgba(0,90,84,0.20) 100%);
+  border-color: rgba(0,210,196,0.22);
   display: flex; flex-direction: column; justify-content: flex-end;
-  padding: 40px 36px; min-height: 420px;
-  border: 1px solid rgba(255,255,255,0.2);
-  box-shadow:
-    0 8px 40px rgba(0,141,131,0.30),
-    0 2px 8px rgba(0,141,131,0.15),
-    inset 0 1px 0 rgba(255,255,255,0.25);
+  padding: 40px 36px; min-height: 440px;
 }
-/* Shimmer sweep on featured */
+.svc-featured::before {
+  background: linear-gradient(90deg, rgba(0,210,196,0) 0%, rgba(0,210,196,0.7) 50%, rgba(0,210,196,0) 100%);
+}
+.svc-featured:hover {
+  border-color: rgba(0,210,196,0.45);
+  box-shadow: 0 28px 64px rgba(0,0,0,0.40), 0 0 0 1px rgba(0,210,196,0.15), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+/* Shimmer sweep */
 .svc-featured::after {
   content: '';
   position: absolute;
   top: -80%; left: -60%;
-  width: 50%; height: 260%;
-  background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.10) 50%, transparent 80%);
-  animation: svc-shimmer 4s ease-in-out infinite;
+  width: 45%; height: 260%;
+  background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.07) 50%, transparent 80%);
+  animation: svc-shimmer 5s ease-in-out infinite;
   pointer-events: none;
 }
 @keyframes svc-shimmer {
   0%   { transform: translateX(-100%) skewX(-15deg); }
-  60%  { transform: translateX(400%) skewX(-15deg); }
-  100% { transform: translateX(400%) skewX(-15deg); }
+  55%  { transform: translateX(420%) skewX(-15deg); }
+  100% { transform: translateX(420%) skewX(-15deg); }
 }
-.svc-featured::before {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
-}
-.svc-featured:hover {
-  transform: translateY(-7px);
-  box-shadow:
-    0 28px 64px rgba(0,141,131,0.38),
-    0 8px 24px rgba(0,141,131,0.20),
-    inset 0 1px 0 rgba(255,255,255,0.3);
+.svc-featured .svc-num {
+  font-size: 9rem;
+  color: rgba(0,210,196,0.08);
+  right: 20px; top: 16px;
 }
 
-/* Wide card — spans 2 cols */
+/* Wide card */
 .svc-wide {
   grid-column: 2 / 4;
-  background: linear-gradient(135deg,
-    rgba(255,245,232,0.85) 0%,
-    rgba(255,235,200,0.75) 100%);
 }
 .svc-wide::before {
-  background: linear-gradient(90deg, transparent, rgba(255,118,0,0.25), transparent);
+  background: linear-gradient(90deg, rgba(255,188,0,0) 0%, rgba(255,188,0,0.55) 50%, rgba(255,188,0,0) 100%);
+}
+.svc-wide:hover::before {
+  background: linear-gradient(90deg, rgba(255,188,0,0) 0%, rgba(255,220,0,0.85) 50%, rgba(255,188,0,0) 100%);
 }
 
 /* Background emoji deco */
@@ -1048,54 +1066,52 @@ img { display: block; max-width: 100%; }
   position: absolute; top: -10px; right: -10px;
   font-size: 8rem; opacity: 0.06; pointer-events: none; user-select: none;
   line-height: 1;
-  transition: opacity 0.3s, transform 0.3s;
+  transition: opacity 0.35s, transform 0.35s;
 }
-.svc-card:hover .svc-bg-emoji { opacity: 0.10; transform: scale(1.08) rotate(6deg); }
+.svc-card:hover .svc-bg-emoji { opacity: 0.11; transform: scale(1.1) rotate(8deg); }
 
-/* Icon wrap — larger, glowing */
+/* Icon wrap */
 .svc-icon-wrap {
-  width: 60px; height: 60px; border-radius: 18px;
+  width: 58px; height: 58px; border-radius: 16px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.6rem; margin-bottom: 22px;
+  font-size: 1.55rem; margin-bottom: 22px;
   flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(43,36,24,0.08);
-  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+  border: 1px solid rgba(255,255,255,0.12);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
 }
-.svc-card:hover .svc-icon-wrap { transform: scale(1.12) rotate(-4deg); box-shadow: 0 8px 24px rgba(43,36,24,0.12); }
+.svc-card:hover .svc-icon-wrap { transform: scale(1.1) rotate(-5deg); }
 
+/* Typography — all white on dark */
 .svc-card h3 {
-  font-family: 'Fredoka', sans-serif; font-size: 1.22rem; font-weight: 600;
-  color: #2B2418; margin-bottom: 10px; line-height: 1.25;
+  font-family: 'Fredoka', sans-serif; font-size: 1.2rem; font-weight: 600;
+  color: rgba(255,255,255,0.92); margin-bottom: 10px; line-height: 1.25;
 }
-.svc-featured h3 { color: #fff; font-size: 1.4rem; }
-.svc-card p { font-size: 0.875rem; color: #6B5540; line-height: 1.75; font-weight: 300; margin-top: 6px; }
-.svc-featured p { color: rgba(255,255,255,0.78); }
+.svc-featured h3 { color: #fff; font-size: 1.45rem; }
+.svc-card p { font-size: 0.875rem; color: rgba(255,255,255,0.52); line-height: 1.75; font-weight: 300; margin-top: 6px; }
+.svc-featured p { color: rgba(255,255,255,0.65); }
 
 /* Badges */
 .svc-badge-glass {
   display: inline-flex; align-items: center;
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.30);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: #fff; border-radius: 100px;
-  padding: 5px 16px; font-size: 0.75rem; font-weight: 700;
+  background: rgba(0,210,196,0.15);
+  border: 1px solid rgba(0,210,196,0.35);
+  color: rgba(0,220,205,0.95); border-radius: 100px;
+  padding: 5px 16px; font-size: 0.73rem; font-weight: 700;
   margin-bottom: 20px; width: fit-content;
-  letter-spacing: 0.3px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  letter-spacing: 0.5px; text-transform: uppercase;
 }
 .svc-badge-soft {
   display: inline-flex; align-items: center;
-  background: rgba(0,141,131,0.09);
-  border: 1px solid rgba(0,141,131,0.18);
-  color: #007a72; border-radius: 100px;
-  padding: 5px 16px; font-size: 0.75rem; font-weight: 700;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.60); border-radius: 100px;
+  padding: 5px 16px; font-size: 0.73rem; font-weight: 600;
   margin-top: 18px; width: fit-content;
   letter-spacing: 0.3px;
 }
 .svc-cta-row {
   margin-top: 28px; padding-top: 20px;
-  border-top: 1px solid rgba(255,255,255,0.18);
+  border-top: 1px solid rgba(255,255,255,0.10);
 }
 
 /* ══════════════════════════════════════════
@@ -1890,7 +1906,7 @@ footer {
         </p>
       </div>
       <a href="https://wa.me/573213556909?text=Hola%20SkyPets%2C%20quiero%20información%20sobre%20sus%20servicios"
-         class="btn btn-teal" style="flex-shrink:0;align-self:flex-start">
+         class="btn btn-teal" style="flex-shrink:0;align-self:flex-start;background:rgba(0,210,196,0.15);border:1px solid rgba(0,210,196,0.35);color:rgba(0,220,205,0.95);backdrop-filter:blur(8px)">
         Ver todos los servicios →
       </a>
     </div>
@@ -1899,9 +1915,10 @@ footer {
       <!-- Featured: Vuelo en cabina -->
       <div class="svc-card svc-featured reveal-l">
         <div class="svc-bg-emoji" aria-hidden="true">✈️</div>
+        <span class="svc-num" aria-hidden="true">01</span>
         <div>
-          <div class="svc-badge-glass">Más popular</div>
-          <div class="svc-icon-wrap" style="background:rgba(255,255,255,0.15)">✈️</div>
+          <div class="svc-badge-glass">✦ Más popular</div>
+          <div class="svc-icon-wrap" style="background:rgba(0,210,196,0.15)">✈️</div>
           <h3>Vuelo en cabina</h3>
           <p>Tu peludito viaja contigo, no en bodega. Gestionamos todo con la aerolínea: requisitos, documentos y preparación completa para el gran día.</p>
           <div class="svc-cta-row">
@@ -1916,32 +1933,35 @@ footer {
       <!-- Vet & ESA -->
       <div class="svc-card reveal d1">
         <div class="svc-bg-emoji" aria-hidden="true">🩺</div>
-        <div class="svc-icon-wrap" style="background:#e0f5f3">🩺</div>
+        <span class="svc-num" aria-hidden="true">02</span>
+        <div class="svc-icon-wrap" style="background:rgba(0,141,131,0.18)">🩺</div>
         <h3>Veterinaria &amp; ESA</h3>
         <p>Chequeos, certificado de apoyo emocional y todos los documentos al día para cualquier destino internacional.</p>
-        <div class="svc-badge-soft">Incluido</div>
+        <div class="svc-badge-soft">✓ Incluido</div>
       </div>
 
       <!-- Microchip -->
       <div class="svc-card reveal d2">
         <div class="svc-bg-emoji" aria-hidden="true">🧬</div>
-        <div class="svc-icon-wrap" style="background:#fff3cc">🧬</div>
+        <span class="svc-num" aria-hidden="true">03</span>
+        <div class="svc-icon-wrap" style="background:rgba(255,188,0,0.15)">🧬</div>
         <h3>Microchip &amp; Serología</h3>
         <p>Implantación ISO y prueba de anticuerpos contra rabia. Imprescindible para Europa, Estados Unidos y algunos países de Latinoamérica.</p>
         <div class="svc-badge-soft">Pregúntanos</div>
       </div>
 
       <!-- Docs — wide -->
-      <div class="svc-card svc-wide reveal d1" style="background:linear-gradient(135deg,#fff8f0,#fff3e3)">
+      <div class="svc-card svc-wide reveal d1">
         <div class="svc-bg-emoji" aria-hidden="true">📋</div>
+        <span class="svc-num" aria-hidden="true">04</span>
         <div style="display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center">
-          <div class="svc-icon-wrap" style="background:#e8f5e2;margin-bottom:0">📋</div>
+          <div class="svc-icon-wrap" style="background:rgba(255,118,0,0.15);margin-bottom:0">📋</div>
           <div>
             <h3>Documentación completa</h3>
             <p>Certificados sanitarios, permisos de ingreso y normativa de aerolíneas. Todo listo sin contratiempos.</p>
           </div>
         </div>
-        <div class="svc-badge-soft" style="margin-top:20px">Incluido en todos los planes</div>
+        <div class="svc-badge-soft" style="margin-top:20px">✓ Incluido en todos los planes</div>
       </div>
     </div>
   </div>
