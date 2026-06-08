@@ -34,6 +34,16 @@
   to   = "/blog/index.html"
   status = 200
 
+[[redirects]]
+  from = "/blog/como-preparar-a-tu-perro-para-volar-sin-estres"
+  to   = "/blog/como-preparar-a-tu-perro-para-volar-sin-estres.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog/como-preparar-a-tu-mascota-antes-de-viajar"
+  to   = "/blog/como-preparar-a-tu-mascota-antes-de-viajar.html"
+  status = 200
+
 # Headers de seguridad
 [[headers]]
   for = "/*"
@@ -41,9 +51,28 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
-# Cache de assets estáticos
+# Cache de assets estáticos — 1 año (immutable)
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache para sitemap y robots — 1 día
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Type = "application/xml; charset=utf-8"
+
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/llms.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Type = "text/plain; charset=utf-8"
