@@ -33,7 +33,7 @@
 <link rel="icon" type="image/webp" href="/assets/images/Logo_SkyPets.webp">
 <link rel="apple-touch-icon" href="/assets/images/Logo_SkyPets.webp">
 
-<!-- LCP: preload imagen hero crítica -->
+<!-- LCP: preload imagen hero — el browser inicia descarga al parsear <head> -->
 <link rel="preload" as="image" href="/assets/images/hero-slide-1.webp" fetchpriority="high">
 
 <!-- Google Fonts — carga asíncrona (no render-blocking) -->
@@ -241,6 +241,7 @@ img { display: block; max-width: 100%; }
   position: relative; min-height: 100svh;
   overflow: hidden; display: flex; align-items: center;
   padding-top: 76px;
+  background: #005f57;
 }
 
 .hero-slide {
@@ -635,6 +636,8 @@ img { display: block; max-width: 100%; }
    PHOTO WALL CAROUSEL — Liquid Glass
 ══════════════════════════════════════════ */
 .photowall-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 600px;
   position: relative;
   padding: clamp(72px,10vw,120px) 0 clamp(64px,9vw,100px);
   overflow: hidden;
@@ -978,6 +981,8 @@ img { display: block; max-width: 100%; }
 ══════════════════════════════════════════ */
 /* ══ SERVICES — Dark premium section ══ */
 .services-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 800px;
   background: linear-gradient(160deg, #021f1d 0%, #011a17 50%, #0a1f18 100%);
   position: relative;
   overflow: hidden;
@@ -1173,6 +1178,8 @@ img { display: block; max-width: 100%; }
    WHY / NOSOTROS
 ══════════════════════════════════════════ */
 .why-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 700px;
   background: linear-gradient(150deg, #007972, #008D83, #009a90);
   position: relative; overflow: hidden;
 }
@@ -1844,7 +1851,10 @@ footer {
 <!-- ══ HERO ══ -->
 <section class="hero" id="heroSection">
   <!-- Slides con Ken Burns -->
-  <div class="hero-slide active" style="background-image:url('assets/images/hero-slide-1.webp')"></div>
+  <div class="hero-slide active">
+    <!-- LCP element: img visible para que el browser lo detecte como LCP candidate -->
+    <img src="/assets/images/hero-slide-1.webp" alt="" fetchpriority="high" decoding="async" width="1920" height="1080" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" aria-hidden="true">
+  </div>
   <div class="hero-slide"        style="background-image:url('assets/images/hero-slide-2.webp')"></div>
   <div class="hero-slide"        style="background-image:url('assets/images/hero-slide-3.webp')"></div>
 
@@ -2863,6 +2873,6 @@ if (statsEl) {
 })();
 </script>
 
-<script src="/assets/scripts/layout.js?v=3"></script>
+<script src="/assets/scripts/layout.js?v=3" defer></script>
 </body>
 </html>
