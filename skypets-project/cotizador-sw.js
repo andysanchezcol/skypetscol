@@ -1,4 +1,4 @@
-const CACHE = 'skypets-cotizador-v1';
+const CACHE = 'skypets-cotizador-v3';
 const ASSETS = [
   '/skypetscol/skypets-project/cotizador.html',
   '/skypetscol/skypets-project/assets/images/Logo_SkyPets.webp'
