@@ -9,11 +9,13 @@ if (!hash_equals('sha256=' . hash_hmac('sha256', $body, SECRET), $sig)) {
     exit('Forbidden');
 }
 
-$repo   = '/home1/eadcbcam/home1/eadcbcam/skypetscol';
+$repo   = '/home1/eadcbcam/skypetscol';
 $deploy = '/home1/eadcbcam/public_html';
 
 $out  = shell_exec("cd $repo && git pull 2>&1");
 $out .= shell_exec("/bin/cp -Ra $repo/skypets-project/. $deploy/ 2>&1");
+
+file_put_contents('/tmp/deploy-log.txt', date('Y-m-d H:i:s') . "\n" . $out . "\n---\n", FILE_APPEND);
 
 http_response_code(200);
 echo $out;
