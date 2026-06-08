@@ -704,5 +704,13 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
 <script type="module" src="/assets/scripts/motion-animations.js"></script>
 
 <script src="/assets/scripts/layout.js?v=3"></script>
+<script>
+function toggleFaq(btn) {
+  var item = btn.closest('.faq-item');
+  var isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(function(el){ el.classList.remove('open'); });
+  if (!isOpen) item.classList.add('open');
+}
+</script>
 </body>
 </html>
