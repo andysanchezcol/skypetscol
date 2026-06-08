@@ -590,6 +590,7 @@
       <button class="tipo-btn" onclick="setTipo('hacia-colombia')" id="btn-hco" style="flex-basis:100%;margin-top:4px">🛬 Hacia Colombia</button>
     </div>
 
+    <div id="wrap-origen">
     <label>Ciudad origen</label>
     <div class="select-wrap">
       <select id="origen">
@@ -605,6 +606,7 @@
         <option>Santa Marta (SMR)</option>
       </select>
     </div>
+    </div><!-- /wrap-origen -->
 
     <label id="label-destino">Ciudad destino</label>
     <div class="select-wrap">
@@ -914,8 +916,16 @@
     } else {
       document.getElementById('label-destino').textContent = 'Ciudad origen (país extranjero)';
     }
+    // Para Hacia Colombia: origen siempre es Bogotá, ocultar el selector
+    const esHaciaColombia = tipo === 'hacia-colombia';
+    document.getElementById('wrap-origen').classList.toggle('section-hidden', esHaciaColombia);
+    if (esHaciaColombia) {
+      document.getElementById('origen').value = 'Bogotá (BOG)';
+    } else {
+      document.getElementById('origen').value = '';
+    }
     // Mostrar/ocultar destino colombiano
-    document.getElementById('wrap-destino-col').classList.toggle('section-hidden', tipo !== 'hacia-colombia');
+    document.getElementById('wrap-destino-col').classList.toggle('section-hidden', !esHaciaColombia);
     document.getElementById('destino-col').value = '';
     document.getElementById('wrap-aviso-vuelo-interno').classList.add('section-hidden');
     poblarDestinos(tipo);
