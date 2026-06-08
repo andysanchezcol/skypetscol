@@ -595,9 +595,10 @@
     </div>
 
     <label>Tipo de viaje</label>
-    <div class="tipo-viaje">
+    <div class="tipo-viaje" style="flex-wrap:wrap">
       <button class="tipo-btn selected" onclick="setTipo('nacional')" id="btn-nac">🇨🇴 Nacional</button>
       <button class="tipo-btn" onclick="setTipo('internacional')" id="btn-int">✈️ Internacional</button>
+      <button class="tipo-btn" onclick="setTipo('hacia-colombia')" id="btn-hco" style="flex-basis:100%;margin-top:4px">🛬 Hacia Colombia</button>
     </div>
 
     <label>Ciudad origen</label>
@@ -621,6 +622,19 @@
       <select id="destino" onchange="onDestinoChange()">
         <option value="">Selecciona destino</option>
       </select>
+    </div>
+    <!-- Campo para ciudad personalizada -->
+    <div id="wrap-otra-ciudad" class="section-hidden">
+      <input type="text" id="otra-ciudad" placeholder="Escribe la ciudad y país" oninput="calcular()" style="margin-bottom:8px">
+      <label>Región (para calcular viáticos)</label>
+      <div class="select-wrap" style="margin-bottom:14px">
+        <select id="otra-region" onchange="onOtraRegionChange()">
+          <option value="">Selecciona región</option>
+          <option value="Europa">Europa (EUR)</option>
+          <option value="USA/Canada">USA y Canadá (USD)</option>
+          <option value="Latinoamerica">Latinoamérica (USD)</option>
+        </select>
+      </div>
     </div>
 
     <label>Fecha del vuelo</label>
@@ -673,6 +687,17 @@
         <span class="toggle-label">¿Requiere hospedaje?</span>
         <label class="toggle">
           <input type="checkbox" id="requiere-hospedaje" onchange="calcular()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Vuelo interno (solo internacional y hacia-colombia) -->
+    <div id="wrap-vuelo-interno" class="section-hidden">
+      <div class="toggle-row" style="background:rgba(255,188,0,0.12);border:1.5px solid rgba(255,188,0,0.4);border-radius:10px;padding:12px 14px;margin-bottom:14px">
+        <span class="toggle-label" style="font-size:13px">✈️ Vuelo interno necesario <span style="font-size:11px;color:var(--muted);display:block;font-weight:400">Se suma $500.000 COP al total</span></span>
+        <label class="toggle">
+          <input type="checkbox" id="vuelo-interno" onchange="calcular()">
           <span class="toggle-slider"></span>
         </label>
       </div>
@@ -791,41 +816,54 @@
     { ciudad: 'Caracas (CCS)',          pais: 'Venezuela',      moneda: 'USD' },
   ];
 
-  // Viáticos diarios en USD por país/región
-  // Comidas (desayuno ~25%, almuerzo ~35%, cena ~30%, hidratación ~10%)
+  // Viáticos diarios por región (según tabla oficial SkyPets)
   const VIATICOS = {
-    'Colombia':        { comidas: 12,  hospedaje: 40  },
-    'Mexico':          { comidas: 30,  hospedaje: 75  },
-    'USA':             { comidas: 65,  hospedaje: 140 },
-    'España':          { comidas: 52,  hospedaje: 110 },
-    'Francia':         { comidas: 58,  hospedaje: 130 },
-    'Países Bajos':    { comidas: 55,  hospedaje: 125 },
-    'Panama':          { comidas: 28,  hospedaje: 65  },
-    'Peru':            { comidas: 22,  hospedaje: 55  },
-    'Chile':           { comidas: 28,  hospedaje: 70  },
-    'Argentina':       { comidas: 18,  hospedaje: 45  },
-    'Brasil':          { comidas: 32,  hospedaje: 75  },
-    'Ecuador':         { comidas: 20,  hospedaje: 50  },
-    'Bolivia':         { comidas: 16,  hospedaje: 45  },
-    'Uruguay':         { comidas: 30,  hospedaje: 65  },
-    'Paraguay':        { comidas: 18,  hospedaje: 45  },
-    'Rep. Dominicana': { comidas: 25,  hospedaje: 70  },
-    'Costa Rica':      { comidas: 28,  hospedaje: 65  },
-    'Venezuela':       { comidas: 25,  hospedaje: 55  },
-    'default':         { comidas: 25,  hospedaje: 60  }
+    // Europa → EUR
+    'España':          { comidas: 50, hospedaje: 75 },
+    'Francia':         { comidas: 50, hospedaje: 75 },
+    'Países Bajos':    { comidas: 50, hospedaje: 75 },
+    'Portugal':        { comidas: 50, hospedaje: 75 },
+    'Italia':          { comidas: 50, hospedaje: 75 },
+    'Alemania':        { comidas: 50, hospedaje: 75 },
+    // USA y Canadá → USD
+    'USA':             { comidas: 50, hospedaje: 80 },
+    'Canada':          { comidas: 50, hospedaje: 80 },
+    // Latinoamérica → USD
+    'Mexico':          { comidas: 35, hospedaje: 55 },
+    'Panama':          { comidas: 35, hospedaje: 55 },
+    'Peru':            { comidas: 35, hospedaje: 55 },
+    'Chile':           { comidas: 35, hospedaje: 55 },
+    'Argentina':       { comidas: 35, hospedaje: 55 },
+    'Brasil':          { comidas: 35, hospedaje: 55 },
+    'Ecuador':         { comidas: 35, hospedaje: 55 },
+    'Bolivia':         { comidas: 35, hospedaje: 55 },
+    'Uruguay':         { comidas: 35, hospedaje: 55 },
+    'Paraguay':        { comidas: 35, hospedaje: 55 },
+    'Rep. Dominicana': { comidas: 35, hospedaje: 55 },
+    'Costa Rica':      { comidas: 35, hospedaje: 55 },
+    'Venezuela':       { comidas: 35, hospedaje: 55 },
+    // Regiones para "Otra ciudad"
+    'Europa':          { comidas: 50, hospedaje: 75 },
+    'USA/Canada':      { comidas: 50, hospedaje: 80 },
+    'Latinoamerica':   { comidas: 35, hospedaje: 55 },
+    // Colombia → COP (solo alimentación, viajes mismo día)
+    'Colombia':        { comidas: 80000, hospedaje: 0 },
+    'default':         { comidas: 35, hospedaje: 55 }
   };
 
-  const MARGEN = 0.25;
+  const MARGEN = 0.20;
+  const MINIMO_NACIONAL = 500000;
 
   // ─── ESTADO ──────────────────────────────────────────────────────────────
 
   let state = {
     tipo: 'nacional',
-    dias: 3,
-    hospedajeNacional: false,
+    dias: 4,
     mismoDia: true,
     paisDestino: null,
+    otraRegion: null,
     moneda: 'COP',
+    vueloInterno: false,
     resultadoCOP: 0,
     resultadoExtranjero: 0
   };
@@ -848,16 +886,28 @@
   function setTipo(tipo) {
     state.tipo = tipo;
     state.moneda = tipo === 'nacional' ? 'COP' : 'USD';
+    state.paisDestino = null;
+    state.otraRegion = null;
     document.getElementById('btn-nac').classList.toggle('selected', tipo === 'nacional');
     document.getElementById('btn-int').classList.toggle('selected', tipo === 'internacional');
-    document.getElementById('label-destino').textContent = tipo === 'nacional' ? 'Ciudad destino' : 'Ciudad / País destino';
+    document.getElementById('btn-hco').classList.toggle('selected', tipo === 'hacia-colombia');
+
+    if (tipo === 'nacional') {
+      document.getElementById('label-destino').textContent = 'Ciudad destino';
+    } else if (tipo === 'internacional') {
+      document.getElementById('label-destino').textContent = 'Ciudad / País destino';
+    } else {
+      document.getElementById('label-destino').textContent = 'Ciudad origen (país extranjero)';
+    }
     poblarDestinos(tipo);
     actualizarTRM();
   }
 
   function poblarDestinos(tipo) {
     const sel = document.getElementById('destino');
+    const wrapOtra = document.getElementById('wrap-otra-ciudad');
     sel.innerHTML = '<option value="">Selecciona destino</option>';
+
     if (tipo === 'nacional') {
       DESTINOS_NACIONALES.forEach(c => {
         const o = document.createElement('option');
@@ -865,7 +915,9 @@
         o.dataset.pais = 'Colombia';
         sel.appendChild(o);
       });
+      wrapOtra.classList.add('section-hidden');
     } else {
+      // Internacional y Hacia Colombia usan misma lista de ciudades internacionales
       DESTINOS_INTERNACIONALES.forEach(d => {
         const o = document.createElement('option');
         o.value = d.ciudad; o.textContent = d.ciudad;
@@ -873,6 +925,11 @@
         o.dataset.moneda = d.moneda;
         sel.appendChild(o);
       });
+      // Opción "Otra ciudad"
+      const otraOpt = document.createElement('option');
+      otraOpt.value = '__otra__'; otraOpt.textContent = '+ Otra ciudad';
+      sel.appendChild(otraOpt);
+      wrapOtra.classList.add('section-hidden');
     }
   }
 
@@ -880,13 +937,37 @@
     const sel = document.getElementById('destino');
     const opt = sel.options[sel.selectedIndex];
     const monedaAnterior = state.moneda;
-    state.paisDestino = opt ? opt.dataset.pais : null;
-    state.moneda = (opt && opt.dataset.moneda) ? opt.dataset.moneda : 'COP';
+    const wrapOtra = document.getElementById('wrap-otra-ciudad');
+
+    if (opt && opt.value === '__otra__') {
+      state.paisDestino = null;
+      state.otraRegion = null;
+      state.moneda = 'USD';
+      wrapOtra.classList.remove('section-hidden');
+    } else {
+      state.paisDestino = opt ? opt.dataset.pais : null;
+      state.moneda = (opt && opt.dataset.moneda) ? opt.dataset.moneda : 'COP';
+      state.otraRegion = null;
+      wrapOtra.classList.add('section-hidden');
+    }
     actualizarTRM();
-    // Auto-cargar tasa si cambia la moneda extranjera
-    if (state.tipo === 'internacional' && state.moneda !== monedaAnterior) {
+    if (state.tipo !== 'nacional' && state.moneda !== monedaAnterior) {
       cargarTRM();
     }
+  }
+
+  function onOtraRegionChange() {
+    const region = document.getElementById('otra-region').value;
+    state.otraRegion = region || null;
+    const monedaAnterior = state.moneda;
+    if (region === 'Europa') {
+      state.moneda = 'EUR';
+    } else {
+      state.moneda = 'USD';
+    }
+    actualizarTRM();
+    if (state.moneda !== monedaAnterior) cargarTRM();
+    calcular();
   }
 
   function actualizarTRM() {
@@ -1010,10 +1091,26 @@
       } else {
         url = `https://www.skyscanner.com.co/vuelos/${origL}/${destL}/`;
       }
-    } else {
-      // Internacional → Google Search en inglés con IATA — activa el widget de vuelos
+    } else if (state.tipo === 'hacia-colombia') {
+      // Hacia Colombia: origen = ciudad extranjera, destino = BOG
+      const origenReal = dest === '__otra__'
+        ? (document.getElementById('otra-ciudad').value || 'origen') : orig;
       const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-      let q = `flights ${orig} to ${dest}`;
+      let q = `flights ${origenReal} to BOG`;
+      if (fecha) {
+        const fd = new Date(fecha + 'T12:00:00');
+        q += ` ${months[fd.getMonth()]} ${fd.getDate()} ${fd.getFullYear()}`;
+        const fv = new Date(fecha + 'T12:00:00');
+        fv.setDate(fv.getDate() + 3);
+        q += ` return ${months[fv.getMonth()]} ${fv.getDate()} ${fv.getFullYear()}`;
+      }
+      url = `https://www.google.com/search?q=${encodeURIComponent(q)}`;
+    } else {
+      // Internacional → Google Search en inglés con IATA
+      const destReal = dest === '__otra__'
+        ? (document.getElementById('otra-ciudad').value || 'destino') : dest;
+      const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      let q = `flights ${orig} to ${destReal}`;
       if (fecha) {
         const fd = new Date(fecha + 'T12:00:00');
         q += ` ${months[fd.getMonth()]} ${fd.getDate()} ${fd.getFullYear()}`;
@@ -1032,22 +1129,20 @@
   function calcular() {
     const trm    = parseFloat(document.getElementById('trm').value) || 1;
     const tqCOP  = parseFloat(document.getElementById('tiquete-ida').value) || 0;
-    const pais   = state.paisDestino || 'default';
+    const pais   = state.otraRegion || state.paisDestino || 'default';
     const vt     = VIATICOS[pais] || VIATICOS['default'];
+    const vueloInterno = document.getElementById('vuelo-interno')?.checked ? 500000 : 0;
 
     if (state.tipo === 'nacional') {
-      const hospedaje = document.getElementById('requiere-hospedaje')?.checked;
-      state.hospedajeNacional = hospedaje;
-      const noches = hospedaje ? 1 : 0;
-      const dias   = hospedaje ? 2 : 1;
-      // Nacional: todo en COP, viáticos × 1000 (COP)
-      const viaticosNal = (vt.comidas * dias + vt.hospedaje * noches) * 1000;
+      // Solo alimentación (viaje mismo día), sin hospedaje
+      const viaticosNal = vt.comidas; // ya en COP (80000)
       const costo = tqCOP + viaticosNal;
-      state.resultadoCOP = Math.ceil(costo * (1 + MARGEN) / 1000) * 1000;
+      const precioConMargen = Math.ceil(costo * (1 + MARGEN) / 1000) * 1000;
+      state.resultadoCOP = Math.max(MINIMO_NACIONAL, precioConMargen);
       state.resultadoExtranjero = 0;
     } else {
-      // Internacional: tiquete ingresado en COP (como muestra Google Flights)
-      // → convertir a moneda extranjera, sumar viáticos, aplicar margen
+      // Internacional / Hacia Colombia:
+      // Tiquete ingresado en COP → convertir a moneda extranjera, sumar viáticos, aplicar margen
       const dias   = 4;
       const noches = 3;
       const tqForeign    = tqCOP / trm;
@@ -1055,7 +1150,8 @@
       const costoForeign = tqForeign + viaticosExt;
       const precioForeign = costoForeign * (1 + MARGEN);
       state.resultadoExtranjero = Math.ceil(precioForeign * 100) / 100;
-      state.resultadoCOP = Math.ceil(precioForeign * trm / 1000) * 1000;
+      // COP total = precio en moneda extranjera × TRM + vuelo interno (si aplica)
+      state.resultadoCOP = Math.ceil(precioForeign * trm / 1000) * 1000 + vueloInterno;
     }
   }
 
@@ -1083,14 +1179,15 @@
     document.getElementById('gf-titulo').textContent = isNacional ? 'Buscar en Skyscanner' : 'Buscar en Google Flights';
     document.getElementById('wrap-mismo-dia').classList.toggle('section-hidden', !isNacional);
     document.getElementById('wrap-info-int').classList.toggle('section-hidden', isNacional);
-    document.getElementById('wrap-hospedaje-nacional').classList.toggle('section-hidden', !isNacional);
+    document.getElementById('wrap-hospedaje-nacional').classList.add('section-hidden');
+    document.getElementById('wrap-vuelo-interno').classList.toggle('section-hidden', isNacional);
 
     // Actualizar label de tiquete según tipo
     document.getElementById('label-tq-ida').textContent = isNacional
-      ? 'Precio IDA + VUELTA — total Google Flights (COP)'
+      ? 'Precio IDA + VUELTA — total Skyscanner (COP)'
       : 'Precio IDA + VUELTA — total Google Flights (COP, como aparece en pantalla)';
     actualizarTRM();
-    if (state.tipo === 'internacional') cargarTRM();
+    if (!isNacional) cargarTRM();
 
     hide('paso1'); show('paso2'); hide('paso3');
     setDot(2);
@@ -1132,22 +1229,42 @@
 
     document.getElementById('precio-final').textContent   = precioTexto;
     document.getElementById('precio-usd-ref').textContent = precioRef;
-    document.getElementById('res-aerolinea').textContent  = aerolinea;
-    document.getElementById('res-ruta').textContent       = `${origen.replace(/\(.*\)/,'').trim()} → ${destino.replace(/\(.*\)/,'').trim()}`;
+    const origenNombre  = origen === '__otra__'
+      ? (document.getElementById('otra-ciudad').value || 'Otra ciudad')
+      : origen.replace(/\(.*\)/,'').trim();
+    const destinoNombre = destino === '__otra__'
+      ? (document.getElementById('otra-ciudad').value || 'Otra ciudad')
+      : destino.replace(/\(.*\)/,'').trim();
+
+    const rutaDisplay = state.tipo === 'hacia-colombia'
+      ? `${origenNombre} → Bogotá`
+      : `${origenNombre} → ${destinoNombre}`;
+
+    document.getElementById('res-aerolinea').textContent  = aerolinea || 'Por confirmar';
+    document.getElementById('res-ruta').textContent       = rutaDisplay;
     document.getElementById('res-duracion').textContent   =
       state.tipo === 'nacional'
         ? (state.mismoDia ? 'Mismo día' : '1-2 días')
         : '4 días · 3 noches';
 
+    const vueloInternoActivo = document.getElementById('vuelo-interno')?.checked;
+    const tipoLabel = state.tipo === 'hacia-colombia' ? 'Hacia Colombia' : state.tipo === 'nacional' ? 'Nacional' : 'Internacional';
+
     // WhatsApp — sin emojis para evitar caracteres ? al encodear
     const aerolineaWA = document.getElementById('aerolinea').value || 'Por confirmar';
+    const notaVueloInterno = vueloInternoActivo
+      ? `Vuelo interno incluido: +$500.000 COP (desplazamiento dentro de Colombia)\n` : '';
+    const notaTRM = state.tipo !== 'nacional'
+      ? `_El valor en COP se liquida a la TRM del dia de pago._\n\n` : '';
     const msg = encodeURIComponent(
-      `*Cotizacion Pet Nanny - SkyPets Colombia*\n\n` +
-      `Ruta: ${origen.replace(/\(.*\)/,'').trim()} - ${destino.replace(/\(.*\)/,'').trim()}\n` +
+      `*Cotizacion Pet Nanny - SkyPets Colombia*\n` +
+      `Tipo: ${tipoLabel}\n\n` +
+      `Ruta: ${rutaDisplay}\n` +
       `Fecha: ${formatFecha(fecha)}\n` +
       `Aerolinea: ${aerolineaWA}\n` +
+      `${notaVueloInterno}` +
       `Precio estimado: ${precioWA}\n` +
-      `_El valor en COP se liquida a la TRM del dia de pago._\n\n` +
+      `${notaTRM}` +
       `_Cotizacion estimada. Sujeta a disponibilidad de tiquetes._\n\n` +
       `*IMPORTANTE:* Este valor corresponde unicamente al servicio del Pet Nanny. No incluye certificados, examenes ni documentos requeridos para el viaje.\n\n` +
       `Si tu peludito no se encuentra en Bogota, se adiciona un valor de $500.000 COP para cubrir el desplazamiento del Pet Nanny hasta su ciudad.\n\n` +
@@ -1167,7 +1284,11 @@
     document.getElementById('tiquete-ida').value  = '';
     document.getElementById('trm').value          = '4200';
     document.getElementById('airline-note').classList.remove('show');
-    state = { tipo: 'nacional', dias: 3, hospedajeNacional: false, mismoDia: true, paisDestino: null, moneda: 'COP', resultadoCOP: 0, resultadoExtranjero: 0 };
+    if (document.getElementById('vuelo-interno')) document.getElementById('vuelo-interno').checked = false;
+    if (document.getElementById('otra-ciudad'))   document.getElementById('otra-ciudad').value = '';
+    if (document.getElementById('otra-region'))   document.getElementById('otra-region').value = '';
+    document.getElementById('wrap-otra-ciudad').classList.add('section-hidden');
+    state = { tipo: 'nacional', dias: 4, mismoDia: true, paisDestino: null, otraRegion: null, moneda: 'COP', vueloInterno: false, resultadoCOP: 0, resultadoExtranjero: 0 };
     setTipo('nacional');
     irPaso1();
   }
