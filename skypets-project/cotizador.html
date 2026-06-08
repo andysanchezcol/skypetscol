@@ -1496,12 +1496,14 @@
 
   // Verificar sesión existente al cargar
   supa.auth.getSession().then(({ data: { session } }) => {
-    if (session) showApp(); else showLogin();
+    if (session && session.user?.app_metadata?.role === 'asesor') showApp();
+    else { if (session) supa.auth.signOut(); showLogin(); }
   });
 
-  // Escuchar cambios de sesión (expiración, revocación)
+  // Escuchar cambios de sesión (expiración, revocación, cambio de rol)
   supa.auth.onAuthStateChange((event, session) => {
-    if (session) showApp(); else showLogin();
+    if (session && session.user?.app_metadata?.role === 'asesor') showApp();
+    else showLogin();
   });
 
   async function doLogin() {
@@ -1529,7 +1531,16 @@
       errBox.textContent = 'Correo o contraseña incorrectos. Verifica tus datos.';
       errBox.classList.add('show');
     } else {
-      showApp();
+      // Verificar que el usuario tenga rol "asesor"
+      const { data: { user } } = await (remember ? supa : client).auth.getUser();
+      const rol = user?.app_metadata?.role;
+      if (rol !== 'asesor') {
+        await (remember ? supa : client).auth.signOut();
+        errBox.textContent = 'No tienes acceso a esta herramienta. Contacta al administrador.';
+        errBox.classList.add('show');
+      } else {
+        showApp();
+      }
     }
   }
 
