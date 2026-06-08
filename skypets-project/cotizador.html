@@ -637,6 +637,32 @@
       </div>
     </div>
 
+    <!-- Ciudad destino en Colombia (solo Hacia Colombia) -->
+    <div id="wrap-destino-col" class="section-hidden">
+      <label>Ciudad destino en Colombia</label>
+      <div class="select-wrap">
+        <select id="destino-col" onchange="onDestinoColChange()">
+          <option value="">Selecciona ciudad destino</option>
+          <option value="Bogotá (BOG)">Bogotá (BOG)</option>
+          <option value="Medellín (MDE)">Medellín (MDE)</option>
+          <option value="Cali (CLO)">Cali (CLO)</option>
+          <option value="Barranquilla (BAQ)">Barranquilla (BAQ)</option>
+          <option value="Cartagena (CTG)">Cartagena (CTG)</option>
+          <option value="Bucaramanga (BGA)">Bucaramanga (BGA)</option>
+          <option value="Pereira (PEI)">Pereira (PEI)</option>
+          <option value="Manizales (MZL)">Manizales (MZL)</option>
+          <option value="Santa Marta (SMR)">Santa Marta (SMR)</option>
+          <option value="Cucuta (CUC)">Cucuta (CUC)</option>
+          <option value="Pasto (PSO)">Pasto (PSO)</option>
+          <option value="Montería (MTR)">Montería (MTR)</option>
+          <option value="San Andrés (ADZ)">San Andrés (ADZ)</option>
+        </select>
+      </div>
+      <div id="wrap-aviso-vuelo-interno" class="section-hidden" style="background:rgba(255,188,0,0.14);border:1.5px solid rgba(255,188,0,0.45);border-radius:10px;padding:10px 14px;margin-top:8px;font-size:12px;color:var(--ink)">
+        <strong>+$500.000 COP</strong> — vuelo interno incluido (ciudad diferente a Bogotá)
+      </div>
+    </div>
+
     <label>Fecha del vuelo</label>
     <div class="date-wrap">
       <span class="date-icon">📅</span>
@@ -899,6 +925,10 @@
     } else {
       document.getElementById('label-destino').textContent = 'Ciudad origen (país extranjero)';
     }
+    // Mostrar/ocultar destino colombiano
+    document.getElementById('wrap-destino-col').classList.toggle('section-hidden', tipo !== 'hacia-colombia');
+    document.getElementById('destino-col').value = '';
+    document.getElementById('wrap-aviso-vuelo-interno').classList.add('section-hidden');
     poblarDestinos(tipo);
     actualizarTRM();
   }
@@ -967,6 +997,13 @@
     }
     actualizarTRM();
     if (state.moneda !== monedaAnterior) cargarTRM();
+    calcular();
+  }
+
+  function onDestinoColChange() {
+    const val = document.getElementById('destino-col').value;
+    const esBogota = val.startsWith('Bogotá');
+    document.getElementById('wrap-aviso-vuelo-interno').classList.toggle('section-hidden', esBogota || !val);
     calcular();
   }
 
@@ -1092,11 +1129,13 @@
         url = `https://www.skyscanner.com.co/vuelos/${origL}/${destL}/`;
       }
     } else if (state.tipo === 'hacia-colombia') {
-      // Hacia Colombia: origen = ciudad extranjera, destino = BOG
+      // Hacia Colombia: origen = ciudad extranjera (#destino), destino = ciudad colombiana (#destino-col)
       const origenReal = dest === '__otra__'
-        ? (document.getElementById('otra-ciudad').value || 'origen') : orig;
+        ? (document.getElementById('otra-ciudad').value || 'origen') : dest;
+      const destColVal = document.getElementById('destino-col')?.value || 'Bogota';
+      const destColCod = destColVal.match(/\(([^)]+)\)/)?.[1] || 'BOG';
       const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-      let q = `flights ${origenReal} to BOG`;
+      let q = `flights ${origenReal} to ${destColCod}`;
       if (fecha) {
         const fd = new Date(fecha + 'T12:00:00');
         q += ` ${months[fd.getMonth()]} ${fd.getDate()} ${fd.getFullYear()}`;
@@ -1131,7 +1170,12 @@
     const tqCOP  = parseFloat(document.getElementById('tiquete-ida').value) || 0;
     const pais   = state.otraRegion || state.paisDestino || 'default';
     const vt     = VIATICOS[pais] || VIATICOS['default'];
-    const vueloInterno = document.getElementById('vuelo-interno')?.checked ? 500000 : 0;
+    let vueloInterno = document.getElementById('vuelo-interno')?.checked ? 500000 : 0;
+    // Hacia Colombia: vuelo interno automático si destino ≠ Bogotá
+    if (state.tipo === 'hacia-colombia') {
+      const destCol = document.getElementById('destino-col')?.value || '';
+      vueloInterno = destCol && !destCol.startsWith('Bogotá') ? 500000 : 0;
+    }
 
     if (state.tipo === 'nacional') {
       // Solo alimentación (viaje mismo día), sin hospedaje
@@ -1170,17 +1214,26 @@
 
     if (!origen)  return alert('Selecciona la ciudad de origen.');
     if (!destino) return alert('Selecciona el destino.');
+    if (state.tipo === 'hacia-colombia' && !document.getElementById('destino-col').value)
+      return alert('Selecciona la ciudad destino en Colombia.');
     if (!fecha)   return alert('Selecciona la fecha del vuelo.');
 
     const isNacional = state.tipo === 'nacional';
+    const isHaciaColombia = state.tipo === 'hacia-colombia';
     const origenCod  = origen.match(/\(([^)]+)\)/)?.[1] || origen;
     const destinoCod = destino.match(/\(([^)]+)\)/)?.[1] || destino;
-    document.getElementById('gf-ruta-text').textContent = `${origenCod} → ${destinoCod} · ${formatFecha(fecha)}`;
+    const destColVal = document.getElementById('destino-col')?.value || '';
+    const destColCod = destColVal.match(/\(([^)]+)\)/)?.[1] || destColVal;
+    const rutaLabel = isHaciaColombia
+      ? `${destinoCod} → ${destColCod}`
+      : `${origenCod} → ${destinoCod}`;
+    document.getElementById('gf-ruta-text').textContent = `${rutaLabel} · ${formatFecha(fecha)}`;
     document.getElementById('gf-titulo').textContent = isNacional ? 'Buscar en Skyscanner' : 'Buscar en Google Flights';
     document.getElementById('wrap-mismo-dia').classList.toggle('section-hidden', !isNacional);
     document.getElementById('wrap-info-int').classList.toggle('section-hidden', isNacional);
     document.getElementById('wrap-hospedaje-nacional').classList.add('section-hidden');
-    document.getElementById('wrap-vuelo-interno').classList.toggle('section-hidden', isNacional);
+    // Checkbox vuelo interno: visible solo en internacional (en hacia-colombia es automático)
+    document.getElementById('wrap-vuelo-interno').classList.toggle('section-hidden', isNacional || isHaciaColombia);
 
     // Actualizar label de tiquete según tipo
     document.getElementById('label-tq-ida').textContent = isNacional
@@ -1235,9 +1288,11 @@
     const destinoNombre = destino === '__otra__'
       ? (document.getElementById('otra-ciudad').value || 'Otra ciudad')
       : destino.replace(/\(.*\)/,'').trim();
+    const destColVal = document.getElementById('destino-col')?.value || '';
+    const destColNombre = destColVal.replace(/\(.*\)/,'').trim() || 'Bogotá';
 
     const rutaDisplay = state.tipo === 'hacia-colombia'
-      ? `${origenNombre} → Bogotá`
+      ? `${destinoNombre} → ${destColNombre}`
       : `${origenNombre} → ${destinoNombre}`;
 
     document.getElementById('res-aerolinea').textContent  = aerolinea || 'Por confirmar';
@@ -1247,7 +1302,9 @@
         ? (state.mismoDia ? 'Mismo día' : '1-2 días')
         : '4 días · 3 noches';
 
-    const vueloInternoActivo = document.getElementById('vuelo-interno')?.checked;
+    const vueloInternoCheckbox = document.getElementById('vuelo-interno')?.checked;
+    const vueloInternoAuto = state.tipo === 'hacia-colombia' && destColVal && !destColVal.startsWith('Bogotá');
+    const vueloInternoActivo = vueloInternoCheckbox || vueloInternoAuto;
     const tipoLabel = state.tipo === 'hacia-colombia' ? 'Hacia Colombia' : state.tipo === 'nacional' ? 'Nacional' : 'Internacional';
 
     // WhatsApp — sin emojis para evitar caracteres ? al encodear
@@ -1287,7 +1344,10 @@
     if (document.getElementById('vuelo-interno')) document.getElementById('vuelo-interno').checked = false;
     if (document.getElementById('otra-ciudad'))   document.getElementById('otra-ciudad').value = '';
     if (document.getElementById('otra-region'))   document.getElementById('otra-region').value = '';
+    if (document.getElementById('destino-col'))   document.getElementById('destino-col').value = '';
     document.getElementById('wrap-otra-ciudad').classList.add('section-hidden');
+    document.getElementById('wrap-destino-col').classList.add('section-hidden');
+    document.getElementById('wrap-aviso-vuelo-interno').classList.add('section-hidden');
     state = { tipo: 'nacional', dias: 4, mismoDia: true, paisDestino: null, otraRegion: null, moneda: 'COP', vueloInterno: false, resultadoCOP: 0, resultadoExtranjero: 0 };
     setTipo('nacional');
     irPaso1();
