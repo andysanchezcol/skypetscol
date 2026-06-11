@@ -557,6 +557,20 @@
 
     .toggle input:checked + .toggle-slider { background: var(--success); }
     .toggle input:checked + .toggle-slider::before { transform: translateX(22px); background: white; }
+  /* ── SERVICIOS ADICIONALES ─────────────────────────────────────────── */
+  .svc-check-row {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,250,236,0.6); backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(43,36,24,0.1); border-radius: 10px;
+    padding: 10px 14px; cursor: pointer; transition: background .15s;
+  }
+  .svc-check-row:has(input:checked) {
+    background: rgba(0,141,131,0.08); border-color: rgba(0,141,131,0.35);
+  }
+  .svc-check-row input[type="checkbox"] { width:18px;height:18px;accent-color:var(--teal);flex-shrink:0;cursor:pointer; }
+  .svc-check-label { flex:1; font-size:13px; font-weight:500; color:var(--ink); }
+  .svc-check-price { font-size:13px; font-weight:600; color:var(--teal); white-space:nowrap; }
+
   /* ── LOGIN OVERLAY ─────────────────────────────────────────────────── */
   #login-overlay {
     position: fixed; inset: 0; z-index: 9999;
@@ -691,7 +705,7 @@
     <div id="wrap-origen">
     <label>Ciudad origen</label>
     <div class="select-wrap">
-      <select id="origen">
+      <select id="origen" onchange="onOrigenChange()">
         <option value="">Selecciona ciudad origen</option>
         <option>Bogotá (BOG)</option>
         <option>Medellín (MDE)</option>
@@ -702,7 +716,11 @@
         <option>Pereira (PEI)</option>
         <option>Manizales (MZL)</option>
         <option>Santa Marta (SMR)</option>
+        <option value="__otra_origen__">+ Otra ciudad</option>
       </select>
+    </div>
+    <div id="wrap-otra-origen" class="section-hidden" style="margin-top:8px;margin-bottom:14px">
+      <input type="text" id="otra-origen-texto" placeholder="Escribe la ciudad de origen" style="margin-bottom:0">
     </div>
     </div><!-- /wrap-origen -->
 
@@ -778,7 +796,7 @@
     </a>
 
     <label id="label-tq-ida">Precio IDA + VUELTA — total Google Flights (COP)</label>
-    <input type="number" id="tiquete-ida" placeholder="Ej: 1700000" oninput="calcular()">
+    <input type="text" inputmode="numeric" id="tiquete-ida" placeholder="Ej: 1.700.000" oninput="onTiqueteInput(this)">
 
     <div id="wrap-mismo-dia" class="section-hidden">
       <div class="toggle-row">
@@ -847,6 +865,24 @@
     <div id="trm-fuente" style="font-size:11px;color:var(--muted);margin-top:-10px;margin-bottom:14px;display:none"></div>
 
     <!-- viáticos calculados internamente, no mostrados al asesor -->
+
+    <hr class="divider">
+    <label style="margin-bottom:10px;display:block">Servicios adicionales <span style="font-size:11px;color:var(--muted);font-weight:400">(opcional)</span></label>
+    <div id="wrap-servicios" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+      <label class="svc-check-row"><input type="checkbox" class="svc-check" data-precio="400000" onchange="calcular()"><span class="svc-check-label">Certificado servicio</span><span class="svc-check-price">$400.000</span></label>
+      <label class="svc-check-row"><input type="checkbox" class="svc-check" data-precio="95000"  onchange="calcular()"><span class="svc-check-label">Certificado apoyo</span><span class="svc-check-price">$95.000</span></label>
+      <label class="svc-check-row"><input type="checkbox" class="svc-check" data-precio="70000"  onchange="calcular()"><span class="svc-check-label">Certificado salud nacional</span><span class="svc-check-price">$70.000</span></label>
+      <label class="svc-check-row"><input type="checkbox" class="svc-check" data-precio="170000" onchange="calcular()"><span class="svc-check-label">Certificado salud internacional</span><span class="svc-check-price">$170.000</span></label>
+      <label class="svc-check-row"><input type="checkbox" class="svc-check" data-precio="1290000" onchange="calcular()"><span class="svc-check-label">Serología</span><span class="svc-check-price">$1.290.000</span></label>
+      <label class="svc-check-row"><input type="checkbox" class="svc-check" data-precio="95000"  onchange="calcular()"><span class="svc-check-label">Pechera</span><span class="svc-check-price">$95.000</span></label>
+      <label class="svc-check-row"><input type="checkbox" class="svc-check" data-precio="120000" onchange="calcular()"><span class="svc-check-label">Anexo Europa</span><span class="svc-check-price">$120.000</span></label>
+      <label class="svc-check-row"><input type="checkbox" class="svc-check" data-precio="130000" onchange="calcular()"><span class="svc-check-label">CDC</span><span class="svc-check-price">$130.000</span></label>
+      <label class="svc-check-row" id="row-otro-svc">
+        <input type="checkbox" class="svc-check" id="check-otro-svc" data-precio="0" onchange="onOtroSvcChange()">
+        <span class="svc-check-label">Otro</span>
+        <input type="text" inputmode="numeric" id="otro-svc-valor" placeholder="Valor" oninput="onOtroSvcValor(this)" class="section-hidden" style="width:110px;padding:6px 10px;font-size:13px;border-radius:8px;border:1.5px solid rgba(43,36,24,0.14);background:rgba(255,250,236,0.7);font-family:'Poppins',sans-serif;color:var(--ink);margin-left:auto">
+      </label>
+    </div>
 
     <div style="display:flex;gap:10px">
       <button class="btn btn-orange" style="background:var(--bg2);color:var(--ink);flex:0 0 auto;width:auto;padding:16px 20px" onclick="irPaso1()">← Atrás</button>
@@ -1042,6 +1078,9 @@
         o.dataset.pais = 'Colombia';
         sel.appendChild(o);
       });
+      const otraOpt = document.createElement('option');
+      otraOpt.value = '__otra__'; otraOpt.textContent = '+ Otra ciudad';
+      sel.appendChild(otraOpt);
       wrapOtra.classList.add('section-hidden');
     } else {
       // Internacional y Hacia Colombia usan misma lista de ciudades internacionales
@@ -1095,6 +1134,56 @@
     actualizarTRM();
     if (state.moneda !== monedaAnterior) cargarTRM();
     calcular();
+  }
+
+  function fmtCOP(n) {
+    return n.toLocaleString('es-CO');
+  }
+
+  function onTiqueteInput(el) {
+    const raw = el.value.replace(/\./g, '').replace(/[^\d]/g, '');
+    const num = parseInt(raw, 10);
+    el.dataset.rawValue = raw;
+    if (raw) el.value = num.toLocaleString('es-CO');
+    else el.value = '';
+    calcular();
+  }
+
+  function getTiqueteValue() {
+    const el = document.getElementById('tiquete-ida');
+    const raw = (el.dataset.rawValue || el.value.replace(/\./g, '').replace(/[^\d]/g, ''));
+    return parseFloat(raw) || 0;
+  }
+
+  function getServiciosTotal() {
+    let total = 0;
+    document.querySelectorAll('.svc-check:checked').forEach(cb => {
+      total += parseInt(cb.dataset.precio) || 0;
+    });
+    return total;
+  }
+
+  function onOtroSvcChange() {
+    const cb = document.getElementById('check-otro-svc');
+    const inp = document.getElementById('otro-svc-valor');
+    inp.classList.toggle('section-hidden', !cb.checked);
+    if (!cb.checked) { inp.value = ''; inp.dataset.rawValue = ''; cb.dataset.precio = 0; }
+    calcular();
+  }
+
+  function onOtroSvcValor(el) {
+    const raw = el.value.replace(/\./g, '').replace(/[^\d]/g, '');
+    const num = parseInt(raw, 10) || 0;
+    el.dataset.rawValue = raw;
+    if (raw) el.value = num.toLocaleString('es-CO');
+    else el.value = '';
+    document.getElementById('check-otro-svc').dataset.precio = num;
+    calcular();
+  }
+
+  function onOrigenChange() {
+    const val = document.getElementById('origen').value;
+    document.getElementById('wrap-otra-origen').classList.toggle('section-hidden', val !== '__otra_origen__');
   }
 
   function onDestinoColChange() {
@@ -1206,10 +1295,12 @@
       alert('Selecciona origen y destino primero.');
       return;
     }
-    const orig = getIATA(origen);
+    const origenReal = origen === '__otra_origen__'
+      ? (document.getElementById('otra-origen-texto').value || 'BOG') : origen;
+    const orig = getIATA(origenReal);
     const dest = getIATA(destino);
 
-    const origNombre = origen.replace(/\([^)]+\)/, '').trim();
+    const origNombre = origenReal.replace(/\([^)]+\)/, '').trim();
     const destNombre = destino.replace(/\([^)]+\)/, '').trim();
     let url;
 
@@ -1264,7 +1355,7 @@
 
   function calcular() {
     const trm    = parseFloat(document.getElementById('trm').value) || 1;
-    const tqCOP  = parseFloat(document.getElementById('tiquete-ida').value) || 0;
+    const tqCOP  = getTiqueteValue();
     const pais   = state.otraRegion || state.paisDestino || 'default';
     const vt     = VIATICOS[pais] || VIATICOS['default'];
     let vueloInterno = document.getElementById('vuelo-interno')?.checked ? 500000 : 0;
@@ -1274,26 +1365,24 @@
       vueloInterno = destCol && !destCol.startsWith('Bogotá') ? 500000 : 0;
     }
 
+    const serviciosExtra = getServiciosTotal();
+
     if (state.tipo === 'nacional') {
-      // Solo alimentación (viaje mismo día), sin hospedaje
-      const viaticosNal = vt.comidas; // ya en COP (80000)
+      const viaticosNal = vt.comidas;
       const costo = tqCOP + viaticosNal;
       const precioConMargen = Math.ceil(costo * (1 + MARGEN) / 1000) * 1000;
-      state.resultadoCOP = Math.max(MINIMO_NACIONAL, precioConMargen);
+      state.resultadoCOP = Math.max(MINIMO_NACIONAL, precioConMargen) + serviciosExtra;
       state.resultadoExtranjero = 0;
     } else {
-      // Internacional / Hacia Colombia:
-      // Tiquete ingresado en COP → convertir a moneda extranjera, sumar viáticos, aplicar margen
-      const dias   = 4;
-      const noches = 3;
+      const dias = 4, noches = 3;
       const tqForeign    = tqCOP / trm;
       const viaticosExt  = vt.comidas * dias + vt.hospedaje * noches;
       const costoForeign = tqForeign + viaticosExt;
       const precioForeign = costoForeign * (1 + MARGEN);
       state.resultadoExtranjero = Math.ceil(precioForeign * 100) / 100;
-      // COP total = precio en moneda extranjera × TRM + vuelo interno (si aplica)
-      state.resultadoCOP = Math.ceil(precioForeign * trm / 1000) * 1000 + vueloInterno;
+      state.resultadoCOP = Math.ceil(precioForeign * trm / 1000) * 1000 + vueloInterno + serviciosExtra;
     }
+    state.serviciosExtra = serviciosExtra;
   }
 
   // ─── NAVEGACIÓN PASOS ─────────────────────────────────────────────────────
@@ -1310,6 +1399,8 @@
     const fecha    = document.getElementById('fecha-vuelo').value;
 
     if (!origen)  return alert('Selecciona la ciudad de origen.');
+    if (origen === '__otra_origen__' && !document.getElementById('otra-origen-texto').value.trim())
+      return alert('Escribe la ciudad de origen.');
     if (!destino) return alert('Selecciona el destino.');
     if (state.tipo === 'hacia-colombia' && !document.getElementById('destino-col').value)
       return alert('Selecciona la ciudad destino en Colombia.');
@@ -1317,7 +1408,9 @@
 
     const isNacional = state.tipo === 'nacional';
     const isHaciaColombia = state.tipo === 'hacia-colombia';
-    const origenCod  = origen.match(/\(([^)]+)\)/)?.[1] || origen;
+    const origenCod  = origen === '__otra_origen__'
+      ? (document.getElementById('otra-origen-texto').value || 'Otra ciudad')
+      : (origen.match(/\(([^)]+)\)/)?.[1] || origen);
     const destinoCod = destino.match(/\(([^)]+)\)/)?.[1] || destino;
     const destColVal = document.getElementById('destino-col')?.value || '';
     const destColCod = destColVal.match(/\(([^)]+)\)/)?.[1] || destColVal;
@@ -1345,8 +1438,7 @@
   }
 
   function irPaso3() {
-    const tqIda = parseFloat(document.getElementById('tiquete-ida').value) || 0;
-    if (tqIda <= 0) return alert('Ingresa el precio del tiquete de ida.');
+    if (getTiqueteValue() <= 0) return alert('Ingresa el precio del tiquete.');
 
     calcular();
 
@@ -1358,7 +1450,6 @@
     const precioCOP  = state.resultadoCOP;
     const precioExt  = state.resultadoExtranjero;
     const moneda     = state.moneda;
-    const trm        = parseFloat(document.getElementById('trm').value) || 1;
 
     let precioTexto, precioRef, precioWA;
     if (state.tipo === 'nacional') {
@@ -1379,22 +1470,25 @@
 
     document.getElementById('precio-final').textContent   = precioTexto;
     document.getElementById('precio-usd-ref').textContent = precioRef;
-    const origenNombre  = origen === '__otra__'
-      ? (document.getElementById('otra-ciudad').value || 'Otra ciudad')
-      : origen.replace(/\(.*\)/,'').trim();
+
+    const origenNombre  = origen === '__otra_origen__'
+      ? (document.getElementById('otra-origen-texto').value || 'Otra ciudad')
+      : origen === '__otra__'
+        ? (document.getElementById('otra-ciudad').value || 'Otra ciudad')
+        : origen.replace(/\(.*\)/,'').trim();
     const destinoNombre = destino === '__otra__'
       ? (document.getElementById('otra-ciudad').value || 'Otra ciudad')
       : destino.replace(/\(.*\)/,'').trim();
-    const destColVal = document.getElementById('destino-col')?.value || '';
+    const destColVal    = document.getElementById('destino-col')?.value || '';
     const destColNombre = destColVal.replace(/\(.*\)/,'').trim() || 'Bogotá';
 
     const rutaDisplay = state.tipo === 'hacia-colombia'
       ? `${destinoNombre} → ${destColNombre}`
       : `${origenNombre} → ${destinoNombre}`;
 
-    document.getElementById('res-aerolinea').textContent  = aerolinea || 'Por confirmar';
-    document.getElementById('res-ruta').textContent       = rutaDisplay;
-    document.getElementById('res-duracion').textContent   =
+    document.getElementById('res-aerolinea').textContent = aerolinea || 'Por confirmar';
+    document.getElementById('res-ruta').textContent      = rutaDisplay;
+    document.getElementById('res-duracion').textContent  =
       state.tipo === 'nacional'
         ? (state.mismoDia ? 'Mismo día' : '1-2 días')
         : '4 días · 3 noches';
@@ -1402,14 +1496,31 @@
     const vueloInternoCheckbox = document.getElementById('vuelo-interno')?.checked;
     const vueloInternoAuto = state.tipo === 'hacia-colombia' && destColVal && !destColVal.startsWith('Bogotá');
     const vueloInternoActivo = vueloInternoCheckbox || vueloInternoAuto;
-    const tipoLabel = state.tipo === 'hacia-colombia' ? 'Hacia Colombia' : state.tipo === 'nacional' ? 'Nacional' : 'Internacional';
+    const esNacional = state.tipo === 'nacional';
+    const tipoLabel  = state.tipo === 'hacia-colombia' ? 'Hacia Colombia' : esNacional ? 'Nacional' : 'Internacional';
 
-    // WhatsApp — sin emojis para evitar caracteres ? al encodear
-    const aerolineaWA = document.getElementById('aerolinea').value || 'Por confirmar';
-    const notaVueloInterno = vueloInternoActivo
+    // Servicios adicionales seleccionados
+    const svcLineas = [];
+    document.querySelectorAll('.svc-check:checked').forEach(cb => {
+      const label = cb.closest('label')?.querySelector('.svc-check-label')?.textContent?.trim();
+      const precio = parseInt(cb.dataset.precio) || 0;
+      if (label && precio > 0) svcLineas.push(`  - ${label}: $${precio.toLocaleString('es-CO')} COP`);
+    });
+    const notaServicios = svcLineas.length
+      ? `\nServicios adicionales:\n${svcLineas.join('\n')}\n` : '';
+
+    // WhatsApp
+    const aerolineaWA = aerolinea || 'Por confirmar';
+    // Nota vuelo interno solo para internacional y hacia colombia
+    const notaVueloInterno = (!esNacional && vueloInternoActivo)
       ? `Vuelo interno incluido: +$500.000 COP (desplazamiento dentro de Colombia)\n` : '';
-    const notaTRM = state.tipo !== 'nacional'
+    const notaTRM = !esNacional
       ? `_El valor en COP se liquida a la TRM del dia de pago._\n\n` : '';
+    // Nota $500k solo para internacional y hacia colombia
+    const notaDesplazamiento = !esNacional
+      ? `Si tu peludito no se encuentra en Bogota, se adiciona un valor de $500.000 COP para cubrir el desplazamiento del Pet Nanny hasta su ciudad.\n\n`
+      : '';
+
     const msg = encodeURIComponent(
       `*Cotizacion Pet Nanny - SkyPets Colombia*\n` +
       `Tipo: ${tipoLabel}\n\n` +
@@ -1417,11 +1528,13 @@
       `Fecha: ${formatFecha(fecha)}\n` +
       `Aerolinea: ${aerolineaWA}\n` +
       `${notaVueloInterno}` +
-      `Precio estimado: ${precioWA}\n` +
+      `${notaServicios}` +
+      `\nPrecio total estimado: ${precioWA}\n` +
       `${notaTRM}` +
       `_Cotizacion estimada. Sujeta a disponibilidad de tiquetes._\n\n` +
-      `*IMPORTANTE:* Este valor corresponde unicamente al servicio del Pet Nanny. No incluye certificados, examenes ni documentos requeridos para el viaje.\n\n` +
-      `Si tu peludito no se encuentra en Bogota, se adiciona un valor de $500.000 COP para cubrir el desplazamiento del Pet Nanny hasta su ciudad.\n\n` +
+      `*IMPORTANTE:* Este valor corresponde unicamente al servicio del Pet Nanny` +
+      (svcLineas.length ? ` y los servicios adicionales seleccionados.` : `. No incluye certificados, examenes ni documentos requeridos para el viaje.`) + `\n\n` +
+      `${notaDesplazamiento}` +
       `Mayor informacion: SkyPets Colombia | +57 321 355 6909`
     );
     document.getElementById('btn-whatsapp').href = `https://wa.me/?text=${msg}`;
@@ -1435,11 +1548,18 @@
     document.getElementById('destino').value      = '';
     document.getElementById('aerolinea').value    = '';
     document.getElementById('fecha-vuelo').value  = '';
-    document.getElementById('tiquete-ida').value  = '';
+    const tqEl = document.getElementById('tiquete-ida');
+    tqEl.value = ''; tqEl.dataset.rawValue = '';
     document.getElementById('trm').value          = '4200';
     document.getElementById('airline-note').classList.remove('show');
     if (document.getElementById('vuelo-interno')) document.getElementById('vuelo-interno').checked = false;
     if (document.getElementById('otra-ciudad'))   document.getElementById('otra-ciudad').value = '';
+    if (document.getElementById('otra-origen-texto')) document.getElementById('otra-origen-texto').value = '';
+    document.getElementById('wrap-otra-origen').classList.add('section-hidden');
+    document.querySelectorAll('.svc-check').forEach(cb => { cb.checked = false; cb.dataset.precio = cb.dataset.precio; });
+    document.getElementById('otro-svc-valor').value = '';
+    document.getElementById('otro-svc-valor').classList.add('section-hidden');
+    document.getElementById('check-otro-svc').dataset.precio = 0;
     if (document.getElementById('otra-region'))   document.getElementById('otra-region').value = '';
     if (document.getElementById('destino-col'))   document.getElementById('destino-col').value = '';
     document.getElementById('wrap-otra-ciudad').classList.add('section-hidden');
