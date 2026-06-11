@@ -774,7 +774,7 @@
       </select>
     </div>
     <div id="wrap-otra-origen" class="section-hidden" style="margin-top:8px;margin-bottom:14px">
-      <input type="text" id="otra-origen-texto" placeholder="Escribe la ciudad de origen" style="margin-bottom:0">
+      <input type="text" id="otra-origen-texto" placeholder="Escribe la ciudad de origen" list="datalist-colombia" autocomplete="off" style="margin-bottom:0">
     </div>
     </div><!-- /wrap-origen -->
 
@@ -786,7 +786,7 @@
     </div>
     <!-- Campo para ciudad personalizada -->
     <div id="wrap-otra-ciudad" class="section-hidden">
-      <input type="text" id="otra-ciudad" placeholder="Escribe la ciudad y país" oninput="calcular()" style="margin-bottom:8px">
+      <input type="text" id="otra-ciudad" placeholder="Escribe la ciudad y país" list="datalist-internacional" autocomplete="off" oninput="calcular()" style="margin-bottom:8px">
       <label>Región (para calcular viáticos)</label>
       <div class="select-wrap" style="margin-bottom:14px">
         <select id="otra-region" onchange="onOtraRegionChange()">
@@ -821,7 +821,7 @@
         </select>
       </div>
       <div id="wrap-otra-col" class="section-hidden" style="margin-top:8px;margin-bottom:14px">
-        <input type="text" id="otra-col-texto" placeholder="Escribe la ciudad destino en Colombia" style="margin-bottom:0" oninput="calcular()">
+        <input type="text" id="otra-col-texto" placeholder="Escribe la ciudad destino en Colombia" list="datalist-colombia" autocomplete="off" style="margin-bottom:0" oninput="calcular()">
       </div>
       <div id="wrap-aviso-vuelo-interno" class="section-hidden" style="background:rgba(255,188,0,0.14);border:1.5px solid rgba(255,188,0,0.45);border-radius:10px;padding:10px 14px;margin-top:8px;font-size:12px;color:var(--ink)">
         <strong>+$500.000 COP</strong> — vuelo interno incluido (ciudad diferente a Bogotá)
@@ -943,6 +943,7 @@
     <div id="wrap-custom-svcs" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
     <button type="button" class="btn-add-custom-svc" onclick="addCustomSvc()">+ Otro servicio</button>
 
+    <hr class="divider" style="margin-top:16px">
     <div style="display:flex;gap:10px">
       <button class="btn btn-orange" style="background:var(--bg2);color:var(--ink);flex:0 0 auto;width:auto;padding:16px 20px" onclick="irPaso1()">← Atrás</button>
       <button class="btn btn-orange" onclick="irPaso3()" style="flex:1">Ver cotización →</button>
@@ -979,6 +980,9 @@
     <button class="btn btn-reset show" onclick="reiniciar()">🔄 Nueva cotización</button>
   </div>
 
+  <!-- Datalists para autocompletado de ciudades -->
+  <datalist id="datalist-colombia"></datalist>
+  <datalist id="datalist-internacional"></datalist>
 </div>
 
 <script>
@@ -1089,7 +1093,27 @@
       hint.classList.toggle('hidden', !!fechaInput.value);
     });
     poblarDestinos('nacional');
+    construirDataLists();
   });
+
+  function construirDataLists() {
+    // Colombia: nombre limpio + código IATA entre paréntesis como valor sugerido
+    const dlCol = document.getElementById('datalist-colombia');
+    DESTINOS_NACIONALES.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.replace(/\(.*\)/, '').trim(); // solo nombre sin código
+      opt.label = c;
+      dlCol.appendChild(opt);
+    });
+    // Internacional: nombre de ciudad
+    const dlInt = document.getElementById('datalist-internacional');
+    DESTINOS_INTERNACIONALES.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.ciudad.replace(/\(.*\)/, '').trim();
+      opt.label = `${d.ciudad} — ${d.pais}`;
+      dlInt.appendChild(opt);
+    });
+  }
 
   // ─── TIPO VIAJE ───────────────────────────────────────────────────────────
 
