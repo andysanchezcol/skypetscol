@@ -502,6 +502,27 @@
 
     .date-hint { display: none; }
 
+    /* Input con prefijo $ */
+    .input-prefix-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .input-prefix-wrap input {
+      padding-left: 28px;
+      margin-bottom: 0;
+    }
+    .input-prefix-sign {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-weight: 600;
+      pointer-events: none;
+      font-size: 16px;
+      line-height: 1;
+    }
+
     /* Section hidden */
     .section-hidden { display: none; }
 
@@ -570,6 +591,39 @@
   .svc-check-row input[type="checkbox"] { width:18px;height:18px;accent-color:var(--teal);flex-shrink:0;cursor:pointer; }
   .svc-check-label { flex:1; font-size:13px; font-weight:500; color:var(--ink); }
   .svc-check-price { font-size:13px; font-weight:600; color:var(--teal); white-space:nowrap; }
+
+  /* ── SERVICIOS PERSONALIZADOS ────────────────────────────────────── */
+  .svc-custom-row {
+    background: rgba(255,250,236,0.6); backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(43,36,24,0.12); border-radius: 10px;
+    padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .svc-custom-row input[type="text"] {
+    margin-bottom: 0; padding: 8px 12px; font-size: 14px;
+    border-radius: 8px; border: 1.5px solid rgba(43,36,24,0.14);
+    background: rgba(255,255,255,0.7); font-family: 'Poppins', sans-serif;
+    color: var(--ink); width: 100%;
+  }
+  .svc-custom-row input[type="text"]:focus {
+    border-color: var(--orange); box-shadow: 0 0 0 2px rgba(255,118,0,0.12); outline: none;
+  }
+  .svc-custom-bottom { display: flex; gap: 6px; align-items: center; }
+  .svc-custom-bottom .input-prefix-wrap { flex: 1; margin-bottom: 0; }
+  .svc-custom-bottom .input-prefix-wrap input { padding: 8px 12px 8px 26px; font-size: 14px; }
+  .svc-custom-bottom .input-prefix-sign { font-size: 14px; left: 10px; }
+  .btn-remove-svc {
+    width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid rgba(229,68,58,0.25);
+    background: rgba(229,68,58,0.08); color: var(--danger); font-size: 15px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .15s;
+  }
+  .btn-remove-svc:hover { background: rgba(229,68,58,0.18); }
+  .btn-add-custom-svc {
+    width: 100%; padding: 10px; border-radius: 100px; border: 1.5px dashed rgba(43,36,24,0.18);
+    background: rgba(255,250,236,0.5); color: var(--muted); font-family: 'Poppins', sans-serif;
+    font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s;
+  }
+  .btn-add-custom-svc:hover { background: rgba(255,188,0,0.12); border-color: var(--yellow); color: var(--ink); }
 
   /* ── LOGIN OVERLAY ─────────────────────────────────────────────────── */
   #login-overlay {
@@ -763,7 +817,11 @@
           <option value="Pasto (PSO)">Pasto (PSO)</option>
           <option value="Montería (MTR)">Montería (MTR)</option>
           <option value="San Andrés (ADZ)">San Andrés (ADZ)</option>
+          <option value="__otra_col__">+ Otra ciudad</option>
         </select>
+      </div>
+      <div id="wrap-otra-col" class="section-hidden" style="margin-top:8px;margin-bottom:14px">
+        <input type="text" id="otra-col-texto" placeholder="Escribe la ciudad destino en Colombia" style="margin-bottom:0" oninput="calcular()">
       </div>
       <div id="wrap-aviso-vuelo-interno" class="section-hidden" style="background:rgba(255,188,0,0.14);border:1.5px solid rgba(255,188,0,0.45);border-radius:10px;padding:10px 14px;margin-top:8px;font-size:12px;color:var(--ink)">
         <strong>+$500.000 COP</strong> — vuelo interno incluido (ciudad diferente a Bogotá)
@@ -796,7 +854,10 @@
     </a>
 
     <label id="label-tq-ida">Precio IDA + VUELTA — total Google Flights (COP)</label>
-    <input type="text" inputmode="numeric" id="tiquete-ida" placeholder="Ej: 1.700.000" oninput="onTiqueteInput(this)">
+    <div class="input-prefix-wrap">
+      <span class="input-prefix-sign">$</span>
+      <input type="text" inputmode="numeric" id="tiquete-ida" placeholder="1.700.000" oninput="onTiqueteInput(this)">
+    </div>
 
     <div id="wrap-mismo-dia" class="section-hidden">
       <div class="toggle-row">
@@ -877,12 +938,10 @@
       <label class="svc-check-row"><input type="checkbox" class="svc-check" data-precio="95000"  onchange="calcular()"><span class="svc-check-label">Pechera</span><span class="svc-check-price">$95.000</span></label>
       <label class="svc-check-row"><input type="checkbox" class="svc-check" data-precio="120000" onchange="calcular()"><span class="svc-check-label">Anexo Europa</span><span class="svc-check-price">$120.000</span></label>
       <label class="svc-check-row"><input type="checkbox" class="svc-check" data-precio="130000" onchange="calcular()"><span class="svc-check-label">CDC</span><span class="svc-check-price">$130.000</span></label>
-      <label class="svc-check-row" id="row-otro-svc">
-        <input type="checkbox" class="svc-check" id="check-otro-svc" data-precio="0" onchange="onOtroSvcChange()">
-        <span class="svc-check-label">Otro</span>
-        <input type="text" inputmode="numeric" id="otro-svc-valor" placeholder="Valor" oninput="onOtroSvcValor(this)" class="section-hidden" style="width:110px;padding:6px 10px;font-size:13px;border-radius:8px;border:1.5px solid rgba(43,36,24,0.14);background:rgba(255,250,236,0.7);font-family:'Poppins',sans-serif;color:var(--ink);margin-left:auto">
-      </label>
     </div>
+    <!-- Servicios personalizados -->
+    <div id="wrap-custom-svcs" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+    <button type="button" class="btn-add-custom-svc" onclick="addCustomSvc()">+ Otro servicio</button>
 
     <div style="display:flex;gap:10px">
       <button class="btn btn-orange" style="background:var(--bg2);color:var(--ink);flex:0 0 auto;width:auto;padding:16px 20px" onclick="irPaso1()">← Atrás</button>
@@ -1160,24 +1219,42 @@
     document.querySelectorAll('.svc-check:checked').forEach(cb => {
       total += parseInt(cb.dataset.precio) || 0;
     });
+    document.querySelectorAll('.svc-custom-valor').forEach(inp => {
+      total += parseInt(inp.dataset.rawValue || '0') || 0;
+    });
     return total;
   }
 
-  function onOtroSvcChange() {
-    const cb = document.getElementById('check-otro-svc');
-    const inp = document.getElementById('otro-svc-valor');
-    inp.classList.toggle('section-hidden', !cb.checked);
-    if (!cb.checked) { inp.value = ''; inp.dataset.rawValue = ''; cb.dataset.precio = 0; }
+  function addCustomSvc() {
+    const container = document.getElementById('wrap-custom-svcs');
+    const row = document.createElement('div');
+    row.className = 'svc-custom-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Nombre del servicio" class="svc-custom-nombre" oninput="calcular()">
+      <div class="svc-custom-bottom">
+        <div class="input-prefix-wrap">
+          <span class="input-prefix-sign">$</span>
+          <input type="text" inputmode="numeric" placeholder="Valor" class="svc-custom-valor" oninput="onCustomSvcValor(this)">
+        </div>
+        <button type="button" class="btn-remove-svc" onclick="removeCustomSvc(this)">🗑</button>
+      </div>
+    `;
+    container.appendChild(row);
+    row.querySelector('.svc-custom-nombre').focus();
     calcular();
   }
 
-  function onOtroSvcValor(el) {
+  function removeCustomSvc(btn) {
+    btn.closest('.svc-custom-row').remove();
+    calcular();
+  }
+
+  function onCustomSvcValor(el) {
     const raw = el.value.replace(/\./g, '').replace(/[^\d]/g, '');
     const num = parseInt(raw, 10) || 0;
     el.dataset.rawValue = raw;
     if (raw) el.value = num.toLocaleString('es-CO');
     else el.value = '';
-    document.getElementById('check-otro-svc').dataset.precio = num;
     calcular();
   }
 
@@ -1188,7 +1265,11 @@
 
   function onDestinoColChange() {
     const val = document.getElementById('destino-col').value;
+    const esOtra = val === '__otra_col__';
     const esBogota = val.startsWith('Bogotá');
+    document.getElementById('wrap-otra-col').classList.toggle('section-hidden', !esOtra);
+    if (!esOtra) document.getElementById('otra-col-texto').value = '';
+    // Vuelo interno: aplica si no es Bogotá (incluyendo "otra ciudad")
     document.getElementById('wrap-aviso-vuelo-interno').classList.toggle('section-hidden', esBogota || !val);
     calcular();
   }
@@ -1359,10 +1440,12 @@
     const pais   = state.otraRegion || state.paisDestino || 'default';
     const vt     = VIATICOS[pais] || VIATICOS['default'];
     let vueloInterno = document.getElementById('vuelo-interno')?.checked ? 500000 : 0;
-    // Hacia Colombia: vuelo interno automático si destino ≠ Bogotá
+    // Hacia Colombia: vuelo interno automático si destino ≠ Bogotá (incluye "otra ciudad")
     if (state.tipo === 'hacia-colombia') {
       const destCol = document.getElementById('destino-col')?.value || '';
       vueloInterno = destCol && !destCol.startsWith('Bogotá') ? 500000 : 0;
+      // "Otra ciudad" siempre suma vuelo interno
+      if (destCol === '__otra_col__') vueloInterno = 500000;
     }
 
     const serviciosExtra = getServiciosTotal();
@@ -1480,7 +1563,9 @@
       ? (document.getElementById('otra-ciudad').value || 'Otra ciudad')
       : destino.replace(/\(.*\)/,'').trim();
     const destColVal    = document.getElementById('destino-col')?.value || '';
-    const destColNombre = destColVal.replace(/\(.*\)/,'').trim() || 'Bogotá';
+    const destColNombre = destColVal === '__otra_col__'
+      ? (document.getElementById('otra-col-texto')?.value?.trim() || 'Otra ciudad')
+      : (destColVal.replace(/\(.*\)/,'').trim() || 'Bogotá');
 
     const rutaDisplay = state.tipo === 'hacia-colombia'
       ? `${destinoNombre} → ${destColNombre}`
@@ -1494,7 +1579,7 @@
         : '4 días · 3 noches';
 
     const vueloInternoCheckbox = document.getElementById('vuelo-interno')?.checked;
-    const vueloInternoAuto = state.tipo === 'hacia-colombia' && destColVal && !destColVal.startsWith('Bogotá');
+    const vueloInternoAuto = state.tipo === 'hacia-colombia' && destColVal && (!destColVal.startsWith('Bogotá') || destColVal === '__otra_col__');
     const vueloInternoActivo = vueloInternoCheckbox || vueloInternoAuto;
     const esNacional = state.tipo === 'nacional';
     const tipoLabel  = state.tipo === 'hacia-colombia' ? 'Hacia Colombia' : esNacional ? 'Nacional' : 'Internacional';
@@ -1506,8 +1591,14 @@
       const precio = parseInt(cb.dataset.precio) || 0;
       if (label && precio > 0) svcLineas.push(`  - ${label}: $${precio.toLocaleString('es-CO')} COP`);
     });
+    document.querySelectorAll('.svc-custom-row').forEach(row => {
+      const nombre = row.querySelector('.svc-custom-nombre')?.value?.trim();
+      const valorInp = row.querySelector('.svc-custom-valor');
+      const precio = parseInt(valorInp?.dataset.rawValue || '0') || 0;
+      if (nombre && precio > 0) svcLineas.push(`  - ${nombre}: $${precio.toLocaleString('es-CO')} COP`);
+    });
     const notaServicios = svcLineas.length
-      ? `\nServicios adicionales:\n${svcLineas.join('\n')}\n` : '';
+      ? `\nServicios incluidos en esta cotizacion:\n${svcLineas.join('\n')}\n` : '';
 
     // WhatsApp
     const aerolineaWA = aerolinea || 'Por confirmar';
@@ -1556,14 +1647,14 @@
     if (document.getElementById('otra-ciudad'))   document.getElementById('otra-ciudad').value = '';
     if (document.getElementById('otra-origen-texto')) document.getElementById('otra-origen-texto').value = '';
     document.getElementById('wrap-otra-origen').classList.add('section-hidden');
-    document.querySelectorAll('.svc-check').forEach(cb => { cb.checked = false; cb.dataset.precio = cb.dataset.precio; });
-    document.getElementById('otro-svc-valor').value = '';
-    document.getElementById('otro-svc-valor').classList.add('section-hidden');
-    document.getElementById('check-otro-svc').dataset.precio = 0;
+    document.querySelectorAll('.svc-check').forEach(cb => { cb.checked = false; });
+    document.getElementById('wrap-custom-svcs').innerHTML = '';
     if (document.getElementById('otra-region'))   document.getElementById('otra-region').value = '';
     if (document.getElementById('destino-col'))   document.getElementById('destino-col').value = '';
     document.getElementById('wrap-otra-ciudad').classList.add('section-hidden');
     document.getElementById('wrap-destino-col').classList.add('section-hidden');
+    document.getElementById('wrap-otra-col').classList.add('section-hidden');
+    if (document.getElementById('otra-col-texto')) document.getElementById('otra-col-texto').value = '';
     document.getElementById('wrap-aviso-vuelo-interno').classList.add('section-hidden');
     state = { tipo: 'nacional', dias: 4, mismoDia: true, paisDestino: null, otraRegion: null, moneda: 'COP', vueloInterno: false, resultadoCOP: 0, resultadoExtranjero: 0 };
     setTipo('nacional');
