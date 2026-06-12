@@ -1,0 +1,7 @@
+Options -Indexes
+DirectoryIndex index.html
+
+<Files ".git">
+    Order allow,deny
+    Deny from all
+</Files>
