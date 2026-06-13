@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SkyPets — Comisiones</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --orange: #FF7600;
+    --teal: #008D83;
+    --yellow: #FFBC00;
+    --ink: #2B2418;
+    --bg1: #FFFAEC;
+    --muted: #6B5540;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg1);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(16px);
+    border: 1.5px solid rgba(43,36,24,0.1);
+    box-shadow: 0 8px 32px rgba(43,36,24,0.1);
+    border-radius: 24px;
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  .logo {
+    width: 72px;
+    height: 72px;
+    background: var(--orange);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 32px;
+  }
+  h1 { font-family: 'Fredoka', sans-serif; font-size: 26px; color: var(--ink); margin-bottom: 6px; }
+  p.sub { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+  .field { margin-bottom: 16px; text-align: left; }
+  label { display: block; font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+  input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid rgba(43,36,24,0.14);
+    border-radius: 12px;
+    background: rgba(255,250,236,0.55);
+    backdrop-filter: blur(8px);
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus { border-color: var(--orange); }
+  .btn {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255,118,0,0.9);
+    color: white;
+    border: none;
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(255,118,0,0.38);
+    backdrop-filter: blur(12px);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 8px;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,118,0,0.52); }
+  .btn:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
+  .error {
+    background: rgba(229,68,58,0.1);
+    border: 1px solid rgba(229,68,58,0.3);
+    color: #E5443A;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .btn-google {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255,255,255,0.95);
+    color: #2B2418;
+    border: 1.5px solid rgba(43,36,24,0.14);
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(43,36,24,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .btn-google:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(43,36,24,0.14); }
+  .divider { display: flex; align-items: center; gap: 12px; margin: 4px 0 20px; }
+  .divider hr { flex: 1; border: none; border-top: 1px solid rgba(43,36,24,0.1); }
+  .divider span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<div class="card">
+  <div class="logo">🐾</div>
+  <h1>SkyPets Comisiones</h1>
+  <p class="sub">Ingresa para calcular pagos semanales</p>
+  <div class="error" id="err"></div>
+  <button class="btn-google" onclick="loginGoogle()">
+    <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 19 12 24 12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.3 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8H6.3C9.6 35.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.3 4.1-4.1 5.5l6.2 5.2C37 39.1 44 34 44 24c0-1.3-.1-2.7-.4-3.9z"/></svg>
+    Continuar con Google
+  </button>
+  <div class="divider"><hr/><span>o ingresa con correo</span><hr/></div>
+  <div class="field">
+    <label>Correo electrónico</label>
+    <input type="email" id="email" placeholder="tu@correo.com" autocomplete="email"/>
+  </div>
+  <div class="field">
+    <label>Contraseña</label>
+    <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+  </div>
+  <button class="btn" id="loginBtn" onclick="login()">Ingresar</button>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://yicrkuntrsiaonkrfzlm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpY3JrdW50cnNpYW9ua3JmemxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTgzODUsImV4cCI6MjA5NTg5NDM4NX0.Layg3dN6QF6U6po7zkqbn8393LDvApdp2nGISKcMrU8';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Manejar callback OAuth (Google redirige de vuelta aquí)
+sb.auth.onAuthStateChange((event, session) => {
+  if (session) window.location.href = 'app.html';
+});
+
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) window.location.href = 'app.html';
+});
+
+async function loginGoogle() {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: 'https://skypetscol.com/comisiones/' }
+  });
+  if (error) {
+    const err = document.getElementById('err');
+    err.textContent = 'Error al conectar con Google.';
+    err.style.display = 'block';
+  }
+}
+
+async function login() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('err');
+  err.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Ingresando…';
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) {
+    err.textContent = 'Correo o contraseña incorrectos.';
+    err.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Ingresar';
+  } else {
+    window.location.href = 'app.html';
+  }
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+</script>
+</body>
+</html>
