@@ -53,6 +53,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 img { display: block; max-width: 100%; }
+.skip-link { position:absolute; top:-100%; left:16px; z-index:9999; padding:10px 20px; background:var(--orange); color:#fff; border-radius:0 0 10px 10px; font-weight:600; text-decoration:none; transition:top 0.15s; }
+.skip-link:focus { top:0; }
 
 /* ─── TOKENS ─── */
 :root {
@@ -1326,7 +1328,7 @@ img { display: block; max-width: 100%; }
 .blog-sm .blog-thumb { height: 190px; }
 .blog-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.45s ease; }
 .blog-card:hover .blog-thumb img { transform: scale(1.05); }
-.blog-thumb-fb { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+.blog-thumb-fb { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, var(--bg3) 0%, var(--bg2) 100%); }
 .blog-cat {
   position: absolute; bottom: 14px; left: 14px;
   background: rgba(255,255,255,0.90);
@@ -1842,6 +1844,8 @@ footer {
 </head>
 <body>
 
+<a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+
 <!-- ══ NAV ══ -->
 
 
@@ -1850,6 +1854,7 @@ footer {
 
 <!-- ══ HERO ══ -->
 <section class="hero" id="heroSection">
+<a id="main-content" tabindex="-1" style="position:absolute"></a>
   <!-- Slides con Ken Burns -->
   <div class="hero-slide active">
     <!-- LCP element: img visible para que el browser lo detecte como LCP candidate -->
@@ -1913,17 +1918,17 @@ footer {
   <div class="stats-inner">
     <div class="stat-item reveal">
       <div class="stat-icon">✈️</div>
-      <span class="stat-num" data-target="620">0</span>
+      <span class="stat-num" data-target="620">620</span>
       <span class="stat-lbl">Viajeros internacionales</span>
     </div>
     <div class="stat-item reveal d1">
       <div class="stat-icon">🧬</div>
-      <span class="stat-num teal-num" data-target="384">0</span>
+      <span class="stat-num teal-num" data-target="384">384</span>
       <span class="stat-lbl">Serologías realizadas</span>
     </div>
     <div class="stat-item reveal d2">
       <div class="stat-icon">🐾</div>
-      <span class="stat-num" data-target="169">0</span>
+      <span class="stat-num" data-target="169">169</span>
       <span class="stat-lbl">Pet Nannys</span>
     </div>
     <div class="stat-item reveal d3">
@@ -1986,7 +1991,7 @@ footer {
       <!-- CARD 4 -->
       <div class="pw-card" data-index="3">
         <div class="pw-img-wrap">
-          <img src="/assets/images/cliente-laika.webp" alt="Laika viajando a Punta Cana">
+          <img src="/assets/images/cliente-laika.webp" alt="Laika viajando a Punta Cana" width="600" height="600" loading="lazy">
           <div class="pw-badge">Cabina ✈️</div>
           <div class="pw-info">
             <span class="pw-name">Laika</span>
@@ -2302,8 +2307,7 @@ footer {
       <a href="https://skypetscol.com/como-preparar-a-tu-perro-para-volar-sin-estres/"
          class="blog-card blog-featured reveal-l">
         <div class="blog-thumb">
-          <img src="https://skypetscol.com/wp-content/uploads/2025/10/1-1.webp" alt="Perro en vuelo"
-               onerror="this.parentElement.innerHTML='<div class=blog-thumb-fb>🐶</div>'">
+          <div class="blog-thumb-fb">🐶</div>
           <span class="blog-cat">Peluditos Viajeros</span>
         </div>
         <div class="blog-body">
@@ -2319,8 +2323,7 @@ footer {
       <a href="https://skypetscol.com/como-preparar-a-tu-mascota-antes-de-viajar-guia-completa-para-duenos-de-perros-y-gatos/"
          class="blog-card blog-sm reveal-r">
         <div class="blog-thumb">
-          <img src="https://skypetscol.com/wp-content/uploads/2025/10/Gato-SkyPets.webp" alt="Gato viajero"
-               onerror="this.parentElement.innerHTML='<div class=blog-thumb-fb>🐱</div>'">
+          <div class="blog-thumb-fb">🐱</div>
           <span class="blog-cat">Perros &amp; Gatos</span>
         </div>
         <div class="blog-body">
