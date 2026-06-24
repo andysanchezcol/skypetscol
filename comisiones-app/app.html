@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SkyPets — Calcular Comisiones</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<link rel="icon" type="image/webp" href="/assets/images/Logo_SkyPets.webp">
+<link rel="apple-touch-icon" href="/assets/images/Logo_SkyPets.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --orange: #FF7600;
+  --teal: #008D83;
+  --yellow: #FFBC00;
+  --success: #71CC1E;
+  --ink: #2B2418;
+  --bg1: #FFFAEC;
+  --bg2: #FFEFC2;
+  --muted: #6B5540;
+  --cream: #FFFAEC;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Poppins', sans-serif; background: var(--bg1); min-height: 100vh; padding-bottom: 40px; }
+
+/* NAV */
+nav {
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(43,36,24,0.08);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+nav .brand { font-family: 'Fredoka', sans-serif; font-size: 20px; color: var(--orange); }
+nav .nav-links { display: flex; gap: 8px; align-items: center; }
+.btn-sm {
+  padding: 8px 16px;
+  border-radius: 100px;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-teal { background: rgba(0,141,131,0.9); color: white; box-shadow: 0 4px 16px rgba(0,141,131,0.3); }
+.btn-teal:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,141,131,0.4); }
+.btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid rgba(43,36,24,0.14); }
+.btn-ghost:hover { background: rgba(43,36,24,0.05); }
+
+/* MAIN */
+main { max-width: 600px; margin: 0 auto; padding: 24px 16px; }
+h2 { font-family: 'Fredoka', sans-serif; font-size: 24px; color: var(--ink); margin-bottom: 4px; }
+.subtitle { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+/* CARDS */
+.card {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(43,36,24,0.1);
+  box-shadow: 0 8px 32px rgba(43,36,24,0.08);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.card h3 { font-family: 'Fredoka', sans-serif; font-size: 17px; color: var(--ink); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+/* UPLOAD ZONE */
+.upload-zone {
+  border: 2px dashed rgba(255,118,0,0.35);
+  border-radius: 14px;
+  padding: 32px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  background: rgba(255,118,0,0.03);
+}
+.upload-zone:hover, .upload-zone.drag { background: rgba(255,118,0,0.07); border-color: var(--orange); }
+.upload-zone .icon { font-size: 36px; margin-bottom: 10px; }
+.upload-zone p { color: var(--muted); font-size: 14px; }
+.upload-zone strong { color: var(--orange); }
+.upload-zone input[type=file] { display: none; }
+.file-ok { color: var(--success); font-weight: 600; font-size: 14px; margin-top: 10px; display: none; }
+
+/* FORM FIELDS */
+.field { margin-bottom: 14px; }
+label { display: block; font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+select, input[type=date], input[type=number], input[type=text] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid rgba(43,36,24,0.14);
+  border-radius: 12px;
+  background: rgba(255,250,236,0.55);
+  backdrop-filter: blur(8px);
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+}
+select:focus, input:focus { border-color: var(--orange); }
+
+/* MANUAL ITEMS */
+.manual-list { margin-bottom: 12px; }
+.manual-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,188,0,0.1);
+  border: 1px solid rgba(255,188,0,0.3);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+.manual-item span { flex: 1; color: var(--ink); }
+.manual-item .remove { background: none; border: none; color: #E5443A; cursor: pointer; font-size: 18px; line-height: 1; padding: 0 2px; }
+.add-manual-row { display: flex; gap: 8px; }
+.add-manual-row input { flex: 2; }
+.add-manual-row input[type=number] { flex: 1; }
+.btn-add {
+  padding: 12px 16px;
+  background: rgba(255,188,0,0.9);
+  color: var(--ink);
+  border: none;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(255,188,0,0.35);
+  transition: transform 0.2s;
+}
+.btn-add:hover { transform: translateY(-1px); }
+
+/* MAIN CTA */
+.btn-main {
+  width: 100%;
+  padding: 16px;
+  background: rgba(255,118,0,0.9);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255,118,0,0.38);
+  backdrop-filter: blur(12px);
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 4px;
+}
+.btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,118,0,0.52); }
+.btn-main:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* RESULTADO */
+#resultado { display: none; }
+
+/* RECIBO (imagen) */
+#recibo {
+  background: linear-gradient(145deg, #FFFAEC 0%, #FFF3D0 100%);
+  border-radius: 20px;
+  padding: 28px 24px;
+  font-family: 'Poppins', sans-serif;
+}
+.recibo-header { text-align: center; margin-bottom: 20px; }
+.recibo-header .brand-name { font-family: 'Fredoka', sans-serif; font-size: 22px; color: var(--orange); }
+.recibo-header .semana { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.recibo-asesora { font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.recibo-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.divider { border: none; border-top: 1.5px dashed rgba(43,36,24,0.15); margin: 16px 0; }
+.detalle-titulo { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px; }
+.detalle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+.detalle-row .desc { font-size: 13px; color: var(--ink); flex: 1; }
+.detalle-row .qty { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.detalle-row .val { font-size: 13px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+.totales-box {
+  background: rgba(255,118,0,0.08);
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 8px;
+}
+.total-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink); margin-bottom: 8px; }
+.total-row:last-child { margin-bottom: 0; }
+.total-row.grand { font-size: 16px; font-weight: 700; color: var(--orange); padding-top: 10px; border-top: 1.5px solid rgba(255,118,0,0.2); margin-top: 8px; }
+.recibo-footer { text-align: center; margin-top: 18px; font-size: 11px; color: var(--muted); }
+
+/* ACCIONES POST-RESULTADO */
+.acciones { display: flex; gap: 10px; margin-top: 16px; }
+.acciones button { flex: 1; }
+.btn-save {
+  padding: 14px;
+  background: rgba(113,204,30,0.9);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(113,204,30,0.35);
+  transition: transform 0.2s;
+}
+.btn-save:hover { transform: translateY(-1px); }
+.btn-download {
+  padding: 14px;
+  background: rgba(0,141,131,0.9);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,141,131,0.3);
+  transition: transform 0.2s;
+}
+.btn-download:hover { transform: translateY(-1px); }
+
+/* NOTIF */
+.notif {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: var(--cream);
+  padding: 12px 24px; border-radius: 100px;
+  font-size: 14px; font-weight: 500;
+  box-shadow: 0 8px 32px rgba(43,36,24,0.25);
+  opacity: 0; transition: opacity 0.3s;
+  white-space: nowrap; z-index: 999;
+}
+.notif.show { opacity: 1; }
+
+/* INFO badge */
+.badge {
+  display: inline-block;
+  background: rgba(255,188,0,0.2);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 100px;
+  margin-left: 8px;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">🐾 SkyPets Comisiones</span>
+  <div class="nav-links">
+    <button class="btn-sm btn-teal" onclick="window.location.href='historial.html'">Historial</button>
+    <button class="btn-sm btn-ghost" onclick="cerrarSesion()">Salir</button>
+  </div>
+</nav>
+
+<main>
+  <h2>Calcular pago semanal</h2>
+  <p class="subtitle">Selecciona la asesora y la semana — los datos se cargan desde Arca</p>
+
+  <!-- PASO 1: PARÁMETROS (antes Paso 2) -->
+  <div class="card">
+    <h3>⚙️ Paso 1 — Parámetros</h3>
+    <div class="field">
+      <label>Asesora</label>
+      <select id="selectAsesora">
+        <option value="">— Cargando asesoras… —</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Semana desde (martes)</label>
+      <input type="date" id="fechaInicio"/>
+    </div>
+    <div class="field">
+      <label>Semana hasta (lunes)</label>
+      <input type="date" id="fechaFin"/>
+    </div>
+  </div>
+
+  <!-- PASO 2: EXTRAS MANUALES -->
+  <div class="card">
+    <h3>➕ Paso 2 — Comisiones adicionales <span class="badge">opcional</span></h3>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:14px;">Agrega guacales u otros ítems registrados fuera de Arca.</p>
+    <div class="manual-list" id="manualList"></div>
+    <div class="add-manual-row">
+      <input type="text" id="manualDesc" placeholder="Descripción (ej. Guacal M)"/>
+      <input type="number" id="manualQty" placeholder="Cant." min="1" value="1" style="max-width:80px;"/>
+      <input type="number" id="manualVal" placeholder="$ comisión" min="0" step="1000"/>
+      <button class="btn-add" onclick="agregarManual()">+ Agregar</button>
+    </div>
+  </div>
+
+  <!-- CALCULAR -->
+  <button class="btn-main" id="btnCalcular" onclick="calcular()" disabled>Calcular pago</button>
+  <!-- disabled se quita en cargarAsesoras() una vez que Supabase responde -->
+
+  <!-- RESULTADO -->
+  <div id="resultado">
+    <div class="card" style="margin-top:20px; padding:0; overflow:hidden;">
+      <!-- Este div se captura como imagen -->
+      <div id="recibo" style="padding:28px 24px;">
+        <div class="recibo-header">
+          <div class="brand-name">🐾 SkyPets Colombia</div>
+          <div class="semana" id="reciboSemana"></div>
+        </div>
+        <div class="recibo-label">Liquidación semanal para</div>
+        <div class="recibo-asesora" id="reciboAsesora"></div>
+        <hr class="divider"/>
+        <div class="detalle-titulo">Detalle de ventas y comisiones</div>
+        <div id="reciboDetalle"></div>
+        <div class="totales-box">
+          <div class="total-row"><span>Comisiones</span><span id="reciboComisiones"></span></div>
+          <div class="total-row"><span>Sueldo básico semanal</span><span>$250.000</span></div>
+          <div class="total-row grand"><span>Total a pagar</span><span id="reciboTotal"></span></div>
+        </div>
+        <div class="recibo-footer">Generado con SkyPets Comisiones · skypetscol.com</div>
+      </div>
+    </div>
+    <div class="acciones">
+      <button class="btn-download" onclick="descargarImagen()">⬇ Descargar imagen</button>
+      <button class="btn-save" id="btnGuardar" onclick="guardarPago()">✓ Guardar pago</button>
+    </div>
+  </div>
+</main>
+
+<div class="notif" id="notif"></div>
+
+<script>
+const SUPABASE_URL = 'https://yicrkuntrsiaonkrfzlm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpY3JrdW50cnNpYW9ua3JmemxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTgzODUsImV4cCI6MjA5NTg5NDM4NX0.Layg3dN6QF6U6po7zkqbn8393LDvApdp2nGISKcMrU8';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Tabla de comisiones fijas
+const COMISIONES = {
+  'Certificado Apoyo Emocional': 10000,
+  'Certificado de Servicio': 20000,
+  'Serología': 30000,
+  'Serología Gatos Europa': 50000,
+  'Certificado Apoyo Psiquiatría': 10000,
+  'Negro': 10000,
+  'Rojo': 10000,
+  'Rosado': 10000,
+  'Guacal Blando Premium': 10000,
+};
+const BASICO = 250000;
+
+let manualItems = [];
+let resultadoActual = null;
+
+// Schema arca en Supabase
+const arca = sb.schema('arca');
+
+// Auth guard + cargar asesoras
+sb.auth.getSession().then(({ data }) => {
+  if (!data.session) { window.location.href = 'index.html'; return; }
+  cargarAsesoras();
+});
+
+async function cerrarSesion() {
+  await sb.auth.signOut();
+  window.location.href = 'index.html';
+}
+
+// Semana actual (martes pasado → lunes próximo)
+function semanaActual() {
+  const hoy = new Date();
+  const dia = hoy.getDay();
+  const desdeMar = (dia >= 2) ? dia - 2 : dia + 5;
+  const martes = new Date(hoy); martes.setDate(hoy.getDate() - desdeMar);
+  const lunes = new Date(martes); lunes.setDate(martes.getDate() + 6);
+  return { inicio: fmt(martes), fin: fmt(lunes) };
+}
+function fmt(d) { return d.toISOString().slice(0, 10); }
+
+const semana = semanaActual();
+document.getElementById('fechaInicio').value = semana.inicio;
+document.getElementById('fechaFin').value = semana.fin;
+
+// CARGAR ASESORAS DESDE arca.sales
+async function cargarAsesoras() {
+  const { data, error } = await arca
+    .from('sales')
+    .select('seller_name')
+    .not('seller_name', 'is', null)
+    .order('seller_name');
+
+  const sel = document.getElementById('selectAsesora');
+  if (error || !data) {
+    sel.innerHTML = '<option value="">— Error al cargar —</option>';
+    return;
+  }
+  const nombres = [...new Set(data.map(r => r.seller_name).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">— Selecciona asesora —</option>' +
+    nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+  document.getElementById('btnCalcular').disabled = false;
+}
+
+function limpiar(v) { return String(v).trim(); }
+
+// MANUALES
+function agregarManual() {
+  const desc = document.getElementById('manualDesc').value.trim();
+  const qty = parseInt(document.getElementById('manualQty').value) || 1;
+  const val = parseInt(document.getElementById('manualVal').value) || 0;
+  if (!desc || !val) { mostrarNotif('Completa descripción y valor'); return; }
+  manualItems.push({ desc, qty, val, comision: qty * val });
+  renderManuales();
+  document.getElementById('manualDesc').value = '';
+  document.getElementById('manualQty').value = '1';
+  document.getElementById('manualVal').value = '';
+}
+
+function renderManuales() {
+  const list = document.getElementById('manualList');
+  list.innerHTML = manualItems.map((item, i) => `
+    <div class="manual-item">
+      <span>${item.desc} × ${item.qty} — <strong>${fmtPeso(item.comision)}</strong></span>
+      <button class="remove" onclick="quitarManual(${i})">×</button>
+    </div>`).join('');
+}
+
+function quitarManual(i) { manualItems.splice(i, 1); renderManuales(); }
+
+// CALCULAR — consulta arca.sales + sale_items + products
+async function calcular() {
+  const asesora = document.getElementById('selectAsesora').value;
+  if (!asesora) { mostrarNotif('Selecciona una asesora'); return; }
+
+  const fechaInicio = document.getElementById('fechaInicio').value;
+  const fechaFin = document.getElementById('fechaFin').value;
+  if (!fechaInicio || !fechaFin) { mostrarNotif('Selecciona el rango de fechas'); return; }
+
+  const btn = document.getElementById('btnCalcular');
+  btn.textContent = 'Consultando Arca…';
+  btn.disabled = true;
+
+  // Traer ventas de la asesora en el rango, con sus ítems y productos
+  const { data: salesData, error } = await arca
+    .from('sales')
+    .select('id, description, created_at, sale_items(quantity, unit_price, products(name, type))')
+    .eq('seller_name', asesora)
+    .gte('created_at', fechaInicio + 'T00:00:00+00:00')
+    .lte('created_at', fechaFin + 'T23:59:59+00:00')
+    .eq('status', 'pagada');
+
+  btn.textContent = 'Calcular pago';
+  btn.disabled = false;
+
+  if (error) { mostrarNotif('Error: ' + error.message); return; }
+
+  // Construir ítems de detalle — una línea por sale_item que tenga comisión
+  const detalleItems = [];
+  for (const sale of (salesData ?? [])) {
+    const items = sale.sale_items ?? [];
+    if (items.length === 0) {
+      // Venta sin ítems (registro simple): intentar mapear por description
+      const prod = limpiar(sale.description ?? '');
+      const comisionUnit = COMISIONES[prod];
+      if (comisionUnit) {
+        detalleItems.push({ desc: prod, prod: null, cant: 1, comisionUnit, comision: comisionUnit });
+      }
+    } else {
+      for (const item of items) {
+        const prodName = item.products?.name ?? '';
+        const comisionUnit = COMISIONES[prodName];
+        if (!comisionUnit) continue;
+        const cant = item.quantity ?? 1;
+        const saleDesc = sale.description || prodName;
+        detalleItems.push({
+          desc: saleDesc,
+          prod: saleDesc !== prodName ? prodName : null,
+          cant,
+          comisionUnit,
+          comision: cant * comisionUnit,
+        });
+      }
+    }
+  }
+
+  const allItems = [
+    ...detalleItems,
+    ...manualItems.map(m => ({ desc: m.desc, cant: m.qty, comisionUnit: m.val, comision: m.comision, esManual: true }))
+  ];
+
+  const totalComisiones = allItems.reduce((s, i) => s + i.comision, 0);
+  const totalPagar = totalComisiones + BASICO;
+
+  resultadoActual = {
+    asesora,
+    semanaInicio: fechaInicio,
+    semanaFin: fechaFin,
+    items: allItems,
+    totalComisiones,
+    basico: BASICO,
+    total: totalPagar,
+  };
+
+  renderRecibo(resultadoActual);
+  document.getElementById('resultado').style.display = 'block';
+  document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('btnGuardar').disabled = false;
+  document.getElementById('btnGuardar').textContent = '✓ Guardar pago';
+}
+
+function fmtPeso(v) {
+  return '$' + Math.round(v).toLocaleString('es-CO');
+}
+
+function renderRecibo(r) {
+  document.getElementById('reciboAsesora').textContent = r.asesora;
+  document.getElementById('reciboSemana').textContent =
+    `Semana del ${fmtFecha(r.semanaInicio)} al ${fmtFecha(r.semanaFin)}`;
+
+  const det = document.getElementById('reciboDetalle');
+  if (r.items.length === 0) {
+    det.innerHTML = '<p style="font-size:13px;color:var(--muted);text-align:center;padding:10px 0;">Sin ventas con comisión en esta semana</p>';
+  } else {
+    det.innerHTML = r.items.map(item => `
+      <div class="detalle-row">
+        <span class="desc">${item.desc}${item.prod ? `<br><em style="font-size:11px;color:var(--muted)">${item.prod}</em>` : ''}${item.esManual ? ' <em style="font-size:11px;color:var(--muted)">(manual)</em>' : ''}</span>
+        <span class="qty">×${item.cant}</span>
+        <span class="val">${fmtPeso(item.comision)}</span>
+      </div>`).join('');
+  }
+
+  document.getElementById('reciboComisiones').textContent = fmtPeso(r.totalComisiones);
+  document.getElementById('reciboTotal').textContent = fmtPeso(r.total);
+}
+
+function fmtFecha(iso) {
+  const [y, m, d] = iso.split('-');
+  const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${+d} ${meses[+m-1]} ${y}`;
+}
+
+// DESCARGAR IMAGEN
+async function descargarImagen() {
+  const recibo = document.getElementById('recibo');
+  const canvas = await html2canvas(recibo, { scale: 2, backgroundColor: '#FFFAEC', useCORS: true });
+  const link = document.createElement('a');
+  link.download = `pago-${resultadoActual.asesora.replace(/ /g,'-')}-${resultadoActual.semanaInicio}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  mostrarNotif('Imagen descargada ✓');
+}
+
+// GUARDAR PAGO EN SUPABASE
+async function guardarPago() {
+  if (!resultadoActual) return;
+  const btn = document.getElementById('btnGuardar');
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+
+  const { error } = await sb.from('pagos_comisiones').insert({
+    asesora: resultadoActual.asesora,
+    semana_inicio: resultadoActual.semanaInicio,
+    semana_fin: resultadoActual.semanaFin,
+    detalle: resultadoActual.items,
+    comisiones_total: resultadoActual.totalComisiones,
+    basico: resultadoActual.basico,
+    total: resultadoActual.total,
+  });
+
+  if (error) {
+    mostrarNotif('Error al guardar: ' + error.message);
+    btn.disabled = false;
+    btn.textContent = '✓ Guardar pago';
+  } else {
+    btn.textContent = '✅ Pago guardado';
+    mostrarNotif('Pago guardado en el historial ✓');
+  }
+}
+
+function mostrarNotif(msg) {
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
