@@ -1,4 +1,4 @@
 AuthType Basic
 AuthName "SkyPets Admin"
-AuthUserFile /home/USUARIO_CPANEL/public_html/admin/.htpasswd
+AuthUserFile /home1/eadcbcam/public_html/admin/.htpasswd
 Require valid-user
