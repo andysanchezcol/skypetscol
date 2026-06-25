@@ -13,6 +13,7 @@
   </a>
   <ul class="nav-links">
     <li><a href="/servicios">Servicios</a></li>
+    <li><a href="/catalogo">Catálogo</a></li>
     <li><a href="/nosotros">Nosotros</a></li>
     <li><a href="/blog">Blog</a></li>
     <li><a href="/contacto">Contacto</a></li>
@@ -30,6 +31,7 @@
 </nav>
 <div class="nav-mobile" id="mobileMenu">
   <a href="/servicios">Servicios</a>
+  <a href="/catalogo">Catálogo</a>
   <a href="/nosotros">Nosotros</a>
   <a href="/blog">Blog</a>
   <a href="/contacto">Contacto</a>
