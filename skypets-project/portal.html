@@ -80,6 +80,33 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
 .nav-mobile.open { display: flex; }
 .nav-mobile a { font-size: 1.05rem; font-weight: 500; color: var(--ink); text-decoration: none; }
 
+/* ── RESET PASSWORD SCREEN ── */
+.reset-screen {
+  min-height: 100svh; padding-top: 76px;
+  display: none; align-items: center; justify-content: center;
+  background: var(--bg1);
+}
+.reset-card {
+  background: white; border-radius: 28px;
+  border: 1px solid rgba(43,36,24,0.08);
+  box-shadow: 0 8px 48px rgba(43,36,24,0.10);
+  padding: 48px 40px; width: min(440px, calc(100vw - 32px));
+}
+.reset-title {
+  font-family: 'Fredoka', sans-serif; font-size: 1.5rem; font-weight: 700;
+  color: var(--ink); margin-bottom: 6px; text-align: center;
+}
+.reset-sub {
+  font-size: 0.85rem; color: var(--muted); text-align: center;
+  margin-bottom: 28px; line-height: 1.5;
+}
+.reset-success {
+  text-align: center; padding: 16px 0;
+}
+.reset-success-icon { font-size: 3rem; margin-bottom: 12px; }
+.reset-success h3 { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; color: var(--ink); margin-bottom: 8px; }
+.reset-success p { font-size: 0.85rem; color: var(--muted); margin-bottom: 20px; }
+
 /* ── AUTH SCREEN ── */
 .auth-screen {
   min-height: 100svh; padding-top: 76px;
@@ -314,6 +341,39 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
   <a href="/portal" style="color:var(--teal);font-weight:600">🐾 Mi Portal</a>
 </div>
 
+<!-- RESET PASSWORD SCREEN -->
+<div class="reset-screen" id="resetScreen">
+  <div class="reset-card">
+    <div class="auth-logo">
+      <img src="/assets/images/Logo_SkyPets.webp" alt="SkyPets" onerror="this.style.display='none'" style="height:48px">
+      <span class="auth-logo-text"><span class="sky">Sky</span><span class="pets">Pets</span></span>
+    </div>
+
+    <div id="resetForm">
+      <div class="reset-title">Nueva contraseña</div>
+      <div class="reset-sub">Elige una contraseña segura para tu cuenta.</div>
+
+      <div class="form-group">
+        <label class="form-label">Nueva contraseña</label>
+        <input type="password" class="form-input" id="resetPass" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmar contraseña</label>
+        <input type="password" class="form-input" id="resetConfirm" placeholder="Repite la contraseña" autocomplete="new-password">
+      </div>
+      <button class="btn-auth" id="btnReset" onclick="doResetPassword()" style="background:var(--teal)">Guardar nueva contraseña</button>
+      <div class="auth-msg" id="resetMsg"></div>
+    </div>
+
+    <div id="resetDone" class="reset-success" style="display:none">
+      <div class="reset-success-icon">✅</div>
+      <h3>¡Contraseña actualizada!</h3>
+      <p>Ya puedes iniciar sesión con tu nueva contraseña.</p>
+      <button class="btn-auth" onclick="showAuthScreen()" style="background:var(--teal)">Iniciar sesión</button>
+    </div>
+  </div>
+</div>
+
 <!-- AUTH SCREEN -->
 <div class="auth-screen" id="authScreen">
   <div class="auth-card">
@@ -339,6 +399,9 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
         <label class="form-label">Contraseña</label>
         <input type="password" class="form-input" id="loginPass" placeholder="••••••••" autocomplete="current-password">
       </div>
+      <p style="text-align:right;margin-top:-8px;margin-bottom:12px;">
+        <a href="#" onclick="showForgotForm();return false;" style="font-size:0.78rem;color:var(--teal);font-weight:500;">¿Olvidaste tu contraseña?</a>
+      </p>
       <button class="btn-auth" id="btnLogin" onclick="doLogin()">Entrar a mi portal</button>
       <div class="auth-divider"><span>o</span></div>
       <button class="btn-google" onclick="doGoogle()">
@@ -362,6 +425,21 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
         <input type="password" class="form-input" id="regPass" placeholder="Mínimo 6 caracteres">
       </div>
       <button class="btn-auth" id="btnRegister" onclick="doRegister()">Crear mi cuenta</button>
+    </div>
+
+    <!-- Forgot password -->
+    <div id="formForgot" style="display:none">
+      <p style="font-size:0.88rem;color:var(--muted);margin-bottom:18px;line-height:1.6;">
+        Ingresa tu correo y te enviaremos un link para crear una nueva contraseña.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="form-input" id="forgotEmail" placeholder="tu@email.com" autocomplete="email">
+      </div>
+      <button class="btn-auth" id="btnForgot" onclick="doForgotPassword()">Enviar link de recuperación</button>
+      <p style="font-size:0.78rem;color:var(--muted);text-align:center;margin-top:14px;">
+        <a href="#" onclick="switchTab('login');return false;" style="color:var(--teal);font-weight:600;">← Volver al inicio de sesión</a>
+      </p>
     </div>
 
     <!-- Resend verification -->
@@ -480,10 +558,10 @@ function switchTab(tab) {
   document.getElementById('formLogin').style.display    = tab === 'login'    ? '' : 'none';
   document.getElementById('formRegister').style.display = tab === 'register' ? '' : 'none';
   document.getElementById('formResend').style.display   = tab === 'resend'   ? '' : 'none';
+  document.getElementById('formForgot').style.display   = 'none';
   document.getElementById('tabLogin').classList.toggle('active',    tab === 'login');
   document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
   document.getElementById('tabResend').classList.toggle('active',   tab === 'resend');
-  // Mostrar la pestaña de reenvío solo cuando aplica
   if (tab === 'resend') document.getElementById('tabResend').style.display = '';
   clearMsg();
 }
@@ -536,10 +614,41 @@ async function doLogout() {
   showAuthScreen();
 }
 
+/* ── RESET PASSWORD ── */
+function showResetScreen() {
+  document.getElementById('resetScreen').style.display = 'flex';
+  document.getElementById('authScreen').style.display  = 'none';
+  document.getElementById('dashboard').style.display   = 'none';
+}
+
+function showResetMsg(text, type = 'error') {
+  const el = document.getElementById('resetMsg');
+  el.textContent = text;
+  el.className = 'auth-msg ' + type;
+}
+
+async function doResetPassword() {
+  const pass    = document.getElementById('resetPass').value;
+  const confirm = document.getElementById('resetConfirm').value;
+  if (!pass || !confirm) return showResetMsg('Completa ambos campos.');
+  if (pass !== confirm)  return showResetMsg('Las contraseñas no coinciden.');
+  if (pass.length < 6)   return showResetMsg('La contraseña debe tener al menos 6 caracteres.');
+  const btn = document.getElementById('btnReset');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  const { error } = await sb.auth.updateUser({ password: pass });
+  btn.disabled = false; btn.textContent = 'Guardar nueva contraseña';
+  if (error) showResetMsg('No se pudo actualizar. El link puede haber expirado.');
+  else {
+    document.getElementById('resetForm').style.display = 'none';
+    document.getElementById('resetDone').style.display = '';
+  }
+}
+
 /* ── UI ── */
 function showAuthScreen() {
-  document.getElementById('authScreen').style.display = 'flex';
-  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('resetScreen').style.display = 'none';
+  document.getElementById('authScreen').style.display  = 'flex';
+  document.getElementById('dashboard').style.display   = 'none';
 }
 
 function showDashboard(user, profile) {
@@ -681,6 +790,29 @@ function handleHashError() {
   return false;
 }
 
+/* ── FORGOT PASSWORD ── */
+function showForgotForm() {
+  document.getElementById('formLogin').style.display    = 'none';
+  document.getElementById('formRegister').style.display = 'none';
+  document.getElementById('formResend').style.display   = 'none';
+  document.getElementById('formForgot').style.display   = '';
+  document.getElementById('tabLogin').classList.remove('active');
+  document.getElementById('tabRegister').classList.remove('active');
+  clearMsg();
+}
+
+async function doForgotPassword() {
+  const email = document.getElementById('forgotEmail').value.trim();
+  if (!email) return showMsg('Ingresa tu correo electrónico.');
+  const btn = document.getElementById('btnForgot');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://skypetscol.com/portal',
+  });
+  btn.disabled = false; btn.textContent = 'Enviar link de recuperación';
+  showMsg('¡Correo enviado! Revisa tu bandeja (y el spam). El link expira en 1 hora.', 'success');
+}
+
 /* ── RESEND VERIFICATION ── */
 async function doResend() {
   const email = document.getElementById('resendEmail').value.trim();
@@ -697,6 +829,19 @@ async function doResend() {
 let _dashShown = false;
 
 async function initPortalSession() {
+  // 0. Detectar flujo de recuperación de contraseña en el hash
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  if (hashParams.get('type') === 'recovery') {
+    const access  = hashParams.get('access_token');
+    const refresh = hashParams.get('refresh_token');
+    history.replaceState(null, '', window.location.pathname);
+    if (access && refresh) {
+      await sb.auth.setSession({ access_token: access, refresh_token: refresh });
+      showResetScreen();
+      return;
+    }
+  }
+
   // 1. Leer token de localStorage directamente (sin red)
   try {
     const raw = localStorage.getItem('sb-yicrkuntrsiaonkrfzlm-auth-token');
