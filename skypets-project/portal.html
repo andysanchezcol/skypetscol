@@ -639,6 +639,7 @@ async function doResetPassword() {
   btn.disabled = false; btn.textContent = 'Guardar nueva contraseña';
   if (error) showResetMsg('No se pudo actualizar. El link puede haber expirado.');
   else {
+    _resetMode = false;
     document.getElementById('resetForm').style.display = 'none';
     document.getElementById('resetDone').style.display = '';
   }
@@ -827,6 +828,7 @@ async function doResend() {
 
 /* ── SESSION INIT — único punto de entrada para mostrar dashboard o login ── */
 let _dashShown = false;
+let _resetMode = false;
 
 async function initPortalSession() {
   // 0. Detectar flujo de recuperación de contraseña en el hash
@@ -836,6 +838,7 @@ async function initPortalSession() {
     const refresh = hashParams.get('refresh_token');
     history.replaceState(null, '', window.location.pathname);
     if (access && refresh) {
+      _resetMode = true;
       await sb.auth.setSession({ access_token: access, refresh_token: refresh });
       showResetScreen();
       return;
@@ -869,7 +872,7 @@ async function initPortalSession() {
 /* ── AUTH STATE — solo para OAuth / magic link redirect con token en URL ── */
 sb.auth.onAuthStateChange(async (event, session) => {
   if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
-    if (_dashShown) return; // ya está en dashboard, no re-procesar
+    if (_dashShown || _resetMode) return; // ya está en dashboard o en modo reset
     const { data: profile } = await sb
       .from('profiles').select('*').eq('id', session.user.id).single();
     _dashShown = true;
