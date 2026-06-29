@@ -1,3 +1,4 @@
+DirectoryIndex index.php
 AuthType Basic
 AuthName "SkyPets Admin"
 AuthUserFile /home1/eadcbcam/public_html/admin/.htpasswd
