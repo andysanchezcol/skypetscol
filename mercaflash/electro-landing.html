@@ -1,0 +1,2979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MercaFlash — Tienda de Electrónica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@font-face {
+  font-family: 'BankGothic';
+  src: url('assets/fonts/BankGothicMdBT.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+</style>
+<style>
+/* ============================================================
+   CSS VARIABLES & RESET
+============================================================ */
+:root {
+  --yellow: #F5C200;
+  --black: #F0F0F0;
+  --white: #111111;
+  --gray-bg: #1A1A1A;
+  --gray-text: #888888;
+  --gray-border: #2E2E2E;
+  --red-sale: #E53935;
+  --dark-bar: #0A0A0A;
+  --yellow-dark: #D9AC00;
+}
+
+body.light-mode {
+  --white: #FFFFFF;
+  --black: #111111;
+  --gray-bg: #F5F5F5;
+  --gray-text: #666666;
+  --gray-border: #E1E1E1;
+  --dark-bar: #222222;
+  --yellow: #F5C200;
+  --yellow-dark: #D9AC00;
+  background: #FFFFFF;
+  color: #111111;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  color: var(--black);
+  background: var(--white);
+  line-height: 1.5;
+}
+
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+img { display: block; max-width: 100%; }
+button { cursor: pointer; font-family: inherit; border: none; outline: none; }
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ============================================================
+   1. PRE-HEADER BAR
+============================================================ */
+#pre-header {
+  background: var(--dark-bar);
+  color: #fff;
+  font-size: 12px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+}
+#pre-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+#pre-header .pre-right {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+#pre-header .pre-right a {
+  color: #ccc;
+  padding: 0 10px;
+  border-right: 1px solid #444;
+  transition: color 0.2s;
+}
+#pre-header .pre-right a:last-of-type { border-right: none; }
+#pre-header .pre-right a:hover { color: var(--yellow); }
+
+#dark-toggle {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  padding: 0 0 0 12px;
+  font-size: 16px;
+  transition: color 0.2s;
+  display: flex; align-items: center;
+}
+#dark-toggle:hover { color: var(--yellow); }
+
+/* ============================================================
+   2. MAIN HEADER
+============================================================ */
+#main-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-border);
+  height: 80px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: box-shadow 0.3s;
+}
+#main-header.scrolled {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+}
+#main-header .header-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: 80px;
+  gap: 28px;
+}
+#main-header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+#main-header .header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+.logo img {
+  height: 64px;
+  width: auto;
+  border-radius: 50%;
+  background: transparent;
+}
+/* Logo swap: blanco en dark mode, negro en light mode */
+.logo-light { display: block; }
+.logo-dark  { display: none; }
+body.light-mode .logo-light { display: none; }
+body.light-mode .logo-dark  { display: block; }
+/* Fallback texto si no carga la imagen */
+.logo-text {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--black);
+  white-space: nowrap;
+  display: none;
+  font-family: 'BankGothic', sans-serif;
+  letter-spacing: 1px;
+}
+.logo img.broken + .logo-text { display: block; }
+.logo-text span { color: var(--yellow); }
+
+/* Search bar — pill style */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: var(--gray-bg);
+  border: 1.5px solid var(--gray-border);
+  border-radius: 100px;
+  height: 50px;
+  width: 580px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-bar:focus-within {
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(245,194,0,0.15);
+}
+.search-bar input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  padding: 0 20px;
+  font-size: 13px;
+  font-family: inherit;
+  background: transparent;
+  color: var(--black);
+  outline: none;
+  min-width: 0;
+}
+.search-bar input::placeholder { color: var(--gray-text); }
+.search-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--gray-border);
+  flex-shrink: 0;
+}
+.search-bar select {
+  height: 100%;
+  padding: 0 16px 0 12px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-text);
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  min-width: 155px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+.search-btn {
+  height: 100%;
+  width: 56px;
+  background: var(--yellow);
+  border: none;
+  border-radius: 0 100px 100px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s, transform 0.15s;
+}
+.search-btn:hover { background: var(--yellow-dark); }
+.search-btn:active { transform: scale(0.95); }
+.search-btn svg { color: var(--black); }
+
+/* Header icons */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.header-icon {
+  position: relative;
+  cursor: pointer;
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.header-icon svg { width: 22px; height: 22px; }
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--yellow);
+  color: var(--black);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+.cart-badge.bump { transform: scale(1.4); }
+
+.account-dropdown {
+  position: absolute;
+  top: 100%;
+  right: -10px;
+  margin-top: 10px;
+  background: var(--white);
+  border: 1px solid var(--gray-border);
+  width: 220px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  display: none;
+  z-index: 200;
+}
+.account-dropdown::before { content:''; position:absolute; top:-12px; left:0; right:0; height:12px; }
+.account-dropdown p { font-size: 12px; color: var(--gray-text); margin-bottom: 10px; }
+.account-dropdown a {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--black);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--gray-border);
+}
+.account-dropdown a:last-child { border-bottom: none; }
+.account-dropdown a:hover { color: var(--yellow); }
+
+/* Mobile menu button */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 4px;
+}
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--black);
+  border-radius: 2px;
+}
+
+/* ============================================================
+   3. SECONDARY NAVBAR
+============================================================ */
+#secondary-nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-border);
+  height: 44px;
+  position: sticky;
+  top: 80px;
+  z-index: 999;
+  overflow: visible;
+}
+#secondary-nav .nav-inner {
+  display: flex;
+  align-items: stretch;
+  height: 44px;
+  gap: 0;
+}
+
+/* All Departments button */
+.dept-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--yellow);
+  color: var(--black);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 0 18px;
+  height: 44px;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  align-self: stretch;
+}
+.dept-btn:hover { background: var(--yellow-dark); }
+
+/* Mega menu — controlado por JS */
+.mega-menu {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  width: 820px;
+  background: var(--white);
+  border: 1px solid var(--gray-border);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+  display: none;
+  z-index: 1100;
+  border-radius: 0 0 12px 12px;
+}
+.mega-menu::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 8px;
+}
+.mega-menu.open { display: flex; }
+
+/* Panel izquierdo — lista de categorías */
+.mega-left {
+  flex: 0 0 240px;
+  border-right: 1px solid var(--gray-border);
+  padding: 8px 0;
+}
+.mega-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--black);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+}
+.mega-item:hover,
+.mega-item.active {
+  background: var(--gray-bg);
+  color: var(--yellow);
+}
+.mega-item.active::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--yellow);
+  border-radius: 2px 0 0 2px;
+}
+.mega-item .menu-icon { display: inline-flex; align-items: center; opacity: 0.75; flex-shrink: 0; }
+.mega-item:hover .menu-icon,
+.mega-item.active .menu-icon { opacity: 1; }
+.mega-item .chevron { margin-left: auto; font-size: 11px; color: var(--gray-text); }
+.mega-item.active .chevron { color: var(--yellow); }
+
+/* Panel derecho — subcategorías + imagen */
+.mega-right {
+  flex: 1;
+  padding: 0;
+  min-height: 340px;
+  background: var(--gray-bg);
+  border-radius: 0 0 12px 0;
+  overflow: hidden;
+}
+.mega-sub { display: none; }
+.mega-sub.active { display: flex; height: 100%; }
+
+.mega-sub-links {
+  flex: 1;
+  padding: 20px 20px;
+}
+.mega-sub-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--gray-text);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gray-border);
+}
+.mega-sub-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 8px;
+}
+.mega-sub-link {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--black);
+  padding: 6px 8px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+}
+.mega-sub-link:hover {
+  background: rgba(245,194,0,0.12);
+  color: var(--yellow);
+}
+.mega-sub-see-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--yellow);
+  text-decoration: none;
+  cursor: pointer;
+}
+.mega-sub-see-all:hover { text-decoration: underline; }
+
+/* Imagen de la categoría */
+.mega-sub-img {
+  flex: 0 0 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 20px 16px 16px;
+  position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--gray-border);
+}
+.mega-sub-img .cat-img-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18;
+}
+.mega-sub-img .cat-img-icon {
+  position: relative;
+  z-index: 1;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-bottom: 12px;
+}
+.mega-sub-img .cat-img-label {
+  position: relative;
+  z-index: 1;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--black);
+  text-align: center;
+}
+.mega-sub-img .cat-img-badge {
+  position: relative;
+  z-index: 1;
+  margin-top: 8px;
+  padding: 4px 12px;
+  background: var(--yellow);
+  color: var(--black);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 100px;
+  cursor: pointer;
+  border: none;
+}
+/* Gradientes por categoría */
+.cat-bg-computadores { background: linear-gradient(135deg,#1a1a2e,#0f3460); }
+.cat-bg-celulares     { background: linear-gradient(135deg,#1a1a2e,#16213e); }
+.cat-bg-tv            { background: linear-gradient(135deg,#0d1b2a,#1b4332); }
+.cat-bg-camaras       { background: linear-gradient(135deg,#1a2e1a,#0f4d2e); }
+.cat-bg-gaming        { background: linear-gradient(135deg,#1a0a0a,#5a1a1a); }
+.cat-bg-relojes       { background: linear-gradient(135deg,#1e1a0f,#3d3000); }
+.cat-bg-oficina       { background: linear-gradient(135deg,#0a1628,#1a3a5c); }
+.cat-bg-auto          { background: linear-gradient(135deg,#1a1a1a,#2d2d2d); }
+
+/* Quick nav links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--black);
+  padding: 0 12px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav-links a.hot { color: var(--red-sale); }
+.nav-links a:hover { color: var(--yellow); border-bottom-color: var(--yellow); }
+
+/* ============================================================
+   4. SMOKE HERO
+============================================================ */
+#hero {
+  background: #080808;
+  position: relative;
+  overflow: hidden;
+  height: 560px;
+}
+
+/* Smoke canvases */
+#smoke-mouse, #smoke-ambient {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+#smoke-mouse   { z-index: 1; }
+#smoke-ambient { z-index: 4; }
+
+/* Gradient: dark left edge → fully transparent at center, no hard cut */
+#hero-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    /* Horizontal: dark left → transparent center */
+    linear-gradient(
+      to right,
+      rgba(8,8,8,0.95) 0%,
+      rgba(8,8,8,0.85) 28%,
+      rgba(8,8,8,0.45) 44%,
+      transparent 52%
+    ),
+    /* Vertical boost: extra dark at bottom-left for text/buttons */
+    linear-gradient(
+      to top,
+      rgba(8,8,8,0.70) 0%,
+      rgba(8,8,8,0.30) 35%,
+      transparent 55%
+    );
+}
+
+/* Bottle slow drift after entrance */
+@keyframes driftLeft {
+  0%   { transform: translateX(0px); }
+  100% { transform: translateX(-38px); }
+}
+.bottle-wrap.drifting {
+  animation: driftLeft 9s ease-in-out forwards;
+}
+
+/* Hero layout */
+.hero-grid {
+  position: relative;
+  z-index: 6; /* always above smoke, products and gradient */
+  height: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 60px;
+  display: flex;
+  align-items: center;
+}
+.hero-text { max-width: 480px; }
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--yellow);
+  margin-bottom: 22px;
+}
+.hero-title {
+  font-size: 68px;
+  font-weight: 700;
+  line-height: 0.95;
+  color: #F0F0F0;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+  font-family: 'BankGothic', sans-serif;
+  letter-spacing: 2px;
+}
+.hero-title span { color: var(--yellow); }
+.hero-desc {
+  font-size: 14px;
+  color: #ffffff;
+  line-height: 1.75;
+  margin-bottom: 38px;
+}
+.hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.hero-btn-primary {
+  background: var(--yellow);
+  color: #111;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 14px 34px;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.hero-btn-primary:hover { background: var(--yellow-dark); transform: translateY(-1px); }
+.hero-btn-secondary {
+  background: transparent;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 13px 22px;
+  border: 1px solid #333;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.hero-btn-secondary:hover { color: #ffffff; border-color: #aaa; }
+
+/* Product bottles */
+.hero-products {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 60%;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+/* Wrapper handles slide+fade — isolated from float animation */
+.bottle-wrap {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  transition: opacity 1.3s ease, transform 1.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.bottle-wrap.hidden {
+  opacity: 0;
+  transform: translateX(70px);
+}
+/* Image handles float only */
+.hero-bottle {
+  display: block;
+  height: 860px;
+  width: auto;
+  filter: drop-shadow(0 30px 80px rgba(0,0,0,0.8));
+  user-select: none;
+}
+.hero-bottle-volcanus, .hero-bottle-paramus { display: block; }
+
+/* CTA button (legacy, keep for other sections) */
+.cta-btn {
+  display: inline-block;
+  background: var(--yellow);
+  color: #111;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 36px;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.cta-btn:hover { background: var(--yellow-dark); transform: translateY(-1px); }
+
+/* ============================================================
+   5. PROMO BANNERS
+============================================================ */
+#promo-banners {
+  padding: 16px 0;
+  background: var(--white);
+}
+.promo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.promo-banner {
+  position: relative;
+  height: 140px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.promo-banner-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.4s;
+}
+.promo-banner:hover .promo-banner-bg { transform: scale(1.03); }
+.promo-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(17,17,17,0.75) 0%, rgba(17,17,17,0.3) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 24px;
+}
+.promo-cat { font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.promo-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 2px; font-family: 'BankGothic', sans-serif; letter-spacing: 0.5px; }
+.promo-discount { font-size: 28px; font-weight: 700; color: var(--yellow); margin-bottom: 8px; }
+.promo-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s;
+}
+.promo-link:hover { color: var(--yellow); }
+
+/* Banner color backgrounds (placeholder) */
+.promo-banner-1 .promo-banner-bg { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+.promo-banner-2 .promo-banner-bg { background: linear-gradient(135deg, #2d1b33 0%, #11998e 100%); }
+
+/* ============================================================
+   6. CATEGORIES WITH TABS
+============================================================ */
+#categories {
+  padding: 60px 0;
+  background: var(--gray-bg);
+  border-top: 1px solid var(--gray-border);
+  border-bottom: 1px solid var(--gray-border);
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'BankGothic', sans-serif;
+  position: relative;
+  padding-bottom: 12px;
+}
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: var(--yellow);
+}
+.tab-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--gray-border);
+  background: var(--white);
+  color: var(--gray-text);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.tab-btn.active {
+  background: var(--yellow);
+  color: var(--black);
+  border-color: var(--yellow);
+}
+.tab-btn:hover:not(.active) { border-color: var(--black); color: var(--black); }
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 12px;
+  overflow-x: auto;
+}
+.cat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  background: var(--white);
+  border: 1px solid var(--gray-border);
+  cursor: pointer;
+  transition: border-color 0.2s;
+  text-align: center;
+}
+.cat-item:hover { border-color: var(--yellow); }
+.cat-item:hover .cat-name { color: var(--yellow); }
+.cat-icon-wrap {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--gray-bg);
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid transparent;
+  transition: border-color 0.2s, transform 0.2s;
+  color: var(--black);
+}
+body.light-mode .cat-icon-wrap { color: #333; }
+.cat-item:hover .cat-icon-wrap { border-color: var(--yellow); transform: scale(1.08); }
+.cat-name { font-size: 12px; font-weight: 700; color: var(--black); }
+.cat-count { font-size: 11px; color: var(--gray-text); }
+
+/* ============================================================
+   7 & 8. PRODUCT CARDS + FEATURED SECTION
+============================================================ */
+#featured {
+  padding: 60px 0;
+  background: var(--white);
+}
+.featured-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 2px solid var(--gray-border);
+  padding-bottom: 12px;
+}
+.featured-tabs {
+  display: flex;
+  gap: 0;
+}
+.feat-tab {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 20px;
+  background: none;
+  border: none;
+  color: var(--gray-text);
+  cursor: pointer;
+  position: relative;
+  margin-bottom: -2px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'Jost', sans-serif;
+  transition: color 0.2s;
+}
+.feat-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 100%;
+  height: 2px;
+  background: var(--yellow);
+  transition: transform 0.25s ease;
+}
+.feat-tab.active { color: var(--black); }
+.feat-tab.active::after { transform: translateX(-50%) scaleX(1); }
+.feat-tab:hover:not(.active) { color: var(--black); }
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  background: transparent;
+  border: none;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: contents; }
+
+/* Product Card */
+.product-card {
+  position: relative;
+  background: var(--white);
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid var(--gray-border);
+  border-radius: 4px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.product-card:hover {
+  z-index: 10;
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+}
+
+.product-img-wrap {
+  position: relative;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow: hidden;
+  background: var(--white);
+}
+.product-img {
+  width: 140px; height: 140px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  transition: transform 0.3s;
+  user-select: none;
+  color: rgba(255,255,255,0.7);
+}
+.product-card:hover .product-img { transform: scale(1.06); }
+/* Gradient placeholders por categoría */
+.product-img.ph-phone   { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+.product-img.ph-laptop  { background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%); }
+.product-img.ph-audio   { background: linear-gradient(135deg, #2d1b33 0%, #4a1e6b 100%); }
+.product-img.ph-camera  { background: linear-gradient(135deg, #1a2e1a 0%, #0f4d2e 100%); }
+.product-img.ph-watch   { background: linear-gradient(135deg, #1e1a0f 0%, #3d3000 100%); }
+.product-img.ph-gaming  { background: linear-gradient(135deg, #1a0a0a 0%, #5a1a1a 100%); }
+
+/* Badges */
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  z-index: 3;
+  font-family: 'Jost', sans-serif;
+}
+.badge-sale { background: var(--red-sale); color: #fff; }
+.badge-new { background: var(--black); color: var(--white); }
+.badge-discount {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: var(--red-sale);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 4px 8px;
+  border-radius: 100px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 3;
+}
+
+/* Action icons (appear on hover) */
+.card-actions {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%) translateX(50px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform 0.25s;
+  z-index: 5;
+}
+.product-card:hover .card-actions { transform: translateY(-50%) translateX(0); }
+.action-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 1px solid var(--gray-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  color: var(--gray-text);
+}
+.action-btn:hover { background: var(--yellow); border-color: var(--yellow); color: var(--black); }
+
+/* Add to cart slide-up */
+.add-to-cart-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  transform: translateY(100%);
+  transition: transform 0.25s;
+  z-index: 5;
+}
+.product-card:hover .add-to-cart-wrap { transform: translateY(0); }
+.add-to-cart-btn {
+  width: 100%;
+  height: 42px;
+  background: var(--yellow);
+  color: var(--black);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  transition: background 0.2s, letter-spacing 0.2s;
+  font-family: 'Jost', sans-serif;
+}
+.add-to-cart-btn:hover { background: var(--yellow-dark); letter-spacing: 2px; }
+
+/* Card info */
+.card-info {
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--gray-border);
+}
+.card-cat {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gray-text);
+  margin-bottom: 4px;
+}
+.card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+}
+.card-name:hover { color: var(--yellow); }
+.card-stars { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+.stars { display: flex; gap: 1px; }
+.star { color: var(--yellow); font-size: 12px; }
+.star.empty { color: #ddd; }
+.review-count { font-size: 11px; color: var(--gray-text); }
+.card-price { display: flex; align-items: baseline; gap: 8px; }
+.price-original { font-size: 13px; color: var(--gray-text); text-decoration: line-through; }
+.price-sale { font-size: 18px; font-weight: 700; color: var(--red-sale); }
+.price-regular { font-size: 18px; font-weight: 700; color: var(--black); }
+
+/* View all */
+.view-all-wrap { text-align: center; margin-top: 24px; }
+.view-all-btn {
+  display: inline-block;
+  padding: 11px 36px;
+  border: 1.5px solid var(--black);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--black);
+  background: transparent;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, color 0.2s;
+}
+.view-all-btn:hover { background: var(--black); color: var(--white); }
+
+/* ============================================================
+   9. OFFER BANNER WITH COUNTDOWN
+============================================================ */
+#offer-banner {
+  background: #1A1A2E;
+  padding: 0 60px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  overflow: hidden;
+  position: relative;
+}
+.offer-text { flex: 1; }
+.offer-label { font-size: 11px; color: var(--yellow); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
+.offer-title { font-size: 24px; font-weight: 700; color: #fff; text-transform: uppercase; line-height: 1.2; font-family: 'BankGothic', sans-serif; letter-spacing: 1px; }
+.offer-right { display: flex; align-items: center; gap: 24px; }
+.countdown { display: flex; gap: 8px; }
+.countdown-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--yellow);
+  width: 60px;
+  padding: 8px 4px;
+}
+.countdown-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--black);
+  line-height: 1;
+}
+.countdown-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+.shop-now-btn {
+  display: inline-block;
+  padding: 11px 28px;
+  border: 2px solid #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.shop-now-btn:hover { background: #fff; color: var(--black); }
+
+/* ============================================================
+   10. BEST SELLERS
+============================================================ */
+#best-sellers {
+  padding: 60px 0;
+  background: var(--gray-bg);
+  border-top: 1px solid var(--gray-border);
+}
+.bs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--gray-border);
+  padding-bottom: 12px;
+}
+.top-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--yellow);
+  color: var(--black);
+  background: transparent;
+}
+.bs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  background: transparent;
+  border: none;
+}
+.bs-col { background: var(--white); }
+.bs-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px dashed var(--gray-border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.bs-item:hover { background: #1f1f1f; }
+.bs-item:last-child { border-bottom: none; }
+.bs-img {
+  width: 80px; height: 80px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.65);
+}
+.bs-img.ph-phone  { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+.bs-img.ph-laptop { background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%); }
+.bs-img.ph-audio  { background: linear-gradient(135deg, #2d1b33 0%, #4a1e6b 100%); }
+.bs-img.ph-camera { background: linear-gradient(135deg, #1a2e1a 0%, #0f4d2e 100%); }
+.bs-img.ph-watch  { background: linear-gradient(135deg, #1e1a0f 0%, #3d3000 100%); }
+.bs-img.ph-gaming { background: linear-gradient(135deg, #1a0a0a 0%, #5a1a1a 100%); }
+.bs-info { flex: 1; min-width: 0; }
+.bs-cat { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gray-text); }
+.bs-name { font-size: 13px; font-weight: 600; color: var(--black); margin: 3px 0; }
+.bs-item:hover .bs-name { color: var(--yellow); }
+.bs-price { font-size: 13px; font-weight: 700; color: var(--black); }
+.bs-stars { display: flex; gap: 1px; }
+.bs-star { font-size: 10px; color: var(--yellow); }
+
+/* ============================================================
+   11. BRAND CAROUSEL
+============================================================ */
+#brands {
+  padding: 60px 0;
+  background: var(--white);
+  border-top: 1px solid var(--gray-border);
+  border-bottom: 1px solid var(--gray-border);
+}
+#brands .section-title { text-align: center; display: block; margin-bottom: 36px; }
+#brands .section-title::after { left: 50%; transform: translateX(-50%); }
+
+.brands-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+.brands-track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: max-content;
+  animation: brandScroll 24s linear infinite;
+}
+.brands-track:hover { animation-play-state: paused; }
+
+@keyframes brandScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 140px;
+  height: 70px;
+  border-right: 1px solid var(--gray-border);
+  filter: grayscale(100%) opacity(0.5);
+  transition: filter 0.3s;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.brand-logo:hover { filter: grayscale(0%) opacity(1); }
+.brand-logo span {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--black);
+  letter-spacing: -0.5px;
+}
+
+/* ============================================================
+   12. NEWSLETTER BANNER
+============================================================ */
+#newsletter {
+  background: var(--yellow);
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 60px;
+}
+.newsletter-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  gap: 24px;
+}
+.newsletter-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.newsletter-icon { font-size: 28px; }
+.newsletter-text strong { font-size: 15px; font-weight: 700; color: var(--black); }
+.newsletter-text p { font-size: 12px; color: rgba(17,17,17,0.7); margin-top: 1px; }
+.newsletter-form {
+  display: flex;
+  gap: 0;
+  flex-shrink: 0;
+  background: var(--white);
+  border-radius: 100px;
+  overflow: hidden;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  height: 48px;
+}
+.newsletter-input {
+  width: 280px;
+  height: 100%;
+  padding: 0 20px;
+  border: none;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  background: transparent;
+  color: #111;
+}
+.newsletter-input::placeholder { color: #aaa; }
+.newsletter-submit {
+  height: 100%;
+  padding: 0 28px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: 0 100px 100px 0;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.newsletter-submit:hover { background: #333; }
+
+/* ============================================================
+   13. FOOTER
+============================================================ */
+#footer {
+  background: var(--white);
+  border-top: 1px solid var(--gray-border);
+}
+.footer-main {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 40px;
+  padding: 48px 20px;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+.footer-logo { font-size: 22px; font-weight: 700; margin-bottom: 16px; }
+.footer-logo span { color: var(--yellow); }
+.footer-cta { font-size: 13px; color: var(--gray-text); margin-bottom: 4px; }
+.footer-phone { font-size: 20px; font-weight: 700; color: var(--black); margin-bottom: 2px; }
+.footer-phone2 { font-size: 14px; color: var(--gray-text); margin-bottom: 12px; }
+.footer-addr { font-size: 12px; color: var(--gray-text); line-height: 1.6; margin-bottom: 16px; }
+.footer-socials { display: flex; gap: 6px; }
+.social-icon {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--gray-bg);
+  border: 1px solid var(--gray-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  color: var(--gray-text);
+}
+.social-icon:hover { background: var(--yellow); border-color: var(--yellow); color: var(--black); }
+
+.footer-col h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+}
+.footer-col ul li { margin-bottom: 8px; }
+.footer-col ul li a { font-size: 13px; color: var(--gray-text); transition: color 0.2s; }
+.footer-col ul li a:hover { color: var(--yellow); }
+
+.footer-bottom {
+  background: var(--gray-bg);
+  border-top: 1px solid var(--gray-border);
+}
+.footer-bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  max-width: 1240px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-copy { font-size: 12px; color: var(--gray-text); }
+.payment-methods { display: flex; gap: 6px; align-items: center; }
+.payment-pill {
+  padding: 4px 10px;
+  border: 1px solid var(--gray-border);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gray-text);
+  background: var(--white);
+  letter-spacing: 0.5px;
+}
+
+/* ============================================================
+   BACK TO TOP
+============================================================ */
+#back-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--black);
+  font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 2000;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+#back-to-top.visible { opacity: 1; transform: translateY(0); }
+#back-to-top:hover { background: var(--yellow-dark); }
+
+/* ============================================================
+   MOBILE MENU OVERLAY
+============================================================ */
+#mobile-nav {
+  position: fixed;
+  top: 0; left: -280px;
+  width: 280px; height: 100%;
+  background: var(--white);
+  z-index: 3000;
+  transition: left 0.3s;
+  overflow-y: auto;
+  padding: 20px;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+}
+#mobile-nav.open { left: 0; }
+.mobile-nav-close {
+  font-size: 24px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: block;
+  color: var(--black);
+}
+#mobile-nav a {
+  display: block;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--gray-border);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+}
+#mobile-nav a:hover { color: var(--yellow); }
+#mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 2999;
+}
+#mobile-overlay.open { display: block; }
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 1199px) {
+  .product-grid { grid-template-columns: repeat(3, 1fr); }
+  .cat-grid { grid-template-columns: repeat(6, 1fr); }
+  .slide-title { font-size: 38px; }
+  .slide-price { font-size: 28px; }
+  #offer-banner { padding: 0 30px; }
+  .footer-main { grid-template-columns: 1fr 1fr; gap: 24px; }
+}
+
+@media (max-width: 767px) {
+  #pre-header .pre-right a:not(:first-child) { display: none; }
+  .search-bar { display: none; }
+  .logo { font-size: 20px; }
+  .hamburger { display: flex; }
+  .header-right .header-icon:not(.cart-icon) { display: none; }
+  .cart-icon { display: flex; }
+  #secondary-nav { display: none; }
+  .slide-content { grid-template-columns: 1fr; }
+  .slide-image { display: none; }
+  #hero { height: 320px; }
+  .slide-title { font-size: 28px; }
+  .slide-price { font-size: 22px; }
+  .promo-grid { grid-template-columns: 1fr; }
+  .cat-grid { grid-template-columns: repeat(4, 1fr); }
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+  .bs-grid { grid-template-columns: 1fr; }
+  .footer-main { grid-template-columns: 1fr; }
+  #offer-banner { padding: 0 16px; height: auto; flex-direction: column; padding: 20px 16px; gap: 16px; }
+  #newsletter { height: auto; padding: 16px; }
+  .newsletter-inner { flex-direction: column; align-items: flex-start; }
+  .newsletter-form { width: 100%; }
+  .newsletter-input { flex: 1; }
+  .header-right { gap: 10px; }
+}
+
+@media (max-width: 480px) {
+  .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  .countdown-block { width: 48px; }
+  .countdown-num { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- MOBILE NAV OVERLAY -->
+<div id="mobile-overlay"></div>
+<nav id="mobile-nav">
+  <span class="mobile-nav-close" id="mobile-nav-close">✕</span>
+  <a href="#">Home</a>
+  <a href="#">Smartphones</a>
+  <a href="#">Laptops</a>
+  <a href="#">Cámaras</a>
+  <a href="#">Audífonos</a>
+  <a href="#">Smartwatches</a>
+  <a href="#">Gaming</a>
+  <a href="#">TV y Audio</a>
+  <a href="#">Oferta del Día</a>
+  <a href="#">Novedades</a>
+  <a href="#">Mi Cuenta</a>
+  <a href="#">Rastrear Pedido</a>
+</nav>
+
+<!-- ============================================================
+     1. PRE-HEADER
+============================================================ -->
+<div id="pre-header">
+  <div class="container">
+    <span>Bienvenido a <strong>MercaFlash</strong></span>
+    <div class="pre-right">
+      <a href="#">Tiendas</a>
+      <a href="#">Rastrear Pedido</a>
+      <a href="#">Tienda</a>
+      <a href="#">Mi Cuenta</a>
+      <button id="dark-toggle" title="Cambiar modo">🌙</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     2. MAIN HEADER
+============================================================ -->
+<header id="main-header">
+  <div class="container header-inner">
+    <div class="header-left">
+      <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+      <a href="#" class="logo">
+        <img class="logo-light" src="logo-mercaflash.webp" alt="MercaFlash">
+        <img class="logo-dark" src="logo-mercaflash-dark.webp" alt="MercaFlash">
+        <span class="logo-text">Merca<span>Flash</span></span>
+      </a>
+    </div>
+
+    <form class="search-bar" onsubmit="return false;">
+      <input type="text" placeholder="Buscar productos, marcas y más...">
+      <div class="search-divider"></div>
+      <select aria-label="Categoría">
+        <option>Todas las categorías</option>
+        <option>Smartphones</option>
+        <option>Laptops</option>
+        <option>Cámaras</option>
+        <option>Audífonos</option>
+        <option>Smartwatches</option>
+        <option>Gaming</option>
+      </select>
+      <button type="submit" class="search-btn" aria-label="Buscar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </form>
+
+    <div class="header-right">
+      <div class="header-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <div class="header-icon" id="account-wrapper" style="position:relative;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div class="account-dropdown" id="account-dropdown">
+          <p>¿Ya tienes cuenta?</p>
+          <a href="#">Iniciar sesión</a>
+          <a href="#">Crear cuenta</a>
+          <a href="#">Lista de deseos</a>
+        </div>
+      </div>
+      <div class="header-icon cart-icon" style="position:relative;" onclick="bumpCart()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-badge" id="cart-badge">0</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     3. SECONDARY NAVBAR
+============================================================ -->
+<nav id="secondary-nav">
+  <div class="container nav-inner">
+    <div style="position:relative;" id="dept-wrapper">
+      <button class="dept-btn" id="dept-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Departamentos
+      </button>
+      <div class="mega-menu" id="mega-menu">
+          <!-- Panel izquierdo: categorías -->
+          <div class="mega-left">
+            <div class="mega-item active" data-sub="sub-computadores">
+              <span class="menu-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+              Computadores y Accesorios
+              <span class="chevron">›</span>
+            </div>
+            <div class="mega-item" data-sub="sub-celulares">
+              <span class="menu-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2"/></svg></span>
+              Celulares y Tablets
+              <span class="chevron">›</span>
+            </div>
+            <div class="mega-item" data-sub="sub-tv">
+              <span class="menu-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></span>
+              TV y Audio
+              <span class="chevron">›</span>
+            </div>
+            <div class="mega-item" data-sub="sub-camaras">
+              <span class="menu-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
+              Cámaras y Fotografía
+              <span class="chevron">›</span>
+            </div>
+            <div class="mega-item" data-sub="sub-gaming">
+              <span class="menu-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13" stroke-width="3"/><line x1="18" y1="11" x2="18.01" y2="11" stroke-width="3"/><rect x="2" y="8" width="20" height="12" rx="2"/></svg></span>
+              Videojuegos
+              <span class="chevron">›</span>
+            </div>
+            <div class="mega-item" data-sub="sub-relojes">
+              <span class="menu-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><polyline points="12 9 12 12 13.5 13.5"/></svg></span>
+              Relojes y Wearables
+              <span class="chevron">›</span>
+            </div>
+            <div class="mega-item" data-sub="sub-oficina">
+              <span class="menu-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></span>
+              Hogar y Oficina
+              <span class="chevron">›</span>
+            </div>
+            <div class="mega-item" data-sub="sub-auto">
+              <span class="menu-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><circle cx="12" cy="16" r="1"/></svg></span>
+              Auto e Industrial
+              <span class="chevron">›</span>
+            </div>
+          </div>
+
+          <!-- Panel derecho: subcategorías + imagen -->
+          <div class="mega-right">
+
+            <div class="mega-sub active" id="sub-computadores">
+              <div class="mega-sub-links">
+                <div class="mega-sub-title">Computadores y Accesorios</div>
+                <div class="mega-sub-grid">
+                  <a class="mega-sub-link" href="#">Laptops</a>
+                  <a class="mega-sub-link" href="#">PCs de Escritorio</a>
+                  <a class="mega-sub-link" href="#">Monitores</a>
+                  <a class="mega-sub-link" href="#">Teclados y Mouse</a>
+                  <a class="mega-sub-link" href="#">Discos Duros y SSD</a>
+                  <a class="mega-sub-link" href="#">Memorias RAM</a>
+                  <a class="mega-sub-link" href="#">Tarjetas Gráficas</a>
+                  <a class="mega-sub-link" href="#">Procesadores</a>
+                  <a class="mega-sub-link" href="#">Cooling y Gabinetes</a>
+                  <a class="mega-sub-link" href="#">Cables y Adaptadores</a>
+                </div>
+                <a class="mega-sub-see-all" href="#">Ver todo ›</a>
+              </div>
+              <div class="mega-sub-img cat-bg-computadores">
+                <div class="cat-img-icon"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <div class="cat-img-label">Computadores</div>
+                <button class="cat-img-badge">Ver ofertas</button>
+              </div>
+            </div>
+
+            <div class="mega-sub" id="sub-celulares">
+              <div class="mega-sub-links">
+                <div class="mega-sub-title">Celulares y Tablets</div>
+                <div class="mega-sub-grid">
+                  <a class="mega-sub-link" href="#">Smartphones Android</a>
+                  <a class="mega-sub-link" href="#">iPhone</a>
+                  <a class="mega-sub-link" href="#">Tablets</a>
+                  <a class="mega-sub-link" href="#">iPad</a>
+                  <a class="mega-sub-link" href="#">Fundas y Protectores</a>
+                  <a class="mega-sub-link" href="#">Cargadores</a>
+                  <a class="mega-sub-link" href="#">Power Banks</a>
+                  <a class="mega-sub-link" href="#">Cables USB</a>
+                </div>
+                <a class="mega-sub-see-all" href="#">Ver todo ›</a>
+              </div>
+              <div class="mega-sub-img cat-bg-celulares">
+                <div class="cat-img-icon"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2"/></svg></div>
+                <div class="cat-img-label">Celulares</div>
+                <button class="cat-img-badge">Ver ofertas</button>
+              </div>
+            </div>
+
+            <div class="mega-sub" id="sub-tv">
+              <div class="mega-sub-links">
+                <div class="mega-sub-title">TV y Audio</div>
+                <div class="mega-sub-grid">
+                  <a class="mega-sub-link" href="#">Smart TV 4K</a>
+                  <a class="mega-sub-link" href="#">OLED y QLED</a>
+                  <a class="mega-sub-link" href="#">Barras de Sonido</a>
+                  <a class="mega-sub-link" href="#">Audífonos Bluetooth</a>
+                  <a class="mega-sub-link" href="#">Parlantes Portátiles</a>
+                  <a class="mega-sub-link" href="#">Sistemas de Teatro</a>
+                  <a class="mega-sub-link" href="#">Proyectores</a>
+                  <a class="mega-sub-link" href="#">Streaming Devices</a>
+                </div>
+                <a class="mega-sub-see-all" href="#">Ver todo ›</a>
+              </div>
+              <div class="mega-sub-img cat-bg-tv">
+                <div class="cat-img-icon"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></div>
+                <div class="cat-img-label">TV y Audio</div>
+                <button class="cat-img-badge">Ver ofertas</button>
+              </div>
+            </div>
+
+            <div class="mega-sub" id="sub-camaras">
+              <div class="mega-sub-links">
+                <div class="mega-sub-title">Cámaras y Fotografía</div>
+                <div class="mega-sub-grid">
+                  <a class="mega-sub-link" href="#">Cámaras DSLR</a>
+                  <a class="mega-sub-link" href="#">Cámaras Mirrorless</a>
+                  <a class="mega-sub-link" href="#">Lentes y Objetivos</a>
+                  <a class="mega-sub-link" href="#">Drones</a>
+                  <a class="mega-sub-link" href="#">Cámaras de Acción</a>
+                  <a class="mega-sub-link" href="#">Trípodes</a>
+                  <a class="mega-sub-link" href="#">Memorias SD</a>
+                  <a class="mega-sub-link" href="#">Iluminación</a>
+                </div>
+                <a class="mega-sub-see-all" href="#">Ver todo ›</a>
+              </div>
+              <div class="mega-sub-img cat-bg-camaras">
+                <div class="cat-img-icon"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+                <div class="cat-img-label">Fotografía</div>
+                <button class="cat-img-badge">Ver ofertas</button>
+              </div>
+            </div>
+
+            <div class="mega-sub" id="sub-gaming">
+              <div class="mega-sub-links">
+                <div class="mega-sub-title">Videojuegos</div>
+                <div class="mega-sub-grid">
+                  <a class="mega-sub-link" href="#">Consolas PlayStation</a>
+                  <a class="mega-sub-link" href="#">Xbox</a>
+                  <a class="mega-sub-link" href="#">Nintendo Switch</a>
+                  <a class="mega-sub-link" href="#">Juegos PC</a>
+                  <a class="mega-sub-link" href="#">Controles</a>
+                  <a class="mega-sub-link" href="#">Headsets Gaming</a>
+                  <a class="mega-sub-link" href="#">Sillas Gamer</a>
+                  <a class="mega-sub-link" href="#">Monitores Gaming</a>
+                </div>
+                <a class="mega-sub-see-all" href="#">Ver todo ›</a>
+              </div>
+              <div class="mega-sub-img cat-bg-gaming">
+                <div class="cat-img-icon"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13" stroke-width="3"/><line x1="18" y1="11" x2="18.01" y2="11" stroke-width="3"/><rect x="2" y="8" width="20" height="12" rx="2"/></svg></div>
+                <div class="cat-img-label">Gaming</div>
+                <button class="cat-img-badge">Ver ofertas</button>
+              </div>
+            </div>
+
+            <div class="mega-sub" id="sub-relojes">
+              <div class="mega-sub-links">
+                <div class="mega-sub-title">Relojes y Wearables</div>
+                <div class="mega-sub-grid">
+                  <a class="mega-sub-link" href="#">Smartwatches</a>
+                  <a class="mega-sub-link" href="#">Apple Watch</a>
+                  <a class="mega-sub-link" href="#">Galaxy Watch</a>
+                  <a class="mega-sub-link" href="#">Bandas Deportivas</a>
+                  <a class="mega-sub-link" href="#">Auriculares TWS</a>
+                  <a class="mega-sub-link" href="#">Lentes Inteligentes</a>
+                </div>
+                <a class="mega-sub-see-all" href="#">Ver todo ›</a>
+              </div>
+              <div class="mega-sub-img cat-bg-relojes">
+                <div class="cat-img-icon"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><polyline points="12 9 12 12 13.5 13.5"/><path d="M9 2h6M9 22h6"/></svg></div>
+                <div class="cat-img-label">Wearables</div>
+                <button class="cat-img-badge">Ver ofertas</button>
+              </div>
+            </div>
+
+            <div class="mega-sub" id="sub-oficina">
+              <div class="mega-sub-links">
+                <div class="mega-sub-title">Hogar y Oficina</div>
+                <div class="mega-sub-grid">
+                  <a class="mega-sub-link" href="#">Impresoras</a>
+                  <a class="mega-sub-link" href="#">Escáneres</a>
+                  <a class="mega-sub-link" href="#">Routers y Redes</a>
+                  <a class="mega-sub-link" href="#">UPS y Reguladores</a>
+                  <a class="mega-sub-link" href="#">Proyectores</a>
+                  <a class="mega-sub-link" href="#">Smart Home</a>
+                  <a class="mega-sub-link" href="#">Aspiradoras Robot</a>
+                  <a class="mega-sub-link" href="#">Seguridad</a>
+                </div>
+                <a class="mega-sub-see-all" href="#">Ver todo ›</a>
+              </div>
+              <div class="mega-sub-img cat-bg-oficina">
+                <div class="cat-img-icon"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></div>
+                <div class="cat-img-label">Hogar y Oficina</div>
+                <button class="cat-img-badge">Ver ofertas</button>
+              </div>
+            </div>
+
+            <div class="mega-sub" id="sub-auto">
+              <div class="mega-sub-links">
+                <div class="mega-sub-title">Auto e Industrial</div>
+                <div class="mega-sub-grid">
+                  <a class="mega-sub-link" href="#">GPS Vehicular</a>
+                  <a class="mega-sub-link" href="#">Cámaras de Reversa</a>
+                  <a class="mega-sub-link" href="#">Radios para Auto</a>
+                  <a class="mega-sub-link" href="#">Cargadores Auto</a>
+                  <a class="mega-sub-link" href="#">Herramientas</a>
+                  <a class="mega-sub-link" href="#">Medición y Pruebas</a>
+                </div>
+                <a class="mega-sub-see-all" href="#">Ver todo ›</a>
+              </div>
+              <div class="mega-sub-img cat-bg-auto">
+                <div class="cat-img-icon"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><circle cx="12" cy="16" r="1"/></svg></div>
+                <div class="cat-img-label">Auto e Industrial</div>
+                <button class="cat-img-badge">Ver ofertas</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="hot">Oferta del Día</a>
+      <a href="#">Top 100 Ofertas</a>
+      <a href="#">Novedades</a>
+      <a href="#">Smartphones</a>
+      <a href="#">Laptops</a>
+      <a href="#">Cámaras</a>
+      <a href="#">Audífonos</a>
+      <a href="#">Gaming</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     4. HERO SLIDER
+============================================================ -->
+<section id="hero">
+  <!-- Mouse smoke: behind products -->
+  <canvas id="smoke-mouse"></canvas>
+  <!-- Ambient smoke: above products, clipped to right side -->
+  <canvas id="smoke-ambient"></canvas>
+  <!-- Gradient overlay: left-to-center dark fade for text legibility -->
+  <div id="hero-gradient"></div>
+
+  <!-- Text content -->
+  <div class="hero-grid">
+    <div class="hero-text">
+      <div class="hero-eyebrow">Quimiflash Atmospherics</div>
+      <div class="hero-title">LÍQUIDOS<br>DE <span>ALTO</span><br>DESEMPEÑO</div>
+      <p class="hero-desc">Niebla y humo de grado farmacéutico para producciones profesionales.<br>No tóxico · Sin residuos · Hecho en Colombia.</p>
+      <div class="hero-actions">
+        <button class="hero-btn-primary">Ver productos</button>
+        <button class="hero-btn-secondary">¿Cuál necesito?</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product bottles — one at a time, alternating -->
+  <div class="hero-products">
+    <div class="bottle-wrap" id="wrap-volcanus">
+      <img src="volcanus.png" alt="Volcanus — Líquido de humo" class="hero-bottle hero-bottle-volcanus">
+    </div>
+    <div class="bottle-wrap hidden" id="wrap-paramus">
+      <img src="paramus.png" alt="Paramus — Líquido de niebla" class="hero-bottle hero-bottle-paramus">
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     5. PROMO BANNERS
+============================================================ -->
+<section id="promo-banners">
+  <div class="container">
+    <div class="promo-grid">
+      <div class="promo-banner promo-banner-1">
+        <div class="promo-banner-bg"></div>
+        <div class="promo-banner-overlay">
+          <div class="promo-cat">Laptops y Computadores</div>
+          <div class="promo-title">Laptops Premium</div>
+          <div class="promo-discount">Hasta 70% off</div>
+          <a href="#" class="promo-link">Ver ofertas ›</a>
+        </div>
+      </div>
+      <div class="promo-banner promo-banner-2">
+        <div class="promo-banner-bg"></div>
+        <div class="promo-banner-overlay">
+          <div class="promo-cat">Cámaras y Óptica</div>
+          <div class="promo-title">Cámaras Pro</div>
+          <div class="promo-discount">Hasta 40% off</div>
+          <a href="#" class="promo-link">Ver ofertas ›</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     6. POPULAR CATEGORIES
+============================================================ -->
+<section id="categories">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Categorías Populares</h2>
+      <div class="tab-group">
+        <button class="tab-btn active" onclick="switchCatTab(this)">Todas</button>
+        <button class="tab-btn" onclick="switchCatTab(this)">Laptops</button>
+        <button class="tab-btn" onclick="switchCatTab(this)">Smartphones</button>
+        <button class="tab-btn" onclick="switchCatTab(this)">Cámaras</button>
+        <button class="tab-btn" onclick="switchCatTab(this)">Audio</button>
+      </div>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-item"><div class="cat-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2"/></svg></div><div class="cat-name">Smartphones</div><div class="cat-count">(42 productos)</div></div>
+      <div class="cat-item"><div class="cat-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/></svg></div><div class="cat-name">Laptops</div><div class="cat-count">(31 productos)</div></div>
+      <div class="cat-item"><div class="cat-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="cat-name">Cámaras</div><div class="cat-count">(24 productos)</div></div>
+      <div class="cat-item"><div class="cat-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div><div class="cat-name">Audífonos</div><div class="cat-count">(58 productos)</div></div>
+      <div class="cat-item"><div class="cat-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><polyline points="12 9 12 12 13.5 13.5"/><path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"/></svg></div><div class="cat-name">Smartwatches</div><div class="cat-count">(19 productos)</div></div>
+      <div class="cat-item"><div class="cat-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13" stroke-width="3"/><line x1="18" y1="11" x2="18.01" y2="11" stroke-width="3"/><rect x="2" y="8" width="20" height="12" rx="2"/></svg></div><div class="cat-name">Gaming</div><div class="cat-count">(37 productos)</div></div>
+      <div class="cat-item"><div class="cat-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></div><div class="cat-name">TV y Audio</div><div class="cat-count">(26 productos)</div></div>
+      <div class="cat-item"><div class="cat-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></div><div class="cat-name">Oficina</div><div class="cat-count">(15 productos)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     7 & 8. FEATURED PRODUCTS
+============================================================ -->
+<section id="featured">
+  <div class="container">
+    <div class="featured-header">
+      <h2 class="section-title">Productos Destacados</h2>
+      <div class="featured-tabs">
+        <button class="feat-tab active" onclick="switchFeatTab(this,'new-arrivals')">Novedades</button>
+        <button class="feat-tab" onclick="switchFeatTab(this,'best-sellers-tab')">Más Vendidos</button>
+        <button class="feat-tab" onclick="switchFeatTab(this,'on-sale')">En Oferta</button>
+      </div>
+    </div>
+
+    <div class="product-grid">
+      <!-- NEW ARRIVALS (8 products) -->
+      <div class="tab-panel active" id="new-arrivals">
+        <!-- Card 1 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="badge badge-new">Nuevo</div>
+            <div class="product-img ph-phone"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Smartphones</div>
+            <div class="card-name">Samsung Galaxy S24 Ultra 5G 256GB</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(128)</span>
+            </div>
+            <div class="card-price"><span class="price-regular">$1,199.99</span></div>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="badge badge-sale">Oferta</div>
+            <div class="badge-discount">-15%</div>
+            <div class="product-img ph-laptop"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Laptops</div>
+            <div class="card-name">MacBook Pro 14" M3 Pro 512GB Space Gray</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(94)</span>
+            </div>
+            <div class="card-price">
+              <span class="price-original">$1,999.99</span>
+              <span class="price-sale">$1,699.99</span>
+            </div>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="badge badge-sale">Oferta</div>
+            <div class="badge-discount">-20%</div>
+            <div class="product-img ph-audio"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Audífonos</div>
+            <div class="card-name">Sony WH-1000XM5 Wireless Noise Canceling</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(312)</span>
+            </div>
+            <div class="card-price">
+              <span class="price-original">$349.99</span>
+              <span class="price-sale">$279.99</span>
+            </div>
+          </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="product-img ph-camera"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Cámaras</div>
+            <div class="card-name">Canon EOS R8 Full-Frame Mirrorless</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star empty" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(47)</span>
+            </div>
+            <div class="card-price"><span class="price-regular">$1,499.99</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BEST SELLERS TAB (4 products) -->
+      <div class="tab-panel" id="best-sellers-tab">
+        <!-- Card 5 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="badge badge-sale">Oferta</div>
+            <div class="badge-discount">-12%</div>
+            <div class="product-img ph-watch"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><polyline points="12 9 12 12 13.5 13.5"/><path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Smartwatches</div>
+            <div class="card-name">Apple Watch Ultra 2 Titanium 49mm GPS + Cellular</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(201)</span>
+            </div>
+            <div class="card-price">
+              <span class="price-original">$799.99</span>
+              <span class="price-sale">$699.99</span>
+            </div>
+          </div>
+        </div>
+        <!-- Card 6 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="badge badge-new">Nuevo</div>
+            <div class="product-img ph-gaming"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13" stroke-width="3"/><line x1="18" y1="11" x2="18.01" y2="11" stroke-width="3"/><rect x="2" y="8" width="20" height="12" rx="2"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Gaming</div>
+            <div class="card-name">ASUS ROG Strix G16 Gaming Laptop RTX 4070</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(88)</span>
+            </div>
+            <div class="card-price"><span class="price-regular">$1,299.99</span></div>
+          </div>
+        </div>
+        <!-- Card 7 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="product-img ph-phone"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Smartphones</div>
+            <div class="card-name">iPhone 15 Pro Max 256GB Natural Titanium</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(547)</span>
+            </div>
+            <div class="card-price"><span class="price-regular">$1,199.99</span></div>
+          </div>
+        </div>
+        <!-- Card 8 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="product-img ph-laptop"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Laptops</div>
+            <div class="card-name">Dell XPS 15 Intel Core i9 32GB RAM 1TB SSD</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star empty" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(73)</span>
+            </div>
+            <div class="card-price"><span class="price-regular">$1,599.99</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ON SALE TAB -->
+      <div class="tab-panel" id="on-sale">
+        <!-- Card 9 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="badge badge-sale">Oferta</div>
+            <div class="badge-discount">-20%</div>
+            <div class="product-img ph-audio"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Audífonos</div>
+            <div class="card-name">AirPods Pro 2nd Gen with MagSafe Case USB-C</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(423)</span>
+            </div>
+            <div class="card-price">
+              <span class="price-original">$249.99</span>
+              <span class="price-sale">$199.99</span>
+            </div>
+          </div>
+        </div>
+        <!-- Card 10 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="badge badge-sale">Oferta</div>
+            <div class="badge-discount">-25%</div>
+            <div class="product-img ph-camera"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Cámaras</div>
+            <div class="card-name">Sony Alpha A7 IV Full-Frame Mirrorless 33MP</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(156)</span>
+            </div>
+            <div class="card-price">
+              <span class="price-original">$2,499.99</span>
+              <span class="price-sale">$1,874.99</span>
+            </div>
+          </div>
+        </div>
+        <!-- Card 11 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="badge badge-sale">Oferta</div>
+            <div class="badge-discount">-18%</div>
+            <div class="product-img ph-watch"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><polyline points="12 9 12 12 13.5 13.5"/><path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Smartwatches</div>
+            <div class="card-name">Samsung Galaxy Watch 6 Classic 47mm Bluetooth</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star empty" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(89)</span>
+            </div>
+            <div class="card-price">
+              <span class="price-original">$299.99</span>
+              <span class="price-sale">$245.99</span>
+            </div>
+          </div>
+        </div>
+        <!-- Card 12 -->
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <div class="badge badge-sale">Oferta</div>
+            <div class="badge-discount">-10%</div>
+            <div class="product-img ph-gaming"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13" stroke-width="3"/><line x1="18" y1="11" x2="18.01" y2="11" stroke-width="3"/><rect x="2" y="8" width="20" height="12" rx="2"/></svg></div>
+            <div class="card-actions">
+              <button class="action-btn" title="Vista rápida"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+              <button class="action-btn" title="Lista de deseos"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+              <button class="action-btn" title="Comparar"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            </div>
+            <div class="add-to-cart-wrap">
+              <button class="add-to-cart-btn" onclick="addToCart(event)"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-cat">Gaming</div>
+            <div class="card-name">PlayStation 5 Console Disc Edition 825GB SSD</div>
+            <div class="card-stars">
+              <div class="stars"><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span class="review-count">(734)</span>
+            </div>
+            <div class="card-price">
+              <span class="price-original">$499.99</span>
+              <span class="price-sale">$449.99</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-all-wrap">
+      <button class="view-all-btn">Ver todos los productos</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     9. OFFER BANNER WITH COUNTDOWN
+============================================================ -->
+<section id="offer-banner">
+  <div class="offer-text">
+    <div class="offer-label">⚡ Oferta por tiempo limitado</div>
+    <div class="offer-title">Hasta 40% OFF en Audífonos y Audio</div>
+  </div>
+  <div class="offer-right">
+    <div class="countdown">
+      <div class="countdown-block"><div class="countdown-num" id="cd-days">02</div><div class="countdown-label">Días</div></div>
+      <div class="countdown-block"><div class="countdown-num" id="cd-hours">14</div><div class="countdown-label">Horas</div></div>
+      <div class="countdown-block"><div class="countdown-num" id="cd-mins">32</div><div class="countdown-label">Min</div></div>
+      <div class="countdown-block"><div class="countdown-num" id="cd-secs">00</div><div class="countdown-label">Seg</div></div>
+    </div>
+    <button class="shop-now-btn">Ver oferta</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     10. BEST SELLERS LIST
+============================================================ -->
+<section id="best-sellers">
+  <div class="container">
+    <div class="bs-header">
+      <h2 class="section-title">Más Vendidos</h2>
+      <span class="top-badge">Top 20</span>
+    </div>
+    <div class="bs-grid">
+      <!-- Column 1 -->
+      <div class="bs-col">
+        <div class="bs-item">
+          <div class="bs-img ph-phone"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Smartphones</div>
+            <div class="bs-name">iPhone 15 Pro Max 256GB</div>
+            <div class="card-price"><span class="price-regular" style="font-size:13px;">$1,199.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+        <div class="bs-item">
+          <div class="bs-img ph-laptop"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Laptops</div>
+            <div class="bs-name">MacBook Air M2 13" 8GB 256GB</div>
+            <div class="card-price"><span class="price-regular" style="font-size:13px;">$1,099.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+        <div class="bs-item">
+          <div class="bs-img ph-audio"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Audífonos</div>
+            <div class="bs-name">Sony WH-1000XM5 Black</div>
+            <div class="card-price"><span class="price-sale" style="font-size:13px;">$279.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+        <div class="bs-item">
+          <div class="bs-img ph-watch"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><polyline points="12 9 12 12 13.5 13.5"/><path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Smartwatches</div>
+            <div class="bs-name">Apple Watch Series 9 45mm</div>
+            <div class="card-price"><span class="price-regular" style="font-size:13px;">$429.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+      </div>
+      <!-- Column 2 -->
+      <div class="bs-col">
+        <div class="bs-item">
+          <div class="bs-img ph-camera"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Cámaras</div>
+            <div class="bs-name">Sony Alpha A7 IV Full-Frame</div>
+            <div class="card-price"><span class="price-sale" style="font-size:13px;">$1,874.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+        <div class="bs-item">
+          <div class="bs-img ph-gaming"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13" stroke-width="3"/><line x1="18" y1="11" x2="18.01" y2="11" stroke-width="3"/><rect x="2" y="8" width="20" height="12" rx="2"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Gaming</div>
+            <div class="bs-name">PlayStation 5 Disc Edition</div>
+            <div class="card-price"><span class="price-sale" style="font-size:13px;">$449.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+        <div class="bs-item">
+          <div class="bs-img ph-phone"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Smartphones</div>
+            <div class="bs-name">Samsung Galaxy S24 Ultra 256GB</div>
+            <div class="card-price"><span class="price-regular" style="font-size:13px;">$1,199.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+        <div class="bs-item">
+          <div class="bs-img ph-audio"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Audífonos</div>
+            <div class="bs-name">AirPods Pro 2nd Gen USB-C</div>
+            <div class="card-price"><span class="price-sale" style="font-size:13px;">$199.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+      </div>
+      <!-- Column 3 -->
+      <div class="bs-col">
+        <div class="bs-item">
+          <div class="bs-img ph-laptop"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Laptops</div>
+            <div class="bs-name">ASUS ROG Strix G16 RTX 4070</div>
+            <div class="card-price"><span class="price-regular" style="font-size:13px;">$1,299.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+        <div class="bs-item">
+          <div class="bs-img ph-watch"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><polyline points="12 9 12 12 13.5 13.5"/><path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Smartwatches</div>
+            <div class="bs-name">Apple Watch Ultra 2 Titanium</div>
+            <div class="card-price"><span class="price-sale" style="font-size:13px;">$699.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+        <div class="bs-item">
+          <div class="bs-img ph-camera"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Cámaras</div>
+            <div class="bs-name">Canon EOS R8 Mirrorless Body</div>
+            <div class="card-price"><span class="price-regular" style="font-size:13px;">$1,499.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+        <div class="bs-item">
+          <div class="bs-img ph-gaming"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13" stroke-width="3"/><line x1="18" y1="11" x2="18.01" y2="11" stroke-width="3"/><rect x="2" y="8" width="20" height="12" rx="2"/></svg></div>
+          <div class="bs-info">
+            <div class="bs-cat">Gaming</div>
+            <div class="bs-name">Xbox Series X 1TB Console</div>
+            <div class="card-price"><span class="price-regular" style="font-size:13px;">$499.99</span></div>
+            <div class="bs-stars"><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="bs-star" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     11. BRAND CAROUSEL
+============================================================ -->
+<section id="brands">
+  <div class="container">
+    <h2 class="section-title">Comprar por Marca</h2>
+    <div class="brands-wrapper">
+      <div class="brands-track" id="brands-track">
+        <div class="brand-logo"><span>Apple</span></div>
+        <div class="brand-logo"><span>Samsung</span></div>
+        <div class="brand-logo"><span>Sony</span></div>
+        <div class="brand-logo"><span>Dell</span></div>
+        <div class="brand-logo"><span>HP</span></div>
+        <div class="brand-logo"><span>ASUS</span></div>
+        <div class="brand-logo"><span>Acer</span></div>
+        <div class="brand-logo"><span>LG</span></div>
+        <div class="brand-logo"><span>Microsoft</span></div>
+        <!-- Duplicate for seamless loop -->
+        <div class="brand-logo"><span>Apple</span></div>
+        <div class="brand-logo"><span>Samsung</span></div>
+        <div class="brand-logo"><span>Sony</span></div>
+        <div class="brand-logo"><span>Dell</span></div>
+        <div class="brand-logo"><span>HP</span></div>
+        <div class="brand-logo"><span>ASUS</span></div>
+        <div class="brand-logo"><span>Acer</span></div>
+        <div class="brand-logo"><span>LG</span></div>
+        <div class="brand-logo"><span>Microsoft</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     12. NEWSLETTER
+============================================================ -->
+<section id="newsletter">
+  <div class="newsletter-inner">
+    <div class="newsletter-left">
+      <div class="newsletter-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+      <div class="newsletter-text">
+        <strong>Suscríbete al boletín</strong>
+        <p>...y recibe un cupón de $20.000 en tu primera compra</p>
+      </div>
+    </div>
+    <form class="newsletter-form" onsubmit="return handleNewsletter(event)">
+      <input type="email" class="newsletter-input" placeholder="Tu correo electrónico...">
+      <button type="submit" class="newsletter-submit">Suscribirse</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============================================================
+     13. FOOTER
+============================================================ -->
+<footer id="footer">
+  <div class="footer-main">
+    <div>
+      <div style="display:inline-flex; flex-direction:column;">
+      <!-- Logo centrado sobre el texto -->
+      <div style="align-self:center; margin-bottom:20px;">
+        <img src="logo-mercaflash.webp" alt="MercaFlash" style="height:80px; width:auto; border-radius:50%; display:block;" onerror="this.style.display='none'">
+      </div>
+      <!-- Texto alineado a la izquierda -->
+      <div class="footer-cta">¿Tienes preguntas? ¡Llámanos 24/7!</div>
+      <div class="footer-phone">(800) 8001-8588</div>
+      <div class="footer-phone2">(800) 8001-9999</div>
+      <div class="footer-addr">
+        <strong>Información de contacto</strong><br>
+        Cra. 7 #123-45, Bogotá D.C.<br>
+        Colombia
+      </div>
+      <div class="footer-socials">
+        <div class="social-icon" title="Facebook">f</div>
+        <div class="social-icon" title="Twitter">𝕏</div>
+        <div class="social-icon" title="Instagram">▣</div>
+        <div class="social-icon" title="LinkedIn">in</div>
+        <div class="social-icon" title="YouTube">▶</div>
+        <div class="social-icon" title="RSS">◉</div>
+      </div>
+      </div><!-- /inline-flex -->
+    </div>
+    <div class="footer-col">
+      <h4>Encuentra rápido</h4>
+      <ul>
+        <li><a href="#">Laptops</a></li>
+        <li><a href="#">Cámaras</a></li>
+        <li><a href="#">Smartphones</a></li>
+        <li><a href="#">Videojuegos</a></li>
+        <li><a href="#">TV y Audio</a></li>
+        <li><a href="#">Gadgets</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Empresa</h4>
+      <ul>
+        <li><a href="#">Quiénes somos</a></li>
+        <li><a href="#">Contacto</a></li>
+        <li><a href="#">Lista de deseos</a></li>
+        <li><a href="#">Comparar</a></li>
+        <li><a href="#">Preguntas frecuentes</a></li>
+        <li><a href="#">Directorio de tiendas</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Servicio al cliente</h4>
+      <ul>
+        <li><a href="#">Mi cuenta</a></li>
+        <li><a href="#">Rastrear pedido</a></li>
+        <li><a href="#">Atención al cliente</a></li>
+        <li><a href="#">Devoluciones / Cambios</a></li>
+        <li><a href="#">Preguntas frecuentes</a></li>
+        <li><a href="#">Soporte de productos</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <div class="footer-copy">© 2026 MercaFlash — Todos los derechos reservados</div>
+      <div class="payment-methods">
+        <span class="payment-pill">VISA</span>
+        <span class="payment-pill">MC</span>
+        <span class="payment-pill">PayPal</span>
+        <span class="payment-pill">Discover</span>
+        <span class="payment-pill">Skrill</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- BACK TO TOP -->
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+/* ── SMOKE CANVAS ── */
+(function() {
+  const canvasAmbient = document.getElementById('smoke-ambient');
+  const canvasMouse   = document.getElementById('smoke-mouse');
+  if (!canvasAmbient || !canvasMouse) return;
+  const ctxA = canvasAmbient.getContext('2d');
+  const ctxM = canvasMouse.getContext('2d');
+  const hero = document.getElementById('hero');
+  // alias for shared resize
+  const canvas = canvasAmbient;
+
+  function resize() {
+    const w = hero.offsetWidth, h = hero.offsetHeight;
+    canvasAmbient.width  = canvasMouse.width  = w;
+    canvasAmbient.height = canvasMouse.height = h;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Mouse state
+  const mouse = { x: -999, y: -999, vx: 0, vy: 0, speed: 0, inside: false };
+  let prevMX = 0, prevMY = 0;
+
+  hero.addEventListener('mouseenter', () => { mouse.inside = true; });
+  hero.addEventListener('mouseleave', () => { mouse.inside = false; mouse.speed = 0; });
+  hero.addEventListener('mousemove', e => {
+    const rect = hero.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+    mouse.vx = mouse.x - prevMX;
+    mouse.vy = mouse.y - prevMY;
+    mouse.speed = Math.sqrt(mouse.vx * mouse.vx + mouse.vy * mouse.vy);
+    prevMX = mouse.x; prevMY = mouse.y;
+  });
+
+  const particles = [];
+
+  function Particle(fromMouse) {
+    const w = canvas.width;
+    const h = canvas.height;
+    this.fromMouse = fromMouse;
+
+    if (fromMouse && mouse.inside) {
+      this.x       = mouse.x + (Math.random() - 0.5) * 70;
+      this.y       = mouse.y + (Math.random() - 0.5) * 50;
+      this.vx      = mouse.vx * 0.10 + (Math.random() - 0.5) * 1.2;
+      this.vy      = mouse.vy * 0.10 - (0.4 + Math.random() * 0.5);
+      this.radius  = 30 + Math.random() * 55;
+      this.maxR    = this.radius + 55 + Math.random() * 75;
+      this.maxLife = 160 + Math.random() * 130;
+      this.peakAlpha = 0.22 + Math.random() * 0.1;
+    } else {
+      // Ambient: only spawn on right 55% so smoke never covers left-side text
+      const sizeClass = Math.random();
+      this.x       = w * 0.45 + Math.random() * w * 0.55;
+      this.y       = h + Math.random() * 30;
+      // Random horizontal tendency (some drift left, some right, some zigzag)
+      this.vx      = (Math.random() - 0.5) * 1.2;
+      this.vy      = -(0.1 + Math.random() * 0.22);
+      this.waveAmp  = 0.3 + Math.random() * 0.8;   // horizontal wave amplitude
+      this.waveFreq = 0.01 + Math.random() * 0.03; // wave frequency
+      this.waveOff  = Math.random() * Math.PI * 2;  // phase offset
+      if (sizeClass < 0.4) {
+        // Small wisp — fast, thin, disappears quickly
+        this.radius  = 30 + Math.random() * 50;
+        this.maxR    = this.radius + 40 + Math.random() * 50;
+        this.maxLife = 120 + Math.random() * 100;
+        this.peakAlpha = 0.10 + Math.random() * 0.08;
+      } else if (sizeClass < 0.75) {
+        // Medium puff
+        this.radius  = 70 + Math.random() * 80;
+        this.maxR    = this.radius + 60 + Math.random() * 80;
+        this.maxLife = 200 + Math.random() * 130;
+        this.peakAlpha = 0.14 + Math.random() * 0.07;
+      } else {
+        // Large bank — slow, wide, lingers
+        this.radius  = 120 + Math.random() * 100;
+        this.maxR    = this.radius + 50 + Math.random() * 70;
+        this.maxLife = 280 + Math.random() * 160;
+        this.peakAlpha = 0.09 + Math.random() * 0.06;
+        this.vx     *= 0.5;
+        this.vy     *= 0.6;
+      }
+    }
+
+    this.life = 0;
+    // Tint by X position
+    const ratio = this.x / w;
+    if (ratio < 0.35)      { this.r = 200; this.g = 240; this.b = 215; }
+    else if (ratio > 0.65) { this.r = 255; this.g = 210; this.b = 210; }
+    else                   { this.r = 230; this.g = 230; this.b = 235; }
+  }
+
+  Particle.prototype.update = function() {
+    this.life++;
+
+    // Mouse repulsion for all particles
+    if (mouse.inside) {
+      const dx = this.x - mouse.x;
+      const dy = this.y - mouse.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 160 && dist > 0) {
+        const force = (160 - dist) / 160 * 0.4;
+        this.vx += (dx / dist) * force;
+        this.vy += (dy / dist) * force;
+      }
+    }
+
+    this.vx *= 0.97;
+    this.vy  = this.vy * 0.97 - 0.008;
+
+    const wave = this.fromMouse ? 0 : Math.sin(this.life * (this.waveFreq || 0.02) + (this.waveOff || 0)) * (this.waveAmp || 0.4);
+    this.x += this.vx + wave;
+    this.y += this.vy;
+    this.radius += (this.maxR - this.radius) * 0.005;
+  };
+
+  Particle.prototype.draw = function() {
+    const progress = this.life / this.maxLife;
+    const peak = this.peakAlpha || 0.18;
+    let alpha;
+    if      (progress < 0.10) alpha = (progress / 0.10) * peak;
+    else if (progress < 0.55) alpha = peak;
+    else                      alpha = peak * (1 - (progress - 0.55) / 0.45);
+    if (alpha <= 0.002) return;
+
+    // Draw on the correct canvas
+    const c = this.fromMouse ? ctxM : ctxA;
+    const grad = c.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+    grad.addColorStop(0,    `rgba(${this.r},${this.g},${this.b},${alpha})`);
+    grad.addColorStop(0.45, `rgba(${this.r},${this.g},${this.b},${alpha * 0.5})`);
+    grad.addColorStop(1,    `rgba(${this.r},${this.g},${this.b},0)`);
+
+    c.beginPath();
+    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    c.fillStyle = grad;
+    c.fill();
+  };
+
+  function loop() {
+    ctxA.clearRect(0, 0, canvasAmbient.width, canvasAmbient.height);
+    ctxM.clearRect(0, 0, canvasMouse.width,   canvasMouse.height);
+
+    // Ambient particles — varied spawn rate
+    if (Math.random() < 0.65) particles.push(new Particle(false));
+    if (Math.random() < 0.30) particles.push(new Particle(false));
+
+    // Mouse burst
+    if (mouse.inside && mouse.speed > 2) {
+      const burst = Math.min(Math.floor(mouse.speed / 4) + 1, 5);
+      for (let i = 0; i < burst; i++) particles.push(new Particle(true));
+    }
+
+    const ambientCap = canvas.height * 0.75; // bottom 25% for ambient
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.update();
+      // Kill ambient particles if they rise above the bottom quarter
+      if (!p.fromMouse && p.y < ambientCap) {
+        particles.splice(i, 1);
+        continue;
+      }
+      if (p.life >= p.maxLife) { particles.splice(i, 1); continue; }
+      p.draw();
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ── BOTTLE ALTERNATOR ── */
+(function() {
+  const wraps = [
+    document.getElementById('wrap-volcanus'),
+    document.getElementById('wrap-paramus')
+  ];
+  if (!wraps[0] || !wraps[1]) return;
+  let active = 0;
+  let driftTimer = null;
+
+  function showBottle(idx) {
+    const wrap = wraps[idx];
+    wrap.classList.remove('hidden', 'drifting');
+    // Force reflow so animation restarts from scratch
+    void wrap.offsetWidth;
+    // Start drift after entrance transition finishes (1.3s)
+    driftTimer = setTimeout(() => wrap.classList.add('drifting'), 1350);
+  }
+
+  function hideBottle(idx) {
+    clearTimeout(driftTimer);
+    const wrap = wraps[idx];
+    wrap.classList.remove('drifting');
+    void wrap.offsetWidth;
+    wrap.classList.add('hidden');
+  }
+
+  // Show first bottle immediately
+  showBottle(active);
+
+  setInterval(() => {
+    hideBottle(active);
+    active = (active + 1) % 2;
+    showBottle(active);
+  }, 6000);
+})();
+
+/* ── STICKY HEADER ── */
+const mainHeader = document.getElementById('main-header');
+window.addEventListener('scroll', () => {
+  mainHeader.classList.toggle('scrolled', window.scrollY > 10);
+  document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 400);
+});
+
+/* ── BACK TO TOP ── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+
+/* ── FEATURED PRODUCTS TABS ── */
+function switchFeatTab(btn, panelId) {
+  document.querySelectorAll('.feat-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+/* ── CATEGORY TABS ── */
+function switchCatTab(btn) {
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ── CART ── */
+let cartCount = 0;
+function addToCart(e) {
+  e.stopPropagation();
+  cartCount++;
+  const badge = document.getElementById('cart-badge');
+  badge.textContent = cartCount;
+  badge.classList.add('bump');
+  setTimeout(() => badge.classList.remove('bump'), 300);
+}
+function bumpCart() {} // click on cart icon
+
+/* ── COUNTDOWN TIMER ── */
+const countdownEnd = new Date(Date.now() + (2 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000) + (32 * 60 * 1000));
+function updateCountdown() {
+  const now = new Date();
+  const diff = Math.max(0, countdownEnd - now);
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  const secs = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cd-days').textContent = String(days).padStart(2,'0');
+  document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+  document.getElementById('cd-mins').textContent = String(mins).padStart(2,'0');
+  document.getElementById('cd-secs').textContent = String(secs).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+/* ── LIGHT MODE TOGGLE ── */
+const darkToggle = document.getElementById('dark-toggle');
+let lightMode = false;
+darkToggle.addEventListener('click', () => {
+  lightMode = !lightMode;
+  document.body.classList.toggle('light-mode', lightMode);
+  darkToggle.textContent = lightMode ? '☀' : '🌙';
+});
+
+/* ── MOBILE MENU ── */
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobile-nav');
+const mobileOverlay = document.getElementById('mobile-overlay');
+const mobileNavClose = document.getElementById('mobile-nav-close');
+
+function openMobileNav() {
+  mobileNav.classList.add('open');
+  mobileOverlay.classList.add('open');
+}
+function closeMobileNav() {
+  mobileNav.classList.remove('open');
+  mobileOverlay.classList.remove('open');
+}
+hamburger.addEventListener('click', openMobileNav);
+mobileNavClose.addEventListener('click', closeMobileNav);
+mobileOverlay.addEventListener('click', closeMobileNav);
+
+/* ── NEWSLETTER ── */
+function handleNewsletter(e) {
+  e.preventDefault();
+  const input = e.target.querySelector('input');
+  if (input.value) {
+    alert('🎉 ¡Gracias! Tu cupón de $20.000 será enviado a ' + input.value);
+    input.value = '';
+  }
+  return false;
+}
+
+/* ── MEGA MENU ── */
+const deptBtn     = document.getElementById('dept-btn');
+const deptWrapper = document.getElementById('dept-wrapper');
+const megaMenu    = document.getElementById('mega-menu');
+let closeTimer = null;
+
+function openMenu()    { clearTimeout(closeTimer); megaMenu.classList.add('open'); }
+function scheduleClose(){ closeTimer = setTimeout(() => megaMenu.classList.remove('open'), 180); }
+
+deptWrapper.addEventListener('mouseenter', openMenu);
+deptWrapper.addEventListener('mouseleave', scheduleClose);
+
+// Mobile: toggle por click
+deptBtn.addEventListener('click', (e) => {
+  if (window.innerWidth <= 767) { megaMenu.classList.toggle('open'); e.stopPropagation(); }
+});
+document.addEventListener('click', (e) => {
+  if (!deptWrapper.contains(e.target)) megaMenu.classList.remove('open');
+});
+
+// Account dropdown — mismo patrón hover con delay
+const accountWrapper  = document.getElementById('account-wrapper');
+const accountDropdown = document.getElementById('account-dropdown');
+let accountTimer = null;
+
+function openAccount()    { clearTimeout(accountTimer); accountDropdown.style.display = 'block'; }
+function closeAccount()   { accountTimer = setTimeout(() => { accountDropdown.style.display = 'none'; }, 180); }
+
+accountWrapper.addEventListener('mouseenter', openAccount);
+accountWrapper.addEventListener('mouseleave', closeAccount);
+
+document.addEventListener('click', (e) => {
+  if (!accountWrapper.contains(e.target)) accountDropdown.style.display = 'none';
+});
+
+// Hover entre categorías → mostrar subcategorías correspondientes
+document.querySelectorAll('.mega-item').forEach(item => {
+  item.addEventListener('mouseenter', () => {
+    const subId = item.dataset.sub;
+    // Desactivar todos
+    document.querySelectorAll('.mega-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('.mega-sub').forEach(s => s.classList.remove('active'));
+    // Activar el seleccionado
+    item.classList.add('active');
+    const sub = document.getElementById(subId);
+    if (sub) sub.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
