@@ -113,7 +113,8 @@
   /* ── Inyectar CSS del nav (garantiza que aplique en TODAS las páginas) ── */
   const NAV_CSS = `
 <style id="layout-nav-css">
-.nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,6vw,72px);height:76px;background:rgba(255,250,236,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(43,36,24,0.07);transition:box-shadow .25s,background .25s;}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,6vw,72px);height:76px;background:rgba(255,250,236,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(43,36,24,0.07);transition:box-shadow .25s,background .25s;overflow:hidden;}
+.nav-logo img{height:44px;width:auto;display:block;}
 .nav.scrolled{background:rgba(255,250,236,0.97);box-shadow:0 4px 24px rgba(43,36,24,0.09);}
 .nav-mobile{display:none;position:fixed;top:76px;left:0;right:0;z-index:999;background:rgba(253,248,243,0.98);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);flex-direction:column;padding:28px clamp(20px,6vw,72px);gap:22px;border-bottom:1px solid rgba(43,36,24,0.08);box-shadow:0 16px 48px rgba(43,36,24,0.08);}
 .nav-mobile.open{display:flex;}
