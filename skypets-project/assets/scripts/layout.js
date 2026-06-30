@@ -114,7 +114,18 @@
   const NAV_CSS = `
 <style id="layout-nav-css">
 .nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,6vw,72px);height:76px;background:rgba(255,250,236,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(43,36,24,0.07);transition:box-shadow .25s,background .25s;overflow:hidden;}
-.nav-logo img{height:44px;width:auto;display:block;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo img{height:44px;width:auto;display:block;flex-shrink:0;}
+.nav-brand{font-family:'Fredoka',sans-serif;font-size:1.35rem;font-weight:700;line-height:1;}
+.nav-brand .sky{color:#FF7600;}.nav-brand .pets{color:#008D83;}
+.nav-links{list-style:none;display:flex;align-items:center;gap:clamp(20px,3vw,36px);margin:0;padding:0;}
+.nav-links a{font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:500;color:#2B2418;text-decoration:none;transition:color .2s;}
+.nav-links a:hover,.nav-links a.active{color:#FF7600;}
+.nav-actions{display:flex;align-items:center;gap:12px;}
+.nav-portal{font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:500;color:#2B2418;text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s;}
+.nav-portal:hover{color:#FF7600;}
+.nav-cta{font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:rgba(255,118,0,0.9);padding:10px 22px;border-radius:100px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(255,118,0,.38);backdrop-filter:blur(12px);transition:transform .2s,box-shadow .2s;}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,118,0,.52);}
 .nav.scrolled{background:rgba(255,250,236,0.97);box-shadow:0 4px 24px rgba(43,36,24,0.09);}
 .nav-mobile{display:none;position:fixed;top:76px;left:0;right:0;z-index:999;background:rgba(253,248,243,0.98);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);flex-direction:column;padding:28px clamp(20px,6vw,72px);gap:22px;border-bottom:1px solid rgba(43,36,24,0.08);box-shadow:0 16px 48px rgba(43,36,24,0.08);}
 .nav-mobile.open{display:flex;}
