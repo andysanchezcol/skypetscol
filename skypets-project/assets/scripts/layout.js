@@ -127,6 +127,21 @@
 .nav-hamburger.open span:nth-child(2){opacity:0;}
 .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
 @media(max-width:768px){.nav-links{display:none!important;}.nav-actions{display:none!important;}.nav-hamburger{display:flex!important;}}
+footer{background:#2B2418;color:rgba(255,250,236,0.48);padding:clamp(56px,8vw,88px) clamp(24px,6vw,72px) 32px;}
+.footer-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:48px;margin-bottom:48px;}
+.footer-logo-wrap{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.footer-brand-name{font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:700;}
+.footer-brand-name .sky{color:#FF7600;}.footer-brand-name .pets{color:#008D83;}
+.footer-brand p{font-size:0.84rem;line-height:1.8;max-width:268px;font-weight:300;}
+.footer-col h4{font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:600;color:rgba(255,250,236,0.88);margin-bottom:18px;}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.footer-col ul a{font-size:0.84rem;color:rgba(255,250,236,0.40);text-decoration:none;font-weight:300;transition:color 0.2s;}
+.footer-col ul a:hover{color:#FF7600;}
+.footer-contact{display:flex;flex-direction:column;gap:10px;}
+.footer-cr{display:flex;align-items:center;gap:8px;font-size:0.84rem;font-weight:300;}
+.footer-bottom{max-width:1100px;margin:0 auto;border-top:1px solid rgba(255,250,236,0.07);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:0.75rem;}
+@media(max-width:960px){.footer-grid{grid-template-columns:1fr 1fr;gap:36px;}}
+@media(max-width:540px){.footer-grid{grid-template-columns:1fr;gap:32px;}.footer-bottom{flex-direction:column;text-align:center;}}
 </style>`;
   document.head.insertAdjacentHTML('beforeend', NAV_CSS);
 
