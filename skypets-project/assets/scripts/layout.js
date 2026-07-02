@@ -152,6 +152,10 @@ footer{background:#2B2418;color:rgba(255,250,236,0.48);padding:clamp(56px,8vw,88
 .footer-contact{display:flex;flex-direction:column;gap:10px;}
 .footer-cr{display:flex;align-items:center;gap:8px;font-size:0.84rem;font-weight:300;}
 .footer-bottom{max-width:1100px;margin:0 auto;border-top:1px solid rgba(255,250,236,0.07);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:0.75rem;}
+.social-row{display:flex;gap:10px;margin-top:20px;}
+.social-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,250,236,0.07);border:1px solid rgba(255,250,236,0.10);display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background 0.2s,transform 0.15s;}
+.social-btn:hover{background:#FF7600;border-color:#FF7600;transform:translateY(-2px);}
+.social-btn--wa:hover{background:#1da851;border-color:#1da851;}
 @media(max-width:960px){.footer-grid{grid-template-columns:1fr 1fr;gap:36px;}}
 @media(max-width:540px){.footer-grid{grid-template-columns:1fr;gap:32px;}.footer-bottom{flex-direction:column;text-align:center;}}
 </style>`;
