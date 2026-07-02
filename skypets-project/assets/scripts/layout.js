@@ -115,8 +115,8 @@
 <style id="layout-nav-css">
 .nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,6vw,72px);height:76px;background:rgba(255,250,236,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(43,36,24,0.07);transition:box-shadow .25s,background .25s;overflow:hidden;}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.nav-logo img{height:44px;width:auto;display:block;flex-shrink:0;}
-.nav-brand{font-family:'Fredoka',sans-serif;font-size:1.35rem;font-weight:700;line-height:1;}
+.nav-logo img{height:68px;width:auto;display:block;flex-shrink:0;}
+.nav-brand{font-family:'Fredoka',sans-serif;font-size:1.9rem;font-weight:700;line-height:1;}
 .nav-brand .sky{color:#FF7600;}.nav-brand .pets{color:#008D83;}
 .nav-links{list-style:none;display:flex;align-items:center;gap:clamp(20px,3vw,36px);margin:0;padding:0;}
 .nav-links a{font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:500;color:#2B2418;text-decoration:none;transition:color .2s;}
