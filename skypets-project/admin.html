@@ -645,23 +645,13 @@ async function doLogin() {
 
   _loginBusy = true;
   btn.disabled = true; btn.textContent = 'Verificando...';
-
-  // Timeout de seguridad: 60 segundos (Supabase free tier puede tardar en arrancar)
-  let countdown = 55;
-  const ticker = setInterval(() => {
-    countdown--;
-    showLoginInfo('Conectando con Supabase' + (countdown < 50 ? ' (el proyecto puede estar arrancando, espera...)' : '...'));
-  }, 1000);
-  const safeguard = setTimeout(() => {
-    clearInterval(ticker);
-    btn.disabled = false; btn.textContent = 'Ingresar al panel';
-    showLoginError('Sin respuesta de Supabase en 60s. El proyecto puede estar pausado — entra al Dashboard de Supabase y verifica que el proyecto esté activo.');
-    _loginBusy = false;
-  }, 60000);
+  showLoginInfo('Conectando con Supabase...');
 
   try {
-    showLoginInfo('Conectando con Supabase...');
-    const { data: authData, error: authErr } = await sb.auth.signInWithPassword({ email, password: pass });
+    const { data: authData, error: authErr } = await withTimeout(
+      sb.auth.signInWithPassword({ email, password: pass }),
+      15000,
+    );
 
     if (authErr) {
       showLoginError('Auth error: ' + authErr.message);
@@ -669,11 +659,10 @@ async function doLogin() {
     }
 
     showLoginInfo('Verificando permisos de admin...');
-    const { data: profile, error: profileErr } = await sb
-      .from('profiles')
-      .select('is_admin, full_name, email')
-      .eq('id', authData.user.id)
-      .single();
+    const { data: profile, error: profileErr } = await withTimeout(
+      sb.from('profiles').select('is_admin, full_name, email').eq('id', authData.user.id).single(),
+      15000,
+    );
 
     if (profileErr) {
       showLoginError('No se pudo leer tu perfil: ' + profileErr.message + ' (code: ' + profileErr.code + ')');
@@ -686,14 +675,15 @@ async function doLogin() {
       return;
     }
 
-    clearTimeout(safeguard);
-    _loginBusy = false;
     enterAdmin(authData.user, profile);
 
   } catch (e) {
-    showLoginError('Excepción: ' + e.message);
+    if (e.message === 'timeout') {
+      showLoginError('Sin respuesta de Supabase en 15s. Puede ser un cold start del plan Free o rate limiting — espera un momento y vuelve a intentar.');
+    } else {
+      showLoginError('Excepción: ' + e.message);
+    }
   } finally {
-    clearTimeout(safeguard);
     _loginBusy = false;
     btn.disabled = false;
     btn.textContent = 'Ingresar al panel';
@@ -1057,22 +1047,46 @@ async function useSession() {
 /* ── AUTO-LOGIN AL CARGAR ── */
 // Lee directamente de localStorage para evitar la llamada de red que se cuelga.
 // El SDK ya tiene los headers de auth configurados desde localStorage en init.
+// Si el access_token expiró (dura 1h por defecto), se intenta renovar con el
+// refresh_token antes de rendirse — con timeout corto para no repetir el
+// cuelgue conocido si Supabase está lento.
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),
+  ]);
+}
+
 (async function autoLogin() {
   try {
     const LS_KEY = 'sb-yicrkuntrsiaonkrfzlm-auth-token';
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return;
 
-    const stored  = JSON.parse(raw);
-    const token   = stored?.access_token;
-    const exp     = stored?.expires_at;
-    const user    = stored?.user;
+    const stored       = JSON.parse(raw);
+    const token        = stored?.access_token;
+    const refreshToken = stored?.refresh_token;
+    const exp          = stored?.expires_at;
+    let   user         = stored?.user;
 
     if (!token || !user?.id) return;
-    // Si el token expiró, no intentar — evita llamada de red colgante
-    if (exp && Date.now() / 1000 > exp - 30) return;
 
-    // Token válido: consultar perfil (la API de DB sí funciona)
+    if (exp && Date.now() / 1000 > exp - 30) {
+      // Token expirado: intentar renovar con el refresh_token (máx 8s de espera)
+      if (!refreshToken) return;
+      try {
+        const { data, error } = await withTimeout(
+          sb.auth.refreshSession({ refresh_token: refreshToken }),
+          8000,
+        );
+        if (error || !data?.session?.user) return;
+        user = data.session.user;
+      } catch (_) {
+        return; // timeout o error de red: pedir login de nuevo, sin bloquear la página
+      }
+    }
+
+    // Token válido (o ya renovado): consultar perfil
     const { data: profile } = await sb
       .from('profiles')
       .select('is_admin,full_name,email')
