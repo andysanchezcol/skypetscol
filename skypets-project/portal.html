@@ -576,6 +576,16 @@ function clearMsg() {
   el.className = 'auth-msg';
 }
 
+/* ── TIMEOUT HELPER ── */
+// Evita que un login se quede colgado indefinidamente si Supabase está lento
+// (cold start del plan Free / rate limiting) — falla rápido con un mensaje claro.
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),
+  ]);
+}
+
 /* ── LOGIN ── */
 async function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
@@ -583,9 +593,16 @@ async function doLogin() {
   if (!email || !pass) return showMsg('Completa todos los campos.');
   const btn = document.getElementById('btnLogin');
   btn.disabled = true; btn.textContent = 'Entrando...';
-  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-  btn.disabled = false; btn.textContent = 'Entrar a mi portal';
-  if (error) showMsg('Correo o contraseña incorrectos.');
+  try {
+    const { error } = await withTimeout(sb.auth.signInWithPassword({ email, password: pass }), 15000);
+    if (error) showMsg('Correo o contraseña incorrectos.');
+  } catch (e) {
+    showMsg(e.message === 'timeout'
+      ? 'Sin respuesta de Supabase en 15s. Espera un momento y vuelve a intentar.'
+      : 'Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Entrar a mi portal';
+  }
 }
 
 /* ── REGISTER ── */
@@ -597,10 +614,20 @@ async function doRegister() {
   if (pass.length < 6) return showMsg('La contraseña debe tener al menos 6 caracteres.');
   const btn = document.getElementById('btnRegister');
   btn.disabled = true; btn.textContent = 'Creando cuenta...';
-  const { error } = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
-  btn.disabled = false; btn.textContent = 'Crear mi cuenta';
-  if (error) showMsg(error.message);
-  else showMsg('¡Cuenta creada! Revisa tu correo para confirmar.', 'success');
+  try {
+    const { error } = await withTimeout(
+      sb.auth.signUp({ email, password: pass, options: { data: { full_name: name } } }),
+      15000,
+    );
+    if (error) showMsg(error.message);
+    else showMsg('¡Cuenta creada! Revisa tu correo para confirmar.', 'success');
+  } catch (e) {
+    showMsg(e.message === 'timeout'
+      ? 'Sin respuesta de Supabase en 15s. Espera un momento y vuelve a intentar.'
+      : 'Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Crear mi cuenta';
+  }
 }
 
 /* ── GOOGLE ── */
@@ -635,13 +662,18 @@ async function doResetPassword() {
   if (pass.length < 6)   return showResetMsg('La contraseña debe tener al menos 6 caracteres.');
   const btn = document.getElementById('btnReset');
   btn.disabled = true; btn.textContent = 'Guardando...';
-  const { error } = await sb.auth.updateUser({ password: pass });
-  btn.disabled = false; btn.textContent = 'Guardar nueva contraseña';
-  if (error) showResetMsg('No se pudo actualizar. El link puede haber expirado.');
-  else {
+  try {
+    const { error } = await withTimeout(sb.auth.updateUser({ password: pass }), 15000);
+    if (error) { showResetMsg('No se pudo actualizar. El link puede haber expirado.'); return; }
     _resetMode = false;
     document.getElementById('resetForm').style.display = 'none';
     document.getElementById('resetDone').style.display = '';
+  } catch (e) {
+    showResetMsg(e.message === 'timeout'
+      ? 'Sin respuesta de Supabase en 15s. Espera un momento y vuelve a intentar.'
+      : 'Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Guardar nueva contraseña';
   }
 }
 
