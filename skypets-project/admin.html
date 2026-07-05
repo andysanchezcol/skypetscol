@@ -511,6 +511,9 @@ tr:hover td { background: rgba(0,141,131,0.03); }
         <select class="select-input" id="uploadType">
           <option value="">Selecciona el tipo...</option>
           <option value="certificado_salud">Certificado de Salud</option>
+          <option value="certificado_cdc">CDC (Estados Unidos)</option>
+          <option value="anexo_europa">Anexo Europa</option>
+          <option value="anexo_latinoamerica">Anexo Latinoamérica</option>
           <option value="certificado_apoyo_emocional">Certificado de Apoyo Emocional (ESA)</option>
           <option value="certificado_asistencia_servicio">Certificado de Asistencia y Servicio (SVAN)</option>
           <option value="cartilla_vacunacion">Cartilla de Vacunación</option>
@@ -584,6 +587,9 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const DOC_TYPE_NAMES = {
   certificado_salud:               'Certificado de Salud',
+  certificado_cdc:                 'CDC',
+  anexo_europa:                    'Anexo Europa',
+  anexo_latinoamerica:             'Anexo Latinoamérica',
   certificado_apoyo_emocional:     'ESA',
   certificado_asistencia_servicio: 'SVAN',
   cartilla_vacunacion:             'Vacunación',
