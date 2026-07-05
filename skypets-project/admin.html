@@ -621,7 +621,7 @@ async function sendMagicLink() {
   try {
     const { error } = await sb.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.origin + '/admin' }
+      options: { emailRedirectTo: window.location.origin + '/admin.html' }
     });
     if (error) { showLoginError('Error: ' + error.message); return; }
     showLoginInfo('✅ Link enviado a ' + email + '. Revisa tu bandeja (y spam). Haz clic en el link para entrar.');
