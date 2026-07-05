@@ -1061,7 +1061,6 @@ function withTimeout(promise, ms) {
   try {
     const LS_KEY = 'sb-yicrkuntrsiaonkrfzlm-auth-token';
     const raw = localStorage.getItem(LS_KEY);
-    console.log('[autoLogin] raw presente:', !!raw);
     if (!raw) return;
 
     const stored       = JSON.parse(raw);
@@ -1069,23 +1068,21 @@ function withTimeout(promise, ms) {
     const refreshToken = stored?.refresh_token;
     const exp          = stored?.expires_at;
     let   user         = stored?.user;
-    console.log('[autoLogin] token:', !!token, 'user.id:', user?.id, 'exp:', exp, 'ahora:', Math.floor(Date.now()/1000));
 
-    if (!token || !user?.id) { console.log('[autoLogin] salida: falta token o user.id'); return; }
+    if (!token || !user?.id) return;
 
     if (exp && Date.now() / 1000 > exp - 30) {
-      console.log('[autoLogin] token expirado, intentando refresh...');
-      if (!refreshToken) { console.log('[autoLogin] salida: no hay refresh_token'); return; }
+      // Token expirado: intentar renovar con el refresh_token (máx 25s de espera —
+      // Supabase Free puede tardar en responder por cold start o incidentes de plataforma)
+      if (!refreshToken) return;
       try {
         const { data, error } = await withTimeout(
           sb.auth.refreshSession({ refresh_token: refreshToken }),
-          8000,
+          25000,
         );
-        console.log('[autoLogin] resultado refresh — error:', error, 'session?', !!data?.session);
         if (error || !data?.session?.user) return;
         user = data.session.user;
-      } catch (e) {
-        console.log('[autoLogin] excepción en refresh:', e.message);
+      } catch (_) {
         return; // timeout o error de red: pedir login de nuevo, sin bloquear la página
       }
     }
@@ -1093,23 +1090,16 @@ function withTimeout(promise, ms) {
     // Token válido (o ya renovado): consultar perfil (con timeout — sin esto se
     // quedaba colgado indefinidamente cuando Supabase está lento, dejando al
     // usuario en la pantalla de login sin ningún error)
-    let profile, profErr;
     try {
-      ({ data: profile, error: profErr } = await withTimeout(
+      const { data: profile } = await withTimeout(
         sb.from('profiles').select('is_admin,full_name,email').eq('id', user.id).single(),
-        8000,
-      ));
-    } catch (e) {
-      console.log('[autoLogin] timeout consultando perfil:', e.message);
+        25000,
+      );
+      if (profile?.is_admin) enterAdmin(user, profile);
+    } catch (_) {
       return;
     }
-    console.log('[autoLogin] perfil:', profile, 'error:', profErr);
-
-    if (profile?.is_admin) enterAdmin(user, profile);
-    else console.log('[autoLogin] salida: profile.is_admin es falsy');
-  } catch(e) {
-    console.log('[autoLogin] excepción general:', e.message);
-  }
+  } catch(_) {}
 })();
 
 /* ── AUTH STATE (para cuando el magic link redirige con token en URL) ── */
