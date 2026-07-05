@@ -1090,12 +1090,19 @@ function withTimeout(promise, ms) {
       }
     }
 
-    // Token válido (o ya renovado): consultar perfil
-    const { data: profile, error: profErr } = await sb
-      .from('profiles')
-      .select('is_admin,full_name,email')
-      .eq('id', user.id)
-      .single();
+    // Token válido (o ya renovado): consultar perfil (con timeout — sin esto se
+    // quedaba colgado indefinidamente cuando Supabase está lento, dejando al
+    // usuario en la pantalla de login sin ningún error)
+    let profile, profErr;
+    try {
+      ({ data: profile, error: profErr } = await withTimeout(
+        sb.from('profiles').select('is_admin,full_name,email').eq('id', user.id).single(),
+        8000,
+      ));
+    } catch (e) {
+      console.log('[autoLogin] timeout consultando perfil:', e.message);
+      return;
+    }
     console.log('[autoLogin] perfil:', profile, 'error:', profErr);
 
     if (profile?.is_admin) enterAdmin(user, profile);
