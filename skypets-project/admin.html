@@ -749,7 +749,7 @@ async function loadDashboard() {
 }
 
 async function loadRecentDocs() {
-  const { data } = await sb.from('documents').select('*, profiles(full_name,email)').order('created_at', { ascending: false }).limit(8);
+  const { data } = await sb.from('documents').select('*, profiles!documents_owner_id_fkey(full_name,email)').order('created_at', { ascending: false }).limit(8);
   const tbody = document.getElementById('recentDocsBody');
   if (!data?.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Sin documentos aún</td></tr>'; return; }
   tbody.innerHTML = data.map(d => `
@@ -873,7 +873,7 @@ function populateClientSelect() {
 /* ── ALL DOCS ── */
 async function loadAllDocs() {
   const status = document.getElementById('docStatusFilter').value;
-  let q = sb.from('documents').select('*, profiles(full_name,email)').order('created_at', { ascending: false });
+  let q = sb.from('documents').select('*, profiles!documents_owner_id_fkey(full_name,email)').order('created_at', { ascending: false });
   if (status) q = q.eq('status', status);
   const { data } = await q;
   const tbody = document.getElementById('allDocsBody');
