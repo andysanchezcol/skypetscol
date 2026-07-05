@@ -1,10 +1,9 @@
 // Disparada por un Database Webhook de Supabase en INSERT sobre arca.clients.
-// Crea la cuenta de portal (auth.users + public.profiles) del cliente en silencio
-// (sin enviar ningún correo) cuando una asesora lo registra en Arca, para que ya
-// exista cuando le subamos un documento — evita mantener dos listas de clientes
-// por separado. El cliente inicia sesión más adelante con el Magic Link ya
-// existente del portal; el aviso de bienvenida se envía junto con el primer
-// documento, no en este paso.
+// Crea la cuenta de portal (auth.users + public.profiles) del cliente cuando
+// una asesora lo registra en Arca, para que ya exista cuando le subamos un
+// documento — evita mantener dos listas de clientes por separado. Además le
+// envía un correo de bienvenida (vía Resend) con un link para que el propio
+// cliente cree su contraseña la primera vez que entra al portal.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 interface ArcaClientRecord {
@@ -62,5 +61,56 @@ Deno.serve(async (req: Request) => {
     })
   }
 
-  return Response.json({ created: true, user_id: created.user.id })
+  const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
+    type: 'recovery',
+    email: record.email,
+    options: { redirectTo: 'https://skypetscol.com/portal' },
+  })
+
+  if (linkErr || !linkData) {
+    return Response.json({ created: true, user_id: created.user.id, email_error: linkErr?.message })
+  }
+
+  const firstName = (record.full_name ?? '').trim().split(' ')[0] || 'Hola'
+  const html = `
+    <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#1a1a1a;line-height:1.5">
+      <p>Hola ${firstName},</p>
+      <p>Bienvenido al portal de clientes de SkyPets. Aquí vas a poder ver y descargar todos los documentos de viaje de tu mascota apenas los subamos.</p>
+      <p>Antes de entrar, crea tu contraseña de acceso con el siguiente botón:</p>
+      <p style="margin-top:24px">
+        <a href="${linkData.properties.action_link}" style="background:#FF7600;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Crear mi contraseña</a>
+      </p>
+      <p style="margin-top:24px">Equipo SkyPets</p>
+    </div>
+  `
+
+  const text = `Hola ${firstName},
+
+Bienvenido al portal de clientes de SkyPets. Aquí vas a poder ver y descargar todos los documentos de viaje de tu mascota apenas los subamos.
+
+Antes de entrar, crea tu contraseña de acceso con este enlace:
+${linkData.properties.action_link}
+
+Equipo SkyPets`
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: 'SkyPets <certificados@skypetscol.com>',
+      to: record.email,
+      subject: 'Bienvenido a tu portal SkyPets — crea tu contraseña',
+      html,
+      text,
+    }),
+  })
+
+  if (!res.ok) {
+    return Response.json({ created: true, user_id: created.user.id, email_error: await res.text() })
+  }
+
+  return Response.json({ created: true, user_id: created.user.id, welcome_email_sent: true })
 })
