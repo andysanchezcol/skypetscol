@@ -1,0 +1,8 @@
+Options -Indexes
+DirectoryIndex index.php
+
+# Proteger archivos sensibles
+<FilesMatch "\.(json|log|sh|env)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>

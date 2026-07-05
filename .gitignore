@@ -1,0 +1,6 @@
+skypets-admin/config.php
+skypets-admin/credentials/
+skypets-admin/vendor/
+skypets-admin/tmp/
+.DS_Store
+skypets-admin/deploy.php

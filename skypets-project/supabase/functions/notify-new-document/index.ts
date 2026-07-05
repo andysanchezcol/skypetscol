@@ -42,6 +42,25 @@ const DOC_INFO: Record<string, DocInfo> = {
       'Llévalo impreso dentro de la carpeta de viaje de tu mascota.',
     ],
   },
+  certificado_cdc: {
+    label: 'Certificado CDC (Estados Unidos)',
+    recommendations: [
+      'Preséntalo ante las autoridades de aduana/CDC al ingresar a Estados Unidos.',
+      'Llévalo impreso dentro de la carpeta de viaje de tu mascota.',
+    ],
+  },
+  anexo_europa: {
+    label: 'Anexo Europa',
+    recommendations: [
+      'Preséntalo junto con el certificado de salud ante las autoridades del país de destino en Europa.',
+    ],
+  },
+  anexo_latinoamerica: {
+    label: 'Anexo Latinoamérica',
+    recommendations: [
+      'Preséntalo junto con el certificado de salud ante las autoridades del país de destino en Latinoamérica.',
+    ],
+  },
   cartilla_vacunacion: {
     label: 'Cartilla de Vacunación',
     recommendations: [
