@@ -228,6 +228,33 @@ $totalGen  = count($generados);
 .action-btns .btn-ver { margin: 0 !important; white-space: nowrap; font-size: 12px; padding: 5px 10px; }
 .btn-doc { background: rgba(0,141,131,0.85) !important; }
 
+/* Grupo de acciones (fila Generados): iconos agrupados + acción principal */
+.action-group { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.icon-btn-group {
+  display: inline-flex; align-items: center;
+  border-radius: 100px; background: rgba(43,36,24,0.06);
+}
+.icon-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; color: var(--muted);
+  text-decoration: none; border-radius: 100px;
+  transition: background 0.15s, color 0.15s;
+}
+.icon-btn:hover { background: rgba(255,118,0,0.14); color: var(--orange); }
+.icon-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+.icon-btn svg { width: 16px; height: 16px; }
+.btn-portal {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 100px;
+  background: var(--teal); color: #fff;
+  text-decoration: none; font-size: 12px; font-weight: 600; white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,141,131,0.3);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-portal:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,141,131,0.42); }
+.btn-portal:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.btn-portal svg { width: 14px; height: 14px; flex-shrink: 0; }
+
 /* Toolbar sobre tabla pendientes */
 .pend-toolbar {
     display: flex; align-items: center; gap: 10px;
@@ -400,11 +427,22 @@ $totalGen  = count($generados);
                             <?php endif; ?>
                         </td>
                         <td>
-                            <div class="action-btns">
-                                <a href="certificado.php?row=<?= $e['rowNum'] ?>" class="btn-ver">Ver</a>
-                                <a href="generar_pdf.php?row=<?= $e['rowNum'] ?>" class="btn-ver" target="_blank">PDF</a>
-                                <a href="generar_docx.php?row=<?= $e['rowNum'] ?>" class="btn-ver btn-doc" target="_blank">.doc</a>
-                                <a href="subir_portal.php?row=<?= $e['rowNum'] ?>" class="btn-ver btn-doc">Subir al portal</a>
+                            <div class="action-group">
+                                <div class="icon-btn-group">
+                                    <a href="certificado.php?row=<?= $e['rowNum'] ?>" class="icon-btn" title="Ver / Editar" aria-label="Ver certificado">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </a>
+                                    <a href="generar_pdf.php?row=<?= $e['rowNum'] ?>" class="icon-btn" target="_blank" title="Descargar PDF" aria-label="Descargar PDF">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+                                    </a>
+                                    <a href="generar_docx.php?row=<?= $e['rowNum'] ?>" class="icon-btn" target="_blank" title="Descargar DOCX" aria-label="Descargar DOCX">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M9 15v-3l1.5 3 1.5-3v3"/></svg>
+                                    </a>
+                                </div>
+                                <a href="subir_portal.php?row=<?= $e['rowNum'] ?>" class="btn-portal" title="Subir al portal">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A5 5 0 0 1 6 5.3 6 6 0 0 1 17.7 6a4.5 4.5 0 0 1 .3 9H16"/><path d="M12 12v9M9 15l3-3 3 3"/></svg>
+                                    Subir al portal
+                                </a>
                             </div>
                         </td>
                     </tr>
