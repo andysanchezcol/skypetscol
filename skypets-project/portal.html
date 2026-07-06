@@ -586,6 +586,25 @@ function withTimeout(promise, ms) {
   ]);
 }
 
+// El incidente de plataforma de Supabase hace que algunas queries autenticadas
+// se cuelguen de forma intermitente — reintentar unas veces antes de rendirse
+// suele resolverlo, ya que no todos los intentos fallan.
+async function withRetry(makeRequest, { attempts = 3, timeoutMs = 12000, onRetry } = {}) {
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await withTimeout(makeRequest(), timeoutMs);
+    } catch (e) {
+      lastErr = e;
+      if (i < attempts - 1) {
+        onRetry?.(i + 1, attempts);
+        await new Promise(r => setTimeout(r, 800 * (i + 1)));
+      }
+    }
+  }
+  throw lastErr;
+}
+
 /* ── LOGIN ── */
 async function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
@@ -594,11 +613,14 @@ async function doLogin() {
   const btn = document.getElementById('btnLogin');
   btn.disabled = true; btn.textContent = 'Entrando...';
   try {
-    const { error } = await withTimeout(sb.auth.signInWithPassword({ email, password: pass }), 15000);
+    const { error } = await withRetry(
+      () => sb.auth.signInWithPassword({ email, password: pass }),
+      { attempts: 3, timeoutMs: 12000, onRetry: (n, total) => { btn.textContent = `Reintentando (${n}/${total - 1})...`; } },
+    );
     if (error) showMsg('Correo o contraseña incorrectos.');
   } catch (e) {
     showMsg(e.message === 'timeout'
-      ? 'Sin respuesta de Supabase en 15s. Espera un momento y vuelve a intentar.'
+      ? 'El servidor está tardando más de lo normal. Ya lo intentamos varias veces — espera un momento y vuelve a intentar.'
       : 'Error: ' + e.message);
   } finally {
     btn.disabled = false; btn.textContent = 'Entrar a mi portal';
@@ -697,11 +719,15 @@ async function loadDocuments(userId) {
   const container = document.getElementById('docContainer');
   container.innerHTML = '<div class="loading-spinner"><div class="spinner"></div> Cargando documentos...</div>';
 
-  const { data, error } = await sb
-    .from('documents')
-    .select('*')
-    .eq('owner_id', userId)
-    .order('created_at', { ascending: false });
+  let data, error;
+  try {
+    ({ data, error } = await withRetry(
+      () => sb.from('documents').select('*').eq('owner_id', userId).order('created_at', { ascending: false }),
+      { attempts: 3, timeoutMs: 12000 },
+    ));
+  } catch (_) {
+    error = true;
+  }
 
   if (error) {
     container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><h3>Error al cargar</h3><p>No pudimos cargar tus documentos. Intenta de nuevo más tarde.</p></div>';
@@ -887,9 +913,14 @@ async function initPortalSession() {
       const user    = stored?.user;
       const valid   = token && user?.id && (!exp || Date.now() / 1000 < exp - 30);
       if (valid) {
-        const { data: profile } = await sb
-          .from('profiles').select('*').eq('id', user.id).single();
-        // Mostrar con o sin perfil (fallback a email)
+        let profile = null;
+        try {
+          ({ data: profile } = await withRetry(
+            () => sb.from('profiles').select('*').eq('id', user.id).single(),
+            { attempts: 2, timeoutMs: 8000 },
+          ));
+        } catch (_) {}
+        // Mostrar con o sin perfil (fallback a email) — nunca bloquear el dashboard por esto
         _dashShown = true;
         showDashboard(user, profile || { full_name: user.user_metadata?.full_name || user.email });
         return;
@@ -905,10 +936,15 @@ async function initPortalSession() {
 sb.auth.onAuthStateChange(async (event, session) => {
   if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
     if (_dashShown || _resetMode) return; // ya está en dashboard o en modo reset
-    const { data: profile } = await sb
-      .from('profiles').select('*').eq('id', session.user.id).single();
+    let profile = null;
+    try {
+      ({ data: profile } = await withRetry(
+        () => sb.from('profiles').select('*').eq('id', session.user.id).single(),
+        { attempts: 2, timeoutMs: 8000 },
+      ));
+    } catch (_) {}
     _dashShown = true;
-    showDashboard(session.user, profile);
+    showDashboard(session.user, profile || { full_name: session.user.user_metadata?.full_name || session.user.email });
   }
   if (event === 'SIGNED_OUT') {
     _dashShown = false;
