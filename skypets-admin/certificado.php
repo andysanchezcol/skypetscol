@@ -495,6 +495,7 @@ function v(array $saved, string $key): string {
         <?php if ($saved): ?>
             <a href="generar_pdf.php?row=<?= $rowNum ?>" target="_blank" class="btn-generate">Generar PDF ↓</a>
             <a href="generar_docx.php?row=<?= $rowNum ?>" target="_blank" class="btn-generate btn-generate-docx">Generar DOCX ↓</a>
+            <a href="subir_portal.php?row=<?= $rowNum ?>" class="btn-generate btn-doc">Subir al portal<?= v($saved,'portal_uploaded_at') ? ' ✅' : '' ?></a>
         <?php else: ?>
             <span class="hint">Guarda los datos primero para poder generar el PDF.</span>
         <?php endif; ?>

@@ -2,6 +2,7 @@
 require_once __DIR__ . '/auth.php';
 requireLogin();
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/google_api.php';
 require_once __DIR__ . '/helpers.php';
 
@@ -15,6 +16,10 @@ if (!$row) { header('Location: dashboard.php'); exit; }
 $mascota = col($row, 'nombre_mascota');
 $tutor   = col($row, 'nombre_tutor');
 $correo  = trim(col($row, 'correo'));
+
+$prevStmt = getDB()->prepare('SELECT portal_uploaded_at FROM certificados WHERE sheet_row = ?');
+$prevStmt->execute([$rowNum]);
+$portalUploadedAt = $prevStmt->fetchColumn() ?: null;
 
 $tiposDoc = [
     'certificado_salud'       => 'Certificado de Salud',
@@ -133,6 +138,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $msg = 'Error al registrar el documento: ' . $insert['body'];
                     $msgTipo = 'error';
                 } else {
+                    getDB()->prepare("UPDATE certificados SET portal_uploaded_at = NOW() WHERE sheet_row = ?")
+                        ->execute([$rowNum]);
                     $msg = '✅ Documento subido al portal de ' . htmlspecialchars($tutor) . '. Se le notificará por correo automáticamente.';
                     $msgTipo = 'ok';
                 }
@@ -163,6 +170,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h2>Subir documento al portal</h2>
     <p><strong><?= htmlspecialchars($mascota) ?></strong> — Tutor: <?= htmlspecialchars($tutor) ?></p>
     <p>✉️ <?= $correo ? htmlspecialchars($correo) : '<em>sin correo registrado</em>' ?></p>
+
+    <?php if ($portalUploadedAt): ?>
+        <div class="alert alert-ok">✅ Ya se subió un documento al portal el <?= date('d/m/Y H:i', strtotime($portalUploadedAt)) ?>. Puedes subir otro si necesitas reemplazarlo (por ejemplo, tras una corrección).</div>
+    <?php endif; ?>
 
     <?php if ($msg): ?>
         <div class="alert alert-<?= $msgTipo ?>"><?= $msg ?></div>
