@@ -558,8 +558,8 @@ tr:hover td { background: rgba(0,141,131,0.03); }
              ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
           <div class="drop-zone-icon">📁</div>
           <p>Arrastra el archivo aquí o <strong>haz clic para seleccionar</strong></p>
-          <p style="font-size:0.75rem;margin-top:6px">PDF, JPG, PNG — Máx. 10 MB</p>
-          <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.webp" onchange="handleFileSelect(this)">
+          <p style="font-size:0.75rem;margin-top:6px">PDF, JPG, PNG — Máx. 10 MB. Si son varios archivos del mismo documento (ej. carnet + adiestramiento + certificado médico), selecciónalos todos juntos: se agrupan en un solo ZIP.</p>
+          <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.webp" multiple onchange="handleFileSelect(this)">
           <div class="file-selected" id="fileSelected"></div>
         </div>
       </div>
@@ -580,6 +580,7 @@ tr:hover td { background: rgba(0,141,131,0.03); }
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script>
 const SUPABASE_URL = 'https://yicrkuntrsiaonkrfzlm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpY3JrdW50cnNpYW9ua3JmemxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTgzODUsImV4cCI6MjA5NTg5NDM4NX0.Layg3dN6QF6U6po7zkqbn8393LDvApdp2nGISKcMrU8';
@@ -603,7 +604,7 @@ const DOC_TYPE_NAMES = {
 };
 
 let allClients = [];
-let selectedFile = null;
+let selectedFiles = [];
 
 /* ── FORM TOGGLE ── */
 function showPasswordForm() {
@@ -910,21 +911,28 @@ function closeUploadModal() {
   document.getElementById('uploadModal').classList.remove('open');
   document.getElementById('fileSelected').textContent = '';
   document.getElementById('uploadProgress').classList.remove('show');
-  selectedFile = null;
+  selectedFiles = [];
 }
 
 /* ── FILE HANDLING ── */
 function handleFileSelect(input) {
-  selectedFile = input.files[0];
-  if (selectedFile) document.getElementById('fileSelected').textContent = `✓ ${selectedFile.name}`;
+  selectedFiles = Array.from(input.files);
+  updateFileSelectedLabel();
 }
 function handleDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
 function handleDragLeave()  { document.getElementById('dropZone').classList.remove('drag-over'); }
 function handleDrop(e) {
   e.preventDefault();
   document.getElementById('dropZone').classList.remove('drag-over');
-  selectedFile = e.dataTransfer.files[0];
-  if (selectedFile) document.getElementById('fileSelected').textContent = `✓ ${selectedFile.name}`;
+  selectedFiles = Array.from(e.dataTransfer.files);
+  updateFileSelectedLabel();
+}
+function updateFileSelectedLabel() {
+  const el = document.getElementById('fileSelected');
+  if (!selectedFiles.length) { el.textContent = ''; return; }
+  el.textContent = selectedFiles.length === 1
+    ? `✓ ${selectedFiles[0].name}`
+    : `✓ ${selectedFiles.length} archivos (se subirán como un solo ZIP): ${selectedFiles.map(f => f.name).join(', ')}`;
 }
 
 /* ── UPLOAD ── */
@@ -940,21 +948,35 @@ async function doUpload() {
   if (!clientId) return showToast('Selecciona un cliente', 'error');
   if (!type)     return showToast('Selecciona el tipo de documento', 'error');
   if (!name)     return showToast('Escribe el nombre del documento', 'error');
-  if (!selectedFile) return showToast('Selecciona un archivo', 'error');
-  if (selectedFile.size > 10 * 1024 * 1024) return showToast('El archivo supera 10 MB', 'error');
+  if (!selectedFiles.length) return showToast('Selecciona un archivo', 'error');
+  const totalSize = selectedFiles.reduce((sum, f) => sum + f.size, 0);
+  if (totalSize > 20 * 1024 * 1024) return showToast('Los archivos superan 20 MB en total', 'error');
 
   const btn = document.getElementById('btnUpload');
   btn.disabled = true; btn.textContent = 'Subiendo...';
   document.getElementById('uploadProgress').classList.add('show');
 
-  const ext      = selectedFile.name.split('.').pop();
-  const docId    = crypto.randomUUID();
+  const docId = crypto.randomUUID();
+  let uploadBlob, ext, contentType;
+
+  if (selectedFiles.length === 1) {
+    uploadBlob  = selectedFiles[0];
+    ext         = selectedFiles[0].name.split('.').pop();
+    contentType = selectedFiles[0].type;
+  } else {
+    const zip = new JSZip();
+    selectedFiles.forEach(f => zip.file(f.name, f));
+    uploadBlob  = await zip.generateAsync({ type: 'blob' });
+    ext         = 'zip';
+    contentType = 'application/zip';
+  }
+
   const filePath = `${clientId}/${docId}.${ext}`;
 
   setProgress(30);
 
-  const { error: storageErr } = await sb.storage.from('skypets-docs').upload(filePath, selectedFile, {
-    contentType: selectedFile.type, upsert: false
+  const { error: storageErr } = await sb.storage.from('skypets-docs').upload(filePath, uploadBlob, {
+    contentType, upsert: false
   });
 
   if (storageErr) {
