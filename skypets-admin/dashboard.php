@@ -49,9 +49,11 @@ function diasHastaViajeStatic(string $fecha): int {
 
 // Cargar estados guardados
 $estados = [];
-$stmt = $db->query('SELECT sheet_row, status FROM certificados');
+$portalSubidos = [];
+$stmt = $db->query('SELECT sheet_row, status, portal_uploaded_at FROM certificados');
 foreach ($stmt->fetchAll() as $r) {
     $estados[$r['sheet_row']] = $r['status'];
+    $portalSubidos[$r['sheet_row']] = $r['portal_uploaded_at'];
 }
 
 // Filtros
@@ -126,7 +128,8 @@ foreach ($rows as $i => $row) {
     $dias   = diasHastaViaje($fecha);
     $esInt  = esInternacional($tipo);
     $prio   = urgenciaPrioridad($dias, $esInt);
-    $entry  = compact('rowNum','tipo','asesor','tutor','mascota','origen','destino','fecha','status','dias','esInt','prio');
+    $portalUploadedAt = $portalSubidos[$rowNum] ?? null;
+    $entry  = compact('rowNum','tipo','asesor','tutor','mascota','origen','destino','fecha','status','dias','esInt','prio','portalUploadedAt');
 
     if ($status === 'generado') {
         $generados[] = $entry;
@@ -374,6 +377,7 @@ $totalGen  = count($generados);
                         <th>Tipo</th>
                         <th>Ruta</th>
                         <th>Asesor</th>
+                        <th>Portal</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
@@ -389,6 +393,13 @@ $totalGen  = count($generados);
                         <td><?= htmlspecialchars($e['origen']) ?> → <?= htmlspecialchars($e['destino']) ?></td>
                         <td><?= htmlspecialchars($e['asesor']) ?></td>
                         <td>
+                            <?php if ($e['portalUploadedAt']): ?>
+                                <span class="urg-badge urg-ok" title="Subido el <?= htmlspecialchars(date('d/m/Y H:i', strtotime($e['portalUploadedAt']))) ?>">✅ Subido</span>
+                            <?php else: ?>
+                                <span class="urg-badge urg-vencido">Pendiente</span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
                             <div class="action-btns">
                                 <a href="certificado.php?row=<?= $e['rowNum'] ?>" class="btn-ver">Ver</a>
                                 <a href="generar_pdf.php?row=<?= $e['rowNum'] ?>" class="btn-ver" target="_blank">PDF</a>
@@ -399,7 +410,7 @@ $totalGen  = count($generados);
                     </tr>
                 <?php endforeach; ?>
                 <?php if (empty($generados)): ?>
-                    <tr><td colspan="9" style="text-align:center;padding:24px;color:#6B5540;">Aún no hay certificados generados.</td></tr>
+                    <tr><td colspan="10" style="text-align:center;padding:24px;color:#6B5540;">Aún no hay certificados generados.</td></tr>
                 <?php endif; ?>
                 </tbody>
             </table>
