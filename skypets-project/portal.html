@@ -782,11 +782,15 @@ function docCard(doc) {
     ${issued || expiry ? `<div class="doc-dates">${issued ? `<span>${issued}</span>` : ''}${expiry ? `<span>${expiry}</span>` : ''}</div>` : ''}
     ${doc.notes ? `<div class="doc-notes">${doc.notes}</div>` : ''}
     <button class="btn-download ${!hasFile ? 'no-file' : ''}"
-            onclick="${hasFile ? `downloadDoc('${doc.id}','${doc.file_path||''}','${doc.file_url||''}','${doc.name}')` : ''}"
+            onclick="${hasFile ? `downloadDoc('${doc.id}','${doc.file_path||''}','${doc.file_url||''}','${escJs(doc.name)}')` : ''}"
             ${!hasFile ? 'disabled' : ''}>
       ${hasFile ? '⬇️ Descargar documento' : '📋 Documento en proceso'}
     </button>
   </div>`;
+}
+
+function escJs(str) {
+  return String(str ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
 async function downloadDoc(id, filePath, fileUrl, name) {
@@ -795,7 +799,9 @@ async function downloadDoc(id, filePath, fileUrl, name) {
     return;
   }
   if (filePath) {
-    const { data, error } = await sb.storage.from('skypets-docs').createSignedUrl(filePath, 60);
+    const ext = (filePath.split('.').pop() || 'pdf').toLowerCase();
+    const downloadName = (name || 'documento').replace(/[\\/:*?"<>|]/g, '') + '.' + ext;
+    const { data, error } = await sb.storage.from('skypets-docs').createSignedUrl(filePath, 60, { download: downloadName });
     if (error || !data?.signedUrl) { alert('No se pudo generar el enlace de descarga. Intenta de nuevo.'); return; }
     window.open(data.signedUrl, '_blank');
   }
