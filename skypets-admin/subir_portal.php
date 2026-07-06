@@ -68,8 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!isset($tiposDoc[$tipo])) {
         $msg = 'Selecciona un tipo de documento válido.';
         $msgTipo = 'error';
-    } elseif (empty($_FILES['documento']['tmp_name']) || $_FILES['documento']['error'] !== UPLOAD_ERR_OK) {
-        $msg = 'Selecciona un archivo para subir.';
+    } elseif (empty($_FILES['documento']['tmp_name'][0]) || $_FILES['documento']['error'][0] !== UPLOAD_ERR_OK) {
+        $msg = 'Selecciona al menos un archivo para subir.';
         $msgTipo = 'error';
     } else {
         $find = supabaseRequest('GET', '/rest/v1/profiles?select=id&email=eq.' . rawurlencode($correo));
@@ -80,17 +80,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $msgTipo = 'error';
         } else {
             $ownerId = $profiles[0]['id'];
-            $file    = $_FILES['documento'];
-            $ext     = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $docId   = uuidv4();
-            $filePath = "$ownerId/$docId.$ext";
-            $fileData = file_get_contents($file['tmp_name']);
+            $names    = $_FILES['documento']['name'];
+            $tmpNames = $_FILES['documento']['tmp_name'];
+            $count    = count(array_filter($tmpNames));
+            $docId    = uuidv4();
+
+            if ($count === 1) {
+                $ext      = strtolower(pathinfo($names[0], PATHINFO_EXTENSION));
+                $filePath = "$ownerId/$docId.$ext";
+                $fileData = file_get_contents($tmpNames[0]);
+                $contentType = $_FILES['documento']['type'][0] ?: 'application/octet-stream';
+            } else {
+                // Varios archivos del mismo documento (ej. carnet + adiestramiento + certificado médico):
+                // se agrupan en un solo ZIP para que el cliente vea un único documento en su portal.
+                $zipPath = tempnam(sys_get_temp_dir(), 'skypets_zip_');
+                $zip = new ZipArchive();
+                $zip->open($zipPath, ZipArchive::OVERWRITE);
+                foreach ($tmpNames as $i => $tmp) {
+                    if (!$tmp) continue;
+                    $zip->addFile($tmp, $names[$i]);
+                }
+                $zip->close();
+                $filePath = "$ownerId/$docId.zip";
+                $fileData = file_get_contents($zipPath);
+                $contentType = 'application/zip';
+                unlink($zipPath);
+            }
 
             $upload = supabaseRequest(
                 'POST',
                 '/storage/v1/object/skypets-docs/' . $filePath,
                 null,
-                ['content_type' => $file['type'] ?: 'application/octet-stream', 'data' => $fileData]
+                ['content_type' => $contentType, 'data' => $fileData]
             );
 
             if ($upload['status'] >= 300) {
@@ -160,8 +181,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </select>
         </div>
         <div class="form-group">
-            <label>Archivo (PDF o DOCX final, ya corregido)</label>
-            <input type="file" name="documento" accept=".pdf,.docx" required>
+            <label>Archivo(s) (PDF o DOCX final, ya corregido)</label>
+            <input type="file" name="documento[]" accept=".pdf,.docx,.jpg,.jpeg,.png" multiple required>
+            <p style="font-size:0.78rem;color:#6B5540;margin-top:6px;">Si son varios archivos del mismo documento (ej. carnet + adiestramiento + certificado médico), selecciónalos todos juntos: se agrupan en un solo ZIP en el portal del cliente.</p>
         </div>
         <button type="submit" class="btn-generate">Subir al portal</button>
     </form>
