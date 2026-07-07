@@ -502,6 +502,7 @@ tr:hover td { background: rgba(0,141,131,0.03); }
       <button class="modal-close" onclick="closeUploadModal()">✕</button>
     </div>
     <div class="modal-body">
+      <div id="uploadFormFields">
       <div>
         <label class="form-label">Cliente *</label>
         <select class="select-input" id="uploadClient"><option value="">Selecciona un cliente...</option></select>
@@ -568,10 +569,20 @@ tr:hover td { background: rgba(0,141,131,0.03); }
         <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
         <div class="progress-label"><span id="progressText">0%</span></div>
       </div>
+      </div>
+      <div id="uploadSuccessPanel" style="display:none;text-align:center;padding:8px 0">
+        <div style="font-size:1.6rem;margin-bottom:6px">✅</div>
+        <p style="font-weight:600;color:var(--ink)">Documento subido exitosamente</p>
+        <p id="uploadSuccessClientInfo" style="font-size:0.82rem;color:var(--muted);margin-top:4px"></p>
+        <div id="uploadWaWrap" style="margin-top:16px"></div>
+      </div>
     </div>
-    <div class="modal-foot">
+    <div class="modal-foot" id="uploadFootDefault">
       <button class="btn-cancel" onclick="closeUploadModal()">Cancelar</button>
       <button class="btn-primary" id="btnUpload" onclick="doUpload()">Subir documento</button>
+    </div>
+    <div class="modal-foot" id="uploadFootSuccess" style="display:none">
+      <button class="btn-primary" onclick="closeUploadModal()">Cerrar</button>
     </div>
   </div>
 </div>
@@ -912,6 +923,17 @@ function closeUploadModal() {
   document.getElementById('fileSelected').textContent = '';
   document.getElementById('uploadProgress').classList.remove('show');
   selectedFiles = [];
+  document.getElementById('uploadFormFields').style.display = '';
+  document.getElementById('uploadSuccessPanel').style.display = 'none';
+  document.getElementById('uploadFootDefault').style.display = '';
+  document.getElementById('uploadFootSuccess').style.display = 'none';
+}
+
+function waLink(phone, text) {
+  if (!phone) return null;
+  let digits = phone.replace(/\D/g, '');
+  if (digits.length === 10) digits = `57${digits}`; // celular colombiano sin indicativo
+  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
 }
 
 /* ── FILE HANDLING ── */
@@ -1009,10 +1031,23 @@ async function doUpload() {
   }
 
   btn.disabled = false; btn.textContent = 'Subir documento';
-  closeUploadModal();
-  showToast('✅ Documento subido exitosamente', 'success');
+  document.getElementById('uploadProgress').classList.remove('show');
   loadDashboard();
   loadAllDocs();
+
+  const client = allClients.find(c => c.id === clientId);
+  document.getElementById('uploadFormFields').style.display = 'none';
+  document.getElementById('uploadFootDefault').style.display = 'none';
+  document.getElementById('uploadSuccessPanel').style.display = '';
+  document.getElementById('uploadFootSuccess').style.display = '';
+  document.getElementById('uploadSuccessClientInfo').textContent =
+    `${client?.full_name || 'Cliente'} — ${DOC_TYPE_NAMES[type] || type}`;
+
+  const waWrap = document.getElementById('uploadWaWrap');
+  const link = waLink(client?.phone, `Hola ${client?.full_name || ''}, tu documento "${name}" ya está disponible en tu portal de SkyPets 🐾. Puedes verlo aquí: https://skypetscol.com/portal`);
+  waWrap.innerHTML = link
+    ? `<a href="${link}" target="_blank" class="btn-primary" style="text-decoration:none;display:inline-block;background:#25D366">📲 Enviar aviso por WhatsApp</a>`
+    : `<p style="font-size:0.78rem;color:var(--muted)">Este cliente no tiene teléfono registrado — no se puede enviar por WhatsApp.</p>`;
 }
 
 function setProgress(pct) {

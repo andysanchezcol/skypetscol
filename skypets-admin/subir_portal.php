@@ -16,6 +16,14 @@ if (!$row) { header('Location: dashboard.php'); exit; }
 $mascota = col($row, 'nombre_mascota');
 $tutor   = col($row, 'nombre_tutor');
 $correo  = trim(col($row, 'correo'));
+$celular = trim(col($row, 'celular'));
+
+function waLink(string $phone, string $text): ?string {
+    $digits = preg_replace('/\D/', '', $phone);
+    if (!$digits) return null;
+    if (strlen($digits) === 10) $digits = '57' . $digits; // celular colombiano sin indicativo
+    return 'https://wa.me/' . $digits . '?text=' . rawurlencode($text);
+}
 
 $prevStmt = getDB()->prepare('SELECT portal_uploaded_at FROM certificados WHERE sheet_row = ?');
 $prevStmt->execute([$rowNum]);
@@ -177,6 +185,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php if ($msg): ?>
         <div class="alert alert-<?= $msgTipo ?>"><?= $msg ?></div>
+    <?php endif; ?>
+
+    <?php if ($msgTipo === 'ok'):
+        $tipoSubido = $tiposDoc[$_POST['tipo']] ?? 'documento';
+        $waMsg = "Hola $tutor, tu $tipoSubido de $mascota ya está disponible en tu portal de SkyPets 🐾. A veces el correo llega a spam, revisa ahí también. Puedes verlo aquí: https://skypetscol.com/portal";
+        $wa = waLink($celular, $waMsg);
+    ?>
+        <?php if ($wa): ?>
+            <a href="<?= $wa ?>" target="_blank" class="btn-generate" style="background:#25D366;display:inline-block;margin-top:10px;">📲 Enviar aviso por WhatsApp</a>
+        <?php else: ?>
+            <p style="font-size:0.82rem;color:#6B5540;margin-top:10px;">Este cliente no tiene celular registrado en el Sheet — no se puede enviar por WhatsApp.</p>
+        <?php endif; ?>
     <?php endif; ?>
 
     <?php if ($msgTipo !== 'ok'): ?>
