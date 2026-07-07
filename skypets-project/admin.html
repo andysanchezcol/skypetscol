@@ -927,6 +927,27 @@ function openUploadForClient(clientId) {
 }
 
 /* ── CHECKLIST DE VIAJE (Arca) ── */
+// Mismas reglas de plazo que arca/src/app/(dashboard)/viajes/DetalleViajeModal.tsx —
+// solo para ordenar por urgencia; si el nombre no calza exacto, no se calcula plazo.
+const TRIP_DEADLINE_HOURS = {
+  'Certificado de Servicio': 3 * 24,
+  'Certificado Apoyo Emocional': 3 * 24,
+  'Certificado Apoyo Psiquiatría': 3 * 24,
+  'Certificado de Salud Internacional': 7 * 24,
+  'Certificado de Salud Nacional': 2 * 24,
+  'Anexo Europa': 10 * 24,
+  'Anexo Latinoamerica': 7 * 24,
+  'CDC': 60 * 24,
+  'Serología': 90 * 24,
+  'Vacuna Rabia': 30 * 24,
+  'Vacuna Pentavalente': 30 * 24,
+  'Microchip': 30 * 24,
+  'Entrega Pechera': 10 * 24,
+  'Inspección ICA (Salida Colombia)': 5 * 24,
+  'ICA Ingreso (Entrada al País)': 1 * 24,
+  'Agendamiento con Aerolínea': 48,
+};
+
 async function loadTripChecklist(clientId) {
   const box = document.getElementById('tripChecklistBox');
   if (!clientId) { box.style.display = 'none'; box.innerHTML = ''; return; }
@@ -945,9 +966,24 @@ async function loadTripChecklist(clientId) {
   }
 
   const { pet_name, flight_date, destination } = data[0];
-  const rows = data.map(d => {
+  const total = data.length;
+  const enviados = data.filter(d => d.doc_status === 'enviado').length;
+  const pct = Math.round((enviados / total) * 100);
+  const barColor = pct === 100 ? 'var(--success)' : 'var(--teal)';
+
+  const sorted = [...data].sort((a, b) => {
+    if (a.doc_status !== b.doc_status) return a.doc_status === 'pendiente' ? -1 : 1;
+    const hoursA = TRIP_DEADLINE_HOURS[a.doc_name];
+    const deadlineA = hoursA != null ? new Date(flight_date).getTime() - hoursA * 3600000 : Infinity;
+    const hoursB = TRIP_DEADLINE_HOURS[b.doc_name];
+    const deadlineB = hoursB != null ? new Date(flight_date).getTime() - hoursB * 3600000 : Infinity;
+    if (deadlineA !== deadlineB) return deadlineA - deadlineB;
+    return a.doc_name.localeCompare(b.doc_name);
+  });
+
+  const rows = sorted.map(d => {
     const ok = d.doc_status === 'enviado';
-    return `<div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;${ok ? 'color:var(--success,#3a7a0a)' : ''}">
+    return `<div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;${ok ? 'color:var(--success)' : ''}">
       <span>${ok ? '✅' : '🕐'} ${d.doc_name}</span>
       ${ok && d.doc_sent_at ? `<span style="font-size:0.72rem;color:var(--muted)">${formatDate(d.doc_sent_at)}</span>` : ''}
     </div>`;
@@ -955,6 +991,10 @@ async function loadTripChecklist(clientId) {
 
   box.innerHTML = `
     <div style="font-weight:600;margin-bottom:6px">✈️ Viaje de ${pet_name || 'la mascota'} — ${destination || 'destino sin definir'} (${formatDate(flight_date)})</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;max-width:280px">
+      <div class="progress-bar-wrap" style="flex:1;margin-top:0"><div class="progress-bar" style="width:${pct}%;background:${barColor}"></div></div>
+      <span style="font-size:0.72rem;font-weight:600;color:${barColor};flex-shrink:0">${enviados}/${total}</span>
+    </div>
     ${rows}
     <div style="font-size:0.72rem;color:var(--muted);margin-top:6px">Los ítems sin archivo (vacunas, microchip, ICA presencial, agendamiento) se marcan a mano en Arca.</div>
   `;
