@@ -35,6 +35,20 @@ const DOC_INFO: Record<string, DocInfo> = {
       'Llévalo impreso dentro de la carpeta de viaje de tu mascota.',
     ],
   },
+  certificado_salud_nacional: {
+    label: 'Certificado de Salud Nacional',
+    recommendations: [
+      'Preséntalo en el mostrador de la aerolínea el día del vuelo.',
+      'Llévalo impreso dentro de la carpeta de viaje de tu mascota.',
+    ],
+  },
+  certificado_salud_internacional: {
+    label: 'Certificado de Salud Internacional',
+    recommendations: [
+      'Preséntalo en el mostrador de la aerolínea el día del vuelo y ante las autoridades del país de destino.',
+      'Llévalo impreso dentro de la carpeta de viaje de tu mascota.',
+    ],
+  },
   certificado_asistencia_servicio: {
     label: 'Certificado de Asistencia y Servicio (SVAN)',
     recommendations: [
@@ -179,5 +193,13 @@ Equipo SkyPets`
     return Response.json({ error: await res.text() }, { status: 500 })
   }
 
-  return Response.json({ sent: true })
+  // Sincronización con Arca: si este tipo de documento corresponde a un
+  // ítem del checklist de viajes (arca.trip_documents), lo marca como
+  // "enviado" para que el asesor lo vea reflejado sin duplicar el dato a mano.
+  const { data: arcaSynced } = await supabaseAdmin.rpc('mark_trip_document_sent', {
+    p_email: profile.email,
+    p_doc_type: record.type,
+  })
+
+  return Response.json({ sent: true, arca_checklist_synced: arcaSynced ?? false })
 })

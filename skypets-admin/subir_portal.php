@@ -30,10 +30,11 @@ $prevStmt->execute([$rowNum]);
 $portalUploadedAt = $prevStmt->fetchColumn() ?: null;
 
 $tiposDoc = [
-    'certificado_salud'       => 'Certificado de Salud',
-    'certificado_cdc'         => 'CDC (Estados Unidos)',
-    'anexo_europa'            => 'Anexo Europa',
-    'anexo_latinoamerica'     => 'Anexo Latinoamérica',
+    'certificado_salud_nacional'      => 'Certificado de Salud Nacional',
+    'certificado_salud_internacional' => 'Certificado de Salud Internacional',
+    'certificado_cdc'                 => 'CDC (Estados Unidos)',
+    'anexo_europa'                    => 'Anexo Europa',
+    'anexo_latinoamerica'             => 'Anexo Latinoamérica',
 ];
 
 function uuidv4(): string {

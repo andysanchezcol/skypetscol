@@ -505,13 +505,15 @@ tr:hover td { background: rgba(0,141,131,0.03); }
       <div id="uploadFormFields">
       <div>
         <label class="form-label">Cliente *</label>
-        <select class="select-input" id="uploadClient"><option value="">Selecciona un cliente...</option></select>
+        <select class="select-input" id="uploadClient" onchange="loadTripChecklist(this.value)"><option value="">Selecciona un cliente...</option></select>
       </div>
+      <div id="tripChecklistBox" style="display:none;margin:-4px 0 4px;padding:12px 14px;background:var(--bg1,#FFFAEC);border-radius:12px;font-size:0.82rem;"></div>
       <div>
         <label class="form-label">Tipo de documento *</label>
         <select class="select-input" id="uploadType">
           <option value="">Selecciona el tipo...</option>
-          <option value="certificado_salud">Certificado de Salud</option>
+          <option value="certificado_salud_nacional">Certificado de Salud Nacional</option>
+          <option value="certificado_salud_internacional">Certificado de Salud Internacional</option>
           <option value="certificado_cdc">CDC (Estados Unidos)</option>
           <option value="anexo_europa">Anexo Europa</option>
           <option value="anexo_latinoamerica">Anexo Latinoamérica</option>
@@ -599,6 +601,8 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const DOC_TYPE_NAMES = {
   certificado_salud:               'Certificado de Salud',
+  certificado_salud_nacional:      'Salud Nacional',
+  certificado_salud_internacional: 'Salud Internacional',
   certificado_cdc:                 'CDC',
   anexo_europa:                    'Anexo Europa',
   anexo_latinoamerica:             'Anexo Latinoamérica',
@@ -916,7 +920,44 @@ function openUploadModal() {
 }
 function openUploadForClient(clientId) {
   openUploadModal();
-  setTimeout(() => { document.getElementById('uploadClient').value = clientId; }, 50);
+  setTimeout(() => {
+    document.getElementById('uploadClient').value = clientId;
+    loadTripChecklist(clientId);
+  }, 50);
+}
+
+/* ── CHECKLIST DE VIAJE (Arca) ── */
+async function loadTripChecklist(clientId) {
+  const box = document.getElementById('tripChecklistBox');
+  if (!clientId) { box.style.display = 'none'; box.innerHTML = ''; return; }
+
+  const client = allClients.find(c => c.id === clientId);
+  if (!client?.email) { box.style.display = 'none'; box.innerHTML = ''; return; }
+
+  box.style.display = '';
+  box.innerHTML = 'Cargando checklist de viaje…';
+
+  const { data, error } = await sb.rpc('get_trip_checklist', { p_email: client.email });
+
+  if (error || !data || !data.length) {
+    box.innerHTML = '<em style="color:var(--muted)">Sin viaje activo registrado en Arca para este cliente.</em>';
+    return;
+  }
+
+  const { pet_name, flight_date, destination } = data[0];
+  const rows = data.map(d => {
+    const ok = d.doc_status === 'enviado';
+    return `<div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;${ok ? 'color:var(--success,#3a7a0a)' : ''}">
+      <span>${ok ? '✅' : '🕐'} ${d.doc_name}</span>
+      ${ok && d.doc_sent_at ? `<span style="font-size:0.72rem;color:var(--muted)">${formatDate(d.doc_sent_at)}</span>` : ''}
+    </div>`;
+  }).join('');
+
+  box.innerHTML = `
+    <div style="font-weight:600;margin-bottom:6px">✈️ Viaje de ${pet_name || 'la mascota'} — ${destination || 'destino sin definir'} (${formatDate(flight_date)})</div>
+    ${rows}
+    <div style="font-size:0.72rem;color:var(--muted);margin-top:6px">Los ítems sin archivo (vacunas, microchip, ICA presencial, agendamiento) se marcan a mano en Arca.</div>
+  `;
 }
 function closeUploadModal() {
   document.getElementById('uploadModal').classList.remove('open');
@@ -1034,6 +1075,7 @@ async function doUpload() {
   document.getElementById('uploadProgress').classList.remove('show');
   loadDashboard();
   loadAllDocs();
+  setTimeout(() => loadTripChecklist(clientId), 2500);
 
   const client = allClients.find(c => c.id === clientId);
   document.getElementById('uploadFormFields').style.display = 'none';
