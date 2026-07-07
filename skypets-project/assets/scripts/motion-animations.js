@@ -2,7 +2,7 @@
  * Complementa main.js sin reemplazarlo.
  * Respeta prefers-reduced-motion automáticamente.
  */
-import { animate, inView, scroll, spring } from "https://cdn.jsdelivr.net/npm/motion@latest/+esm";
+import { animate, inView, scroll, spring } from "https://cdn.jsdelivr.net/npm/motion@12.40.0/+esm";
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
