@@ -472,6 +472,7 @@ tr:hover td { background: rgba(0,141,131,0.03); }
                 <option value="urgente">Urgente (≤72h)</option>
                 <option value="proximo">Esta semana</option>
                 <option value="pendiente">Faltan documentos</option>
+                <option value="sin_fecha">Sin fecha de vuelo</option>
                 <option value="ok">Documentos completos</option>
                 <option value="pasado">Vuelo pasado</option>
               </select>
@@ -936,8 +937,9 @@ async function loadTripBadges(clients) {
 let allTrips = [];
 
 function tripUrgency(trip) {
-  const hoursToFlight = (new Date(trip.flight_date).getTime() - Date.now()) / 36e5;
   const pendientes = trip.total_docs - trip.sent_docs;
+  if (!trip.flight_date) return pendientes === 0 ? 'ok' : 'sin_fecha';
+  const hoursToFlight = (new Date(trip.flight_date).getTime() - Date.now()) / 36e5;
   if (hoursToFlight < 0) return 'pasado';
   if (pendientes === 0) return 'ok';
   if (hoursToFlight <= 72) return 'urgente';
@@ -950,6 +952,7 @@ const TRIP_URGENCY_BADGE = {
   proximo:   { cls: 'badge-warning', label: 'Esta semana — faltan documentos' },
   pendiente: { cls: 'badge-warning', label: 'Faltan documentos' },
   ok:        { cls: 'badge-success', label: 'Documentos completos' },
+  sin_fecha: { cls: 'badge-teal',    label: 'Sin fecha de vuelo' },
   pasado:    { cls: 'badge-gray',    label: 'Vuelo pasado' },
 };
 
@@ -997,7 +1000,12 @@ function renderTrips(trips) {
   const tbody = document.getElementById('tripsBody');
   if (!trips.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--muted)">No hay viajes que coincidan</td></tr>'; return; }
 
-  const sorted = [...trips].sort((a, b) => new Date(a.flight_date) - new Date(b.flight_date));
+  const sorted = [...trips].sort((a, b) => {
+    if (!a.flight_date && !b.flight_date) return 0;
+    if (!a.flight_date) return 1;
+    if (!b.flight_date) return -1;
+    return new Date(a.flight_date) - new Date(b.flight_date);
+  });
 
   tbody.innerHTML = sorted.map(t => {
     const u = tripUrgency(t);
