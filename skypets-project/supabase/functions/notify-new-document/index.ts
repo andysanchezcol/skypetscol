@@ -205,6 +205,12 @@ Equipo SkyPets`
     }
   }
 
+  // Copiar a la asesora responsable del viaje (si tiene uno activo), para que
+  // quede con acceso directo al documento sin tener que pedirlo aparte.
+  const { data: asesorEmail } = await supabaseAdmin.rpc('get_trip_asesor_email', {
+    p_email: profile.email,
+  })
+
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -214,6 +220,7 @@ Equipo SkyPets`
     body: JSON.stringify({
       from: 'Certificados SkyPets <certificados@skypetscol.com>',
       to: profile.email,
+      ...(asesorEmail ? { cc: asesorEmail } : {}),
       subject: `${info.label} disponible en tu portal SkyPets`,
       html,
       text,
