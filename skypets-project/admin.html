@@ -478,8 +478,8 @@ tr:hover td { background: rgba(0,141,131,0.03); }
             </div>
           </div>
           <table>
-            <thead><tr><th>Cliente / Mascota</th><th>Vuelo</th><th>Asesora</th><th>Documentos</th><th>Estado</th></tr></thead>
-            <tbody id="tripsBody"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Cargando...</td></tr></tbody>
+            <thead><tr><th>Cliente / Mascota</th><th>Vuelo</th><th>Asesora</th><th>Documentos</th><th>Estado</th><th></th></tr></thead>
+            <tbody id="tripsBody"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Cargando...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -955,11 +955,11 @@ const TRIP_URGENCY_BADGE = {
 
 async function loadTrips() {
   const tbody = document.getElementById('tripsBody');
-  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Cargando...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Cargando...</td></tr>';
 
   const { data, error } = await sb.rpc('get_all_trips');
   if (error || !data) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Error al cargar viajes: ${error?.message || ''}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Error al cargar viajes: ${error?.message || ''}</td></tr>`;
     return;
   }
 
@@ -995,7 +995,7 @@ function filterTrips() {
 
 function renderTrips(trips) {
   const tbody = document.getElementById('tripsBody');
-  if (!trips.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:48px;color:var(--muted)">No hay viajes que coincidan</td></tr>'; return; }
+  if (!trips.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--muted)">No hay viajes que coincidan</td></tr>'; return; }
 
   const sorted = [...trips].sort((a, b) => new Date(a.flight_date) - new Date(b.flight_date));
 
@@ -1024,8 +1024,28 @@ function renderTrips(trips) {
           ${pendientes ? `<div style="font-size:0.72rem;color:var(--muted);margin-top:4px;max-width:280px">Pendientes: ${pendientes}</div>` : ''}
         </td>
         <td><span class="badge ${badge.cls}">${badge.label}</span></td>
+        <td><button class="btn-sm btn-sm-teal" onclick='openUploadForTrip(${JSON.stringify(t).replace(/'/g, "&#39;")})'>+ Subir doc</button></td>
       </tr>`;
   }).join('');
+}
+
+/* ── Subir documento directo desde un viaje ── */
+function openUploadForTrip(trip) {
+  if (!trip.client_email) {
+    showToast('Este viaje no tiene un cliente con email registrado en Arca — no se puede vincular al portal.', 'error');
+    return;
+  }
+  const profile = allClients.find(c => (c.email || '').toLowerCase() === trip.client_email.toLowerCase());
+  if (!profile) {
+    if (confirm(`${trip.client_name || 'Este cliente'} (${trip.client_email}) aún no tiene cuenta en el portal.\n\n¿Quieres crearla ahora para poder subirle documentos?`)) {
+      openCreateClientModal();
+      document.getElementById('newClientName').value  = trip.client_name || '';
+      document.getElementById('newClientEmail').value = trip.client_email || '';
+      document.getElementById('newClientPhone').value = trip.client_phone || '';
+    }
+    return;
+  }
+  openUploadForClient(profile.id);
 }
 
 function filterClients() {

@@ -11,6 +11,19 @@ interface DocumentRecord {
   owner_id: string
   type: string
   name: string
+  file_path: string | null
+}
+
+// Convierte a base64 en trozos para no reventar el stack con archivos grandes
+// (String.fromCharCode(...bytes) falla con arrays muy largos).
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer)
+  let binary = ''
+  const chunkSize = 0x8000
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize))
+  }
+  return btoa(binary)
 }
 
 interface DocInfo {
@@ -174,6 +187,24 @@ Ingresa a tu portal: https://skypetscol.com/portal
 
 Equipo SkyPets`
 
+  // Adjuntar el archivo real al correo, además del link al portal — si la
+  // descarga del storage falla (archivo grande, bucket caído, etc.) se envía
+  // igual el correo sin adjunto en vez de bloquear la notificación completa.
+  let attachments: { filename: string; content: string }[] | undefined
+  if (record.file_path) {
+    try {
+      const { data: fileData, error: downloadErr } = await supabaseAdmin.storage
+        .from('skypets-docs')
+        .download(record.file_path)
+      if (!downloadErr && fileData) {
+        const filename = record.file_path.split('/').pop() || `${record.name}.pdf`
+        attachments = [{ filename, content: arrayBufferToBase64(await fileData.arrayBuffer()) }]
+      }
+    } catch (_e) {
+      // sin adjunto, el correo con el link al portal se envía de todas formas
+    }
+  }
+
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -186,6 +217,7 @@ Equipo SkyPets`
       subject: `${info.label} disponible en tu portal SkyPets`,
       html,
       text,
+      ...(attachments ? { attachments } : {}),
     }),
   })
 
