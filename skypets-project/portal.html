@@ -836,25 +836,34 @@ function docCard(doc) {
     ${issued || expiry ? `<div class="doc-dates">${issued ? `<span>${issued}</span>` : ''}${expiry ? `<span>${expiry}</span>` : ''}</div>` : ''}
     ${doc.notes ? `<div class="doc-notes">${doc.notes}</div>` : ''}
     <button class="btn-download ${!hasFile ? 'no-file' : ''}"
-            onclick="${hasFile ? `downloadDoc('${doc.id}','${doc.file_path||''}','${doc.file_url||''}','${escJs(doc.name)}')` : ''}"
-            ${!hasFile ? 'disabled' : ''}>
+            ${hasFile ? `data-doc-id="${doc.id}"` : 'disabled'}>
       ${hasFile ? '⬇️ Descargar documento' : '📋 Documento en proceso'}
     </button>
   </div>`;
 }
 
-function escJs(str) {
-  return String(str ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-}
+// Delegación de eventos en vez de onclick interpolado: antes el nombre del
+// documento se inyectaba dentro del atributo onclick, y un nombre con comillas
+// (ej. Certificado "ESA") rompía el HTML del botón y el clic no hacía nada.
+// El id es un UUID, seguro como atributo.
+document.getElementById('docContainer').addEventListener('click', e => {
+  const btn = e.target.closest('.btn-download[data-doc-id]');
+  if (btn) downloadDoc(btn.dataset.docId);
+});
 
-async function downloadDoc(id, filePath, fileUrl, name) {
+async function downloadDoc(id) {
+  const doc = allDocs.find(d => d.id === id);
+  if (!doc) return;
+  const filePath = doc.file_path || '';
+  const fileUrl  = doc.file_url || '';
+
   if (fileUrl && !filePath) {
     window.open(fileUrl, '_blank');
     return;
   }
   if (filePath) {
     const ext = (filePath.split('.').pop() || 'pdf').toLowerCase();
-    const downloadName = (name || 'documento').replace(/[\\/:*?"<>|]/g, '') + '.' + ext;
+    const downloadName = (doc.name || 'documento').replace(/[\\/:*?"<>|]/g, '') + '.' + ext;
     const { data, error } = await sb.storage.from('skypets-docs').createSignedUrl(filePath, 60, { download: downloadName });
     if (error || !data?.signedUrl) { alert('No se pudo generar el enlace de descarga. Intenta de nuevo.'); return; }
     // window.open() después de un await lo bloquean los navegadores en
