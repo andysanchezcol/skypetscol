@@ -857,7 +857,11 @@ async function downloadDoc(id, filePath, fileUrl, name) {
     const downloadName = (name || 'documento').replace(/[\\/:*?"<>|]/g, '') + '.' + ext;
     const { data, error } = await sb.storage.from('skypets-docs').createSignedUrl(filePath, 60, { download: downloadName });
     if (error || !data?.signedUrl) { alert('No se pudo generar el enlace de descarga. Intenta de nuevo.'); return; }
-    window.open(data.signedUrl, '_blank');
+    // window.open() después de un await lo bloquean los navegadores en
+    // silencio (no cuenta como gesto directo del usuario) — navegar en la
+    // misma pestaña sí dispara la descarga (la URL firmada trae
+    // Content-Disposition: attachment, así que la página no se pierde).
+    window.location.href = data.signedUrl;
   }
 }
 
