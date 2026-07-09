@@ -211,6 +211,15 @@ Equipo SkyPets`
     p_email: profile.email,
   })
 
+  // Copias fijas: Andrés siempre (staff/admin.html), y la doctora además cuando
+  // el documento es un certificado de salud (los sube ella misma desde
+  // admin.skypetscol.com vía subir_portal.php) — para que ambos tengan
+  // constancia aunque el correo al cliente caiga en spam.
+  const HEALTH_CERT_TYPES = ['certificado_salud', 'certificado_salud_nacional', 'certificado_salud_internacional']
+  const ccList = new Set<string>(['andres.sanchez@skypetscol.com'])
+  if (HEALTH_CERT_TYPES.includes(record.type)) ccList.add('dra.viviana@skypetscol.com')
+  if (asesorEmail) ccList.add(asesorEmail)
+
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -220,7 +229,7 @@ Equipo SkyPets`
     body: JSON.stringify({
       from: 'Certificados SkyPets <certificados@skypetscol.com>',
       to: profile.email,
-      ...(asesorEmail ? { cc: asesorEmail } : {}),
+      cc: Array.from(ccList),
       subject: `${info.label} disponible en tu portal SkyPets`,
       html,
       text,
