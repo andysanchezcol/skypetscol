@@ -476,6 +476,9 @@ tr:hover td { background: rgba(0,141,131,0.03); }
                 <option value="ok">Documentos completos</option>
                 <option value="pasado">Vuelo pasado</option>
               </select>
+              <select class="search-input" id="tripDocFilter" onchange="filterTrips()" style="min-width:200px">
+                <option value="">Todos los documentos</option>
+              </select>
             </div>
           </div>
           <table>
@@ -975,6 +978,13 @@ async function loadTrips() {
     asesoras.map(a => `<option value="${a}">${a}</option>`).join('');
   asesorSelect.value = currentAsesor;
 
+  const docSelect = document.getElementById('tripDocFilter');
+  const docNames = [...new Set(allTrips.flatMap(t => t.pendientes || []))].sort();
+  const currentDoc = docSelect.value;
+  docSelect.innerHTML = '<option value="">Todos los documentos</option>' +
+    docNames.map(d => `<option value="${d}">${d}</option>`).join('');
+  docSelect.value = currentDoc;
+
   renderTrips(allTrips);
 }
 
@@ -982,6 +992,7 @@ function filterTrips() {
   const q = document.getElementById('tripSearch').value.toLowerCase();
   const asesor = document.getElementById('tripAsesorFilter').value;
   const urgency = document.getElementById('tripUrgencyFilter').value;
+  const docName = document.getElementById('tripDocFilter').value;
 
   const filtered = allTrips.filter(t => {
     const matchSearch = !q ||
@@ -990,7 +1001,8 @@ function filterTrips() {
       (t.destination || '').toLowerCase().includes(q);
     const matchAsesor = !asesor || t.seller_name === asesor;
     const matchUrgency = !urgency || tripUrgency(t) === urgency;
-    return matchSearch && matchAsesor && matchUrgency;
+    const matchDoc = !docName || (t.pendientes || []).includes(docName);
+    return matchSearch && matchAsesor && matchUrgency && matchDoc;
   });
 
   renderTrips(filtered);
