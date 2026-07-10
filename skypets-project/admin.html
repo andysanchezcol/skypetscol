@@ -1403,6 +1403,21 @@ function withTimeout(promise, ms) {
 
 (async function autoLogin() {
   try {
+    // El magic link expirado/ya usado vuelve con #error=...&error_code=otp_expired.
+    // Mostrarlo en la pantalla de login en vez de dejar el error crudo en la URL.
+    const errParams = new URLSearchParams(
+      (location.hash || '').replace(/^#/, '') || location.search.replace(/^\?/, '')
+    );
+    if (errParams.get('error')) {
+      const code = errParams.get('error_code') || '';
+      const msg = code === 'otp_expired'
+        ? 'El enlace expiró o ya se usó. Pide uno nuevo e ingresa apenas te llegue.'
+        : 'No se pudo validar el enlace de acceso. Intenta iniciar sesión de nuevo.';
+      showLoginError(msg);
+      history.replaceState(null, '', location.pathname); // limpiar el hash feo de la URL
+      return;
+    }
+
     const LS_KEY = 'sb-yicrkuntrsiaonkrfzlm-auth-token';
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return;
