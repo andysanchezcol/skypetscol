@@ -5,6 +5,37 @@ function base64url_encode(string $data): string {
     return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
 }
 
+/**
+ * Petición cURL a una API de Google con las defensas aprendidas en el hosting
+ * compartido de HostGator: fuerza IPv4 (la ruta IPv6 del servidor cuelga hasta
+ * agotar el timeout — "0 de 0 bytes recibidos"), acota los tiempos de espera y
+ * reintenta una vez si la conexión no llega a establecerse.
+ * Devuelve [cuerpo, códigoHTTP]. Lanza RuntimeException si la conexión sigue
+ * fallando tras el reintento.
+ */
+function googleRequest(string $url, array $extraOpts = []): array {
+    $ch = curl_init($url);
+    curl_setopt_array($ch, $extraOpts + [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_IPRESOLVE      => CURL_IPRESOLVE_V4,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT        => 25,
+    ]);
+    $body = curl_exec($ch);
+    if ($body === false) {
+        $body = curl_exec($ch); // reintento único ante fallo de conexión
+    }
+    $err  = curl_error($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($body === false) {
+        throw new RuntimeException("Google API: fallo de conexión a $url — $err");
+    }
+    return [$body, $code];
+}
+
 function getAccessToken(): string {
     static $token = null;
     static $expires = 0;
@@ -27,19 +58,19 @@ function getAccessToken(): string {
     openssl_sign($sig_input, $signature, $creds['private_key'], OPENSSL_ALGO_SHA256);
     $jwt = "$sig_input." . base64url_encode($signature);
 
-    $ch = curl_init('https://oauth2.googleapis.com/token');
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => http_build_query([
+    [$raw, $code] = googleRequest('https://oauth2.googleapis.com/token', [
+        CURLOPT_POST       => true,
+        CURLOPT_POSTFIELDS => http_build_query([
             'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
             'assertion'  => $jwt,
         ]),
-        CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded'],
-        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded'],
     ]);
-    $resp = json_decode(curl_exec($ch), true);
-    curl_close($ch);
+
+    $resp = json_decode($raw, true);
+    if (!isset($resp['access_token'])) {
+        throw new RuntimeException('Google OAuth: respuesta sin access_token — ' . ($resp['error_description'] ?? $raw));
+    }
 
     $token   = $resp['access_token'];
     $expires = $now + ($resp['expires_in'] ?? 3600);
@@ -47,20 +78,38 @@ function getAccessToken(): string {
 }
 
 function getSheetRows(): array {
-    $token = getAccessToken();
-    $range = urlencode("'Form Responses 1'!A:AI");
-    $url   = 'https://sheets.googleapis.com/v4/spreadsheets/' . SHEET_ID . "/values/$range";
+    static $cache = null;
+    static $cacheTime = 0;
+    if ($cache !== null && time() < $cacheTime + 60) {
+        return $cache;
+    }
 
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER     => ["Authorization: Bearer $token"],
-        CURLOPT_SSL_VERIFYPEER => true,
-    ]);
-    $resp = json_decode(curl_exec($ch), true);
-    curl_close($ch);
+    $cacheFile = __DIR__ . '/tmp/sheet_rows_cache.json';
+    try {
+        $token = getAccessToken();
+        $range = urlencode("'Form Responses 1'!A:AI");
+        $url   = 'https://sheets.googleapis.com/v4/spreadsheets/' . SHEET_ID . "/values/$range";
 
-    return $resp['values'] ?? [];
+        [$raw, $code] = googleRequest($url, [
+            CURLOPT_HTTPHEADER => ["Authorization: Bearer $token"],
+        ]);
+        $resp = json_decode($raw, true);
+        if (!isset($resp['values'])) {
+            throw new RuntimeException('Google Sheets: respuesta sin values — ' . ($resp['error']['message'] ?? $raw));
+        }
+
+        $cache     = $resp['values'];
+        $cacheTime = time();
+        @file_put_contents($cacheFile, json_encode($cache));
+        return $cache;
+    } catch (Throwable $e) {
+        // Google no respondió: usar el último cache en disco en vez de tumbar la página
+        if (file_exists($cacheFile)) {
+            $stale = json_decode(file_get_contents($cacheFile), true);
+            if (is_array($stale)) return $stale;
+        }
+        throw $e;
+    }
 }
 
 function driveFileId(string $url): string {
@@ -72,29 +121,28 @@ function driveFileId(string $url): string {
 function downloadDriveImage(string $fileId): ?string {
     if (!$fileId) return null;
 
-    $token = getAccessToken();
-    $url   = "https://www.googleapis.com/drive/v3/files/$fileId?alt=media";
-
     $tmpFile = __DIR__ . '/tmp/' . $fileId . '.jpg';
-
     if (file_exists($tmpFile) && filemtime($tmpFile) > time() - 3600) {
         return $tmpFile;
     }
 
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTPHEADER     => ["Authorization: Bearer $token"],
-        CURLOPT_SSL_VERIFYPEER => true,
-    ]);
-    $data = curl_exec($ch);
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+    // Contrato ?string: si Google falla, devolver null para que el documento se
+    // genere sin foto en vez de romper toda la descarga con un error fatal.
+    try {
+        $token = getAccessToken();
+        $url   = "https://www.googleapis.com/drive/v3/files/$fileId?alt=media";
 
-    if ($code === 200 && $data) {
-        file_put_contents($tmpFile, $data);
-        return $tmpFile;
+        [$data, $code] = googleRequest($url, [
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTPHEADER     => ["Authorization: Bearer $token"],
+        ]);
+
+        if ($code === 200 && $data !== '') {
+            file_put_contents($tmpFile, $data);
+            return $tmpFile;
+        }
+    } catch (Throwable $e) {
+        error_log('downloadDriveImage: ' . $e->getMessage());
     }
     return null;
 }

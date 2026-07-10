@@ -6,7 +6,18 @@ require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/google_api.php';
 require_once __DIR__ . '/helpers.php';
 
-$rows = getSheetRows();
+try {
+    $rows = getSheetRows();
+} catch (Throwable $e) {
+    error_log('dashboard.php getSheetRows: ' . $e->getMessage());
+    http_response_code(503);
+    echo '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>SkyPets — Certificados</title></head><body style="font-family:sans-serif;text-align:center;padding:60px;">'
+       . '<h1>No se pudo cargar el listado</h1>'
+       . '<p>Google Sheets no respondió a tiempo. Intenta recargar en unos segundos.</p>'
+       . '<button onclick="location.reload()">Volver a cargar</button>'
+       . '</body></html>';
+    exit;
+}
 $db   = getDB();
 
 // ── Acción: archivar vencidos ─────────────────────────────────────
