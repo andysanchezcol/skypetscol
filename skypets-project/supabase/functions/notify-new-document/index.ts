@@ -210,11 +210,15 @@ Equipo SkyPets`
         .from('skypets-docs')
         .download(record.file_path)
       if (!downloadErr && fileData) {
-        // Usar el nombre que el staff le puso al documento, no el UUID del storage —
-        // así el cliente identifica el archivo sin abrirlo.
+        // Usar el nombre que el staff le puso al documento + cliente-mascota,
+        // no el UUID del storage — así se identifica el archivo (de quién es)
+        // sin tener que abrirlo, aunque el staff no haya incluido la mascota
+        // en "Nombre del documento".
         const ext = record.file_path.split('.').pop() || 'pdf'
-        const safeName = record.name.replace(/[\\/:*?"<>|]/g, '').trim() || 'documento'
-        const filename = `${safeName}.${ext}`
+        const clean = (s: string) => s.replace(/[\\/:*?"<>|]/g, '').trim()
+        const docName    = clean(record.name) || 'documento'
+        const clienteMascota = clean(`${profile.full_name || 'cliente'}-${pet?.name || 'mascota'}`)
+        const filename = `${docName} - ${clienteMascota}.${ext}`
         attachments = [{ filename, content: arrayBufferToBase64(await fileData.arrayBuffer()) }]
       }
     } catch (_e) {
