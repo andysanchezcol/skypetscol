@@ -158,13 +158,26 @@ Deno.serve(async (req: Request) => {
   const info = DOC_INFO[record.type] ?? DOC_INFO.otro
   const firstName = (profile.full_name ?? '').trim().split(' ')[0] || 'Hola'
 
+  // Nombre y sexo real de la mascota (public.pets.sex: 'macho'/'hembra') para
+  // poder decir "peludito"/"peludita" en vez de "mascota" — sin dato de sexo
+  // registrado, se usa "peludito" como default neutro más común en el uso real.
+  const { data: pet } = await supabaseAdmin
+    .from('pets')
+    .select('name, sex')
+    .eq('owner_id', record.owner_id)
+    .limit(1)
+    .maybeSingle()
+
+  const peludo = pet?.sex === 'hembra' ? 'peludita' : 'peludito'
+  const petPhrase = pet?.name ? `tu ${peludo} ${pet.name}` : `tu ${peludo}`
+
   const recsHtml = info.recommendations.map(r => `<p style="margin:0 0 12px">${r}</p>`).join('')
   const recsText = info.recommendations.map(r => `- ${r}`).join('\n')
 
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#1a1a1a;line-height:1.5">
       <p>Hola ${firstName},</p>
-      <p>Te hacemos entrega de la documentación correspondiente para el viaje de tu mascota: <strong>${info.label}</strong>. Te pedimos revisarla con atención y validar que todos los datos estén correctos según la información suministrada.</p>
+      <p>Te hacemos entrega de la documentación correspondiente para el viaje de ${petPhrase}: <strong>${info.label}</strong>. Te pedimos revisarla con atención y validar que todos los datos estén correctos según la información suministrada.</p>
       <p>Gracias por confiar en nosotros para acompañarte en este proceso.</p>
       ${recsHtml ? `<p><strong>Recomendaciones importantes:</strong></p>${recsHtml}` : ''}
       <p><strong>Importante:</strong> si necesitas realizar alguna solicitud, corrección o requieres información adicional, comunícate directamente con nosotros.</p>
@@ -177,7 +190,7 @@ Deno.serve(async (req: Request) => {
 
   const text = `Hola ${firstName},
 
-Te hacemos entrega de la documentación correspondiente para el viaje de tu mascota: ${info.label}. Te pedimos revisarla con atención y validar que todos los datos estén correctos según la información suministrada.
+Te hacemos entrega de la documentación correspondiente para el viaje de ${petPhrase}: ${info.label}. Te pedimos revisarla con atención y validar que todos los datos estén correctos según la información suministrada.
 
 Gracias por confiar en nosotros para acompañarte en este proceso.
 ${recsText ? `\nRecomendaciones importantes:\n${recsText}\n` : ''}
@@ -197,7 +210,11 @@ Equipo SkyPets`
         .from('skypets-docs')
         .download(record.file_path)
       if (!downloadErr && fileData) {
-        const filename = record.file_path.split('/').pop() || `${record.name}.pdf`
+        // Usar el nombre que el staff le puso al documento, no el UUID del storage —
+        // así el cliente identifica el archivo sin abrirlo.
+        const ext = record.file_path.split('.').pop() || 'pdf'
+        const safeName = record.name.replace(/[\\/:*?"<>|]/g, '').trim() || 'documento'
+        const filename = `${safeName}.${ext}`
         attachments = [{ filename, content: arrayBufferToBase64(await fileData.arrayBuffer()) }]
       }
     } catch (_e) {
@@ -211,14 +228,13 @@ Equipo SkyPets`
     p_email: profile.email,
   })
 
-  // Copias fijas: Andrés siempre (staff/admin.html), y la doctora además cuando
-  // el documento es un certificado de salud (los sube ella misma desde
-  // admin.skypetscol.com vía subir_portal.php) — para que ambos tengan
-  // constancia aunque el correo al cliente caiga en spam.
-  const HEALTH_CERT_TYPES = ['certificado_salud', 'certificado_salud_nacional', 'certificado_salud_internacional']
-  const ccList = new Set<string>(['andres.sanchez@skypetscol.com'])
-  if (HEALTH_CERT_TYPES.includes(record.type)) ccList.add('dra.viviana@skypetscol.com')
+  // Copias fijas en todo documento (sin importar el tipo): la veterinaria y
+  // Andrés, para que ambos tengan constancia aunque el correo al cliente caiga
+  // en spam. Orden pedido: cliente (to) → asesor → veterinaria → Andrés.
+  const ccList = new Set<string>()
   if (asesorEmail) ccList.add(asesorEmail)
+  ccList.add('dra.viviana@skypetscol.com')
+  ccList.add('andres.sanchez@skypetscol.com')
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
