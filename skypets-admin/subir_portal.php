@@ -72,8 +72,45 @@ function supabaseRequest(string $method, string $path, ?array $jsonBody = null, 
 
 $msg = '';
 $msgTipo = '';
+$clienteSinPortal = false;
+$docUploaded = false;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'crear_cuenta') {
+    if (!$correo) {
+        $msg = 'El registro de este cliente no tiene correo. No se puede crear la cuenta.';
+        $msgTipo = 'error';
+    } else {
+        $find = supabaseRequest('GET', '/rest/v1/profiles?select=id&email=eq.' . rawurlencode($correo));
+        $profiles = json_decode($find['body'], true) ?: [];
+
+        if ($find['status'] === 200 && !empty($profiles)) {
+            $msg = 'Este cliente ya tenía cuenta en el portal — ya puedes subir el documento.';
+            $msgTipo = 'ok';
+        } else {
+            $create = supabaseRequest('POST', '/auth/v1/admin/users', [
+                'email'         => $correo,
+                'email_confirm' => true, // cuenta lista en silencio, sin correo de confirmación
+                'user_metadata' => ['full_name' => $tutor],
+            ]);
+            $created = json_decode($create['body'], true) ?: [];
+
+            if ($create['status'] >= 300 || empty($created['id'])) {
+                $msg = 'Error al crear la cuenta en el portal: ' . $create['body'];
+                $msgTipo = 'error';
+            } else {
+                // El trigger de auth.users ya crea la fila en profiles (email + full_name);
+                // aquí solo completamos el teléfono, que la Edge Function normal sí guarda.
+                supabaseRequest('PATCH', '/rest/v1/profiles?id=eq.' . rawurlencode($created['id']), [
+                    'phone' => $celular ?: null,
+                ]);
+                $msg = '✅ Cuenta creada en el portal para ' . htmlspecialchars($correo) . '. Ya puedes subir el documento.';
+                $msgTipo = 'ok';
+            }
+        }
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? 'subir_doc') === 'subir_doc' && isset($_POST['tipo'])) {
     $tipo = $_POST['tipo'] ?? '';
 
     if (!$correo) {
@@ -90,8 +127,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $profiles = json_decode($find['body'], true) ?: [];
 
         if ($find['status'] !== 200 || empty($profiles)) {
-            $msg = 'No se puede subir: este cliente no existe en el portal (' . htmlspecialchars($correo) . '). Debe estar registrado en Arca primero.';
+            $msg = 'Este cliente no existe en el portal (' . htmlspecialchars($correo) . '). Crea su cuenta primero con el botón de abajo.';
             $msgTipo = 'error';
+            $clienteSinPortal = true;
         } else {
             $ownerId = $profiles[0]['id'];
             $names    = $_FILES['documento']['name'];
@@ -151,9 +189,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ->execute([$rowNum]);
                     $msg = '✅ Documento subido al portal de ' . htmlspecialchars($tutor) . '. Se le notificará por correo automáticamente.';
                     $msgTipo = 'ok';
+                    $docUploaded = true;
                 }
             }
         }
+    }
+}
+
+// Chequeo proactivo: si aún no se sabe (GET normal, o tras crear la cuenta),
+// verifica si el cliente ya existe en el portal para decidir qué formulario mostrar.
+if ($correo && !$docUploaded && !$clienteSinPortal) {
+    $findGet = supabaseRequest('GET', '/rest/v1/profiles?select=id&email=eq.' . rawurlencode($correo));
+    $profilesGet = json_decode($findGet['body'], true) ?: [];
+    if ($findGet['status'] !== 200 || empty($profilesGet)) {
+        $clienteSinPortal = true;
     }
 }
 ?>
@@ -188,7 +237,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="alert alert-<?= $msgTipo ?>"><?= $msg ?></div>
     <?php endif; ?>
 
-    <?php if ($msgTipo === 'ok'):
+    <?php if ($docUploaded):
         $tipoSubido = $tiposDoc[$_POST['tipo']] ?? 'documento';
         $waMsg = "Hola $tutor, tu $tipoSubido de $mascota ya está disponible en tu portal de SkyPets 🐾. A veces el correo llega a spam, revisa ahí también. Puedes verlo aquí: https://skypetscol.com/portal";
         $wa = waLink($celular, $waMsg);
@@ -200,9 +249,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
     <?php endif; ?>
 
-    <?php if ($msgTipo !== 'ok'): ?>
+    <?php if ($clienteSinPortal && $correo): ?>
+    <form method="POST" style="margin-top:10px;">
+        <input type="hidden" name="row" value="<?= $rowNum ?>">
+        <input type="hidden" name="action" value="crear_cuenta">
+        <button type="submit" class="btn-generate" style="background:#008D83;">Crear cuenta en el portal para <?= htmlspecialchars($correo) ?></button>
+    </form>
+    <?php elseif (!$docUploaded): ?>
     <form method="POST" enctype="multipart/form-data" class="form-medico">
         <input type="hidden" name="row" value="<?= $rowNum ?>">
+        <input type="hidden" name="action" value="subir_doc">
         <div class="form-group">
             <label>Tipo de documento</label>
             <select name="tipo" required>
