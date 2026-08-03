@@ -1,0 +1,5 @@
+DirectoryIndex index.php
+AuthType Basic
+AuthName "SkyPets Catalogo Admin"
+AuthUserFile /home1/eadcbcam/public_html/catalogo-admin/.htpasswd
+Require valid-user

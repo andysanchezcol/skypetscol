@@ -391,7 +391,7 @@ async function handleImgUpload(event, target) {
     fd.append('image', file);
     fd.append('slug', slug);
     try {
-      const res  = await fetch('/admin/upload.php', { method: 'POST', body: fd });
+      const res  = await fetch('/catalogo-admin/upload.php', { method: 'POST', body: fd });
       const data = await res.json();
       if (data.path) {
         if (target === 'main') { mainImages.push({ path: data.path }); renderMainPreviews(); }
@@ -432,7 +432,7 @@ function removeImg(target, idx) {
   if (target === 'main') renderMainPreviews(); else renderVariantPreviews(target);
   /* borrar del servidor solo si no es placeholder */
   if (path.startsWith('/assets/')) {
-    fetch('/admin/delete-image.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ path }) });
+    fetch('/catalogo-admin/delete-image.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ path }) });
   }
 }
 
@@ -477,7 +477,7 @@ async function saveProduct() {
   if (editIdx === -1) products.push(product);
   else products[editIdx] = product;
 
-  const res  = await fetch('/admin/save.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ products }) });
+  const res  = await fetch('/catalogo-admin/save.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ products }) });
   const data = await res.json();
 
   if (data.ok) { renderTable(); closeDrawer(); showToast('Producto guardado', 'success'); }
@@ -488,7 +488,7 @@ async function saveProduct() {
 async function deleteProduct(idx) {
   if (!confirm(`¿Eliminar "${products[idx].name}"? Esta acción no se puede deshacer.`)) return;
   products.splice(idx, 1);
-  const res  = await fetch('/admin/save.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ products }) });
+  const res  = await fetch('/catalogo-admin/save.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ products }) });
   const data = await res.json();
   if (data.ok) { renderTable(); showToast('Producto eliminado', 'success'); }
   else showToast(data.error || 'Error al eliminar', 'error');
