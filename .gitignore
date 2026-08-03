@@ -5,3 +5,4 @@ skypets-admin/tmp/
 .DS_Store
 skypets-admin/deploy.php
 skypets-project/deploy.php
+skypets-project/catalogo-admin/.htpasswd
