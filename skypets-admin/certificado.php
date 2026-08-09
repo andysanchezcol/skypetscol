@@ -160,7 +160,13 @@ function v(array $saved, string $key): string {
 </div>
 
 <!-- ─── FORMULARIO MÉDICO ────────────────────────────────────── -->
-<form method="POST" class="form-medico">
+<div id="borradorAviso" style="display:none;background:#fff3cd;border:1px solid #ffe08a;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:0.9rem;">
+    Encontramos cambios sin guardar de una sesión anterior en este formulario.
+    <button type="button" onclick="restaurarBorrador()" class="btn-generate" style="margin-left:8px;padding:4px 12px;">Recuperar</button>
+    <button type="button" onclick="descartarBorrador()" style="margin-left:4px;padding:4px 12px;border:1px solid #ccc;border-radius:6px;background:none;cursor:pointer;">Descartar</button>
+</div>
+
+<form method="POST" class="form-medico" id="formMedico">
 
     <div class="form-section">
         <h3>Raza (corrección)</h3>
@@ -695,6 +701,70 @@ function fillDespar(tipo, val) {
 setInterval(function() {
     fetch('keepalive.php').catch(function(){});
 }, 10 * 60 * 1000);
+</script>
+<script>
+// Autoguardado en el navegador: si la sesión muere a media edición (o se
+// cierra la pestaña por error), el trabajo escrito no se pierde — se
+// recupera al volver a abrir este mismo certificado, sin depender de que
+// el servidor haya alcanzado a guardarlo.
+(function() {
+    var form = document.getElementById('formMedico');
+    if (!form) return;
+    var draftKey = 'borrador_certificado_<?= $rowNum ?>';
+
+    function leerCampos() {
+        var data = {};
+        Array.prototype.forEach.call(form.elements, function(el) {
+            if (!el.name) return;
+            if (el.type === 'submit' || el.type === 'button') return;
+            data[el.name] = el.value;
+        });
+        return data;
+    }
+
+    function guardarBorrador() {
+        try { localStorage.setItem(draftKey, JSON.stringify({ t: Date.now(), data: leerCampos() })); }
+        catch (e) {}
+    }
+
+    var t;
+    form.addEventListener('input', function() {
+        clearTimeout(t);
+        t = setTimeout(guardarBorrador, 800);
+    });
+
+    form.addEventListener('submit', function() {
+        try { localStorage.removeItem(draftKey); } catch (e) {}
+    });
+
+    window.restaurarBorrador = function() {
+        var raw = localStorage.getItem(draftKey);
+        if (!raw) return;
+        var draft = JSON.parse(raw).data;
+        Object.keys(draft).forEach(function(name) {
+            var el = form.elements[name];
+            if (el && !el.readOnly) el.value = draft[name];
+        });
+        document.getElementById('borradorAviso').style.display = 'none';
+    };
+
+    window.descartarBorrador = function() {
+        try { localStorage.removeItem(draftKey); } catch (e) {}
+        document.getElementById('borradorAviso').style.display = 'none';
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var raw = localStorage.getItem(draftKey);
+        if (!raw) return;
+        try {
+            var draft = JSON.parse(raw);
+            var actual = leerCampos();
+            var cambioReal = Object.keys(draft.data).some(function(k) { return draft.data[k] !== actual[k]; });
+            if (cambioReal) document.getElementById('borradorAviso').style.display = 'block';
+            else localStorage.removeItem(draftKey);
+        } catch (e) {}
+    });
+})();
 </script>
 
 </body>
