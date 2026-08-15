@@ -571,7 +571,7 @@ tr:hover td { background: rgba(0,141,131,0.03); }
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
         <div>
           <label class="form-label">Fecha de emisión</label>
-          <input type="date" class="form-input" id="uploadIssued">
+          <input type="date" class="form-input" id="uploadIssued" oninput="document.getElementById('uploadExpiry').min = this.value">
         </div>
         <div>
           <label class="form-label">Fecha de vencimiento</label>
@@ -1249,6 +1249,9 @@ async function doUpload() {
   if (!selectedFiles.length) return showToast('Selecciona un archivo', 'error');
   const totalSize = selectedFiles.reduce((sum, f) => sum + f.size, 0);
   if (totalSize > 20 * 1024 * 1024) return showToast('Los archivos superan 20 MB en total', 'error');
+  if (issued && expiry && expiry < issued) {
+    return showToast('La fecha de vencimiento no puede ser anterior a la de emisión', 'error');
+  }
 
   const btn = document.getElementById('btnUpload');
   btn.disabled = true; btn.textContent = 'Subiendo...';
