@@ -438,6 +438,7 @@ tr:hover td { background: rgba(0,141,131,0.03); }
           <div class="table-header">
             <h3>Todos los documentos</h3>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <input class="search-input" id="docSearch" type="text" placeholder="Buscar por cliente o mascota…" oninput="filterAllDocs()" style="min-width:220px">
               <select class="search-input" id="docStatusFilter" onchange="loadAllDocs()" style="min-width:150px">
                 <option value="">Todos los estados</option>
                 <option value="vigente">Vigente</option>
@@ -1088,11 +1089,33 @@ function populateClientSelect() {
 }
 
 /* ── ALL DOCS ── */
+let allDocsData = [];
+
 async function loadAllDocs() {
   const status = document.getElementById('docStatusFilter').value;
   let q = sb.from('documents').select('*, profiles!documents_owner_id_fkey(full_name,email)').order('created_at', { ascending: false });
   if (status) q = q.eq('status', status);
   const { data } = await q;
+  allDocsData = data ?? [];
+  filterAllDocs();
+}
+
+// Filtra en el navegador sobre lo ya cargado — sin volver a pedir al servidor.
+// El nombre de la mascota no vive en una columna propia de "documents" (solo
+// en el título, ej. "Certificado Apoyo Emocional - Estrellita"), así que la
+// búsqueda revisa d.name además del cliente (nombre y email).
+function filterAllDocs() {
+  const q = document.getElementById('docSearch').value.trim().toLowerCase();
+  const filtered = q
+    ? allDocsData.filter(d =>
+        (d.name || '').toLowerCase().includes(q) ||
+        (d.profiles?.full_name || '').toLowerCase().includes(q) ||
+        (d.profiles?.email || '').toLowerCase().includes(q))
+    : allDocsData;
+  renderAllDocs(filtered);
+}
+
+function renderAllDocs(data) {
   const tbody = document.getElementById('allDocsBody');
   if (!data?.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--muted)">Sin documentos</td></tr>'; return; }
   tbody.innerHTML = data.map(d => `
