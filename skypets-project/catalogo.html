@@ -48,7 +48,7 @@ body {
 /* Mesh blobs */
 .cat-hero-blob {
   position: absolute; border-radius: 50%;
-  filter: blur(80px); pointer-events: none; will-change: transform;
+  pointer-events: none; will-change: transform;
 }
 .cat-hero-blob:nth-child(1) {
   width: 520px; height: 520px; left: -100px; top: -80px;
@@ -90,7 +90,7 @@ body {
 .cat-hero-text {}
 .cat-hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(255,255,255,0.08); backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.14);
   color: rgba(255,255,255,0.75); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
   text-transform: uppercase; padding: 6px 16px; border-radius: 100px;
@@ -121,6 +121,11 @@ body {
   transition: opacity 0.9s ease;
   pointer-events: none;
 }
+.cat-hero-slide::after {
+  content: ''; position: absolute; left: 10%; right: 0; bottom: 6%; height: 12%;
+  background: radial-gradient(ellipse at 60% 50%, rgba(0,0,0,0.55) 0%, transparent 70%);
+  z-index: -1;
+}
 .cat-hero-slide.active {
   opacity: 1;
   pointer-events: auto;
@@ -129,8 +134,10 @@ body {
   width: 100%; height: 100%;
   object-fit: contain;
   object-position: center right;
-  filter: drop-shadow(0 32px 80px rgba(0,0,0,0.75));
+}
+.cat-hero-slide.active img {
   animation: heroFloat 6s ease-in-out infinite alternate;
+  will-change: transform;
 }
 @keyframes heroFloat {
   from { transform: translateY(0px); }
@@ -148,7 +155,7 @@ body {
 /* ══ FILTROS ══ */
 .filter-bar {
   position: sticky; top: 76px; z-index: 500;
-  background: rgba(255,250,236,0.95); backdrop-filter: blur(16px);
+  background: rgba(255,250,236,0.98);
   border-bottom: 1px solid rgba(43,36,24,0.08);
   padding: 16px clamp(20px, 6vw, 72px);
 }
@@ -161,9 +168,9 @@ body {
   flex-shrink: 0; font-family: 'Poppins', sans-serif;
   font-size: 0.82rem; font-weight: 500;
   padding: 8px 20px; border-radius: 100px; border: none; cursor: pointer;
-  background: rgba(255,250,236,0.55); backdrop-filter: blur(8px);
+  background: rgba(255,250,236,0.8);
   border: 1.5px solid rgba(43,36,24,0.14);
-  color: var(--muted); transition: all 0.2s;
+  color: var(--muted); transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
 .filter-btn:hover { color: var(--orange); border-color: rgba(255,118,0,0.3); }
 .filter-btn.active {
@@ -184,14 +191,14 @@ body {
 
 /* ══ PRODUCT CARD ══ */
 .prod-card {
-  background: rgba(255,255,255,0.78);
-  backdrop-filter: blur(16px);
+  background: #fff;
   border: 1.5px solid rgba(43,36,24,0.08);
   border-radius: 24px;
   box-shadow: 0 8px 32px rgba(43,36,24,0.08);
   overflow: hidden;
-  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+  transition: transform 0.12s ease-out, box-shadow 0.2s ease-out;
   cursor: pointer;
+  content-visibility: auto; contain-intrinsic-size: auto 480px;
 }
 .prod-card:hover {
   box-shadow: 0 20px 56px rgba(43,36,24,0.14);
@@ -207,7 +214,6 @@ body {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: contain; padding: 24px;
   transition: opacity 0.4s ease;
-  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
 }
 .prod-img.alt { opacity: 0; }
 .prod-card:hover .prod-img.main { opacity: 0; }
@@ -228,7 +234,7 @@ body {
 /* Badge categoria */
 .prod-badge {
   position: absolute; top: 14px; left: 14px;
-  background: rgba(30,25,18,0.75); backdrop-filter: blur(10px);
+  background: rgba(30,25,18,0.85);
   border-radius: 100px; padding: 4px 14px;
   font-size: 0.72rem; font-weight: 600; color: rgba(255,250,236,0.85);
   border: 1px solid rgba(255,250,236,0.15);
@@ -294,8 +300,7 @@ body {
 /* ══ MODAL ══ */
 .modal-overlay {
   display: none; position: fixed; inset: 0; z-index: 2000;
-  background: rgba(43,36,24,0.6); backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(43,36,24,0.72);
   align-items: center; justify-content: center; padding: 16px;
 }
 .modal-overlay.open { display: flex; }
@@ -428,9 +433,9 @@ body {
 .variant-pill {
   font-family: 'Poppins', sans-serif; font-size: 0.8rem; font-weight: 500;
   padding: 7px 20px; border-radius: 100px; cursor: pointer;
-  background: rgba(255,250,236,0.6); backdrop-filter: blur(8px);
+  background: rgba(255,250,236,0.9);
   border: 1.5px solid rgba(43,36,24,0.14); color: var(--muted);
-  transition: all 0.18s; line-height: 1;
+  transition: color 0.18s, border-color 0.18s, background 0.18s; line-height: 1;
 }
 .variant-pill:hover { border-color: rgba(255,118,0,0.4); color: var(--orange); }
 .variant-pill.active {
@@ -488,7 +493,7 @@ body {
 .cat-cta p { color: rgba(255,255,255,0.8); font-size: 1rem; margin-bottom: 28px; }
 .btn-wa-cta {
   display: inline-flex; align-items: center; gap: 10px;
-  background: rgba(255,255,255,0.15); backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.18);
   border: 1.5px solid rgba(255,255,255,0.3); color: #fff;
   font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 600;
   padding: 14px 32px; border-radius: 100px; text-decoration: none;
@@ -510,9 +515,9 @@ body {
 .variant-pill {
   font-family: 'Poppins', sans-serif; font-size: 0.8rem; font-weight: 500;
   padding: 6px 18px; border-radius: 100px; cursor: pointer; border: none;
-  background: rgba(255,250,236,0.55); backdrop-filter: blur(8px);
+  background: rgba(255,250,236,0.9);
   border: 1.5px solid rgba(43,36,24,0.14); color: var(--muted);
-  transition: all 0.18s;
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
 }
 .variant-pill:hover { border-color: rgba(255,118,0,0.4); color: var(--orange); }
 .variant-pill.active {
@@ -652,6 +657,12 @@ body {
 <script>
 let PRODUCTS = [];
 
+/* Imágenes redimensionadas (WebP en caché) vía /img.php */
+const IMG_RE = /^\/assets\/images\/productos\/[^/]+$/;
+function imgUrl(src, w) {
+  return IMG_RE.test(src) ? `/img.php?w=${w}&src=${encodeURIComponent(src)}` : src;
+}
+
 const WA_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
 
 /* ── Carga y render ── */
@@ -672,8 +683,8 @@ function renderGrid() {
     const imgs = p.variants?.length ? (p.variants[0].images || []) : (p.images || []);
     const img1 = imgs[0] || '';
     const img2 = imgs[1] || img1;
-    const imgMain = img1 ? `<img class="prod-img main" src="${img1}" alt="${p.name}" width="600" height="400" loading="lazy">` : '';
-    const imgAlt  = img2 ? `<img class="prod-img alt"  src="${img2}" alt="${p.name} detalle" width="600" height="400" loading="lazy">` : '';
+    const imgMain = img1 ? `<img class="prod-img main" src="${imgUrl(img1,640)}" alt="${p.name}" width="600" height="400" loading="${i < 3 ? 'eager' : 'lazy'}" decoding="async">` : '';
+    const imgAlt  = img2 ? `<img class="prod-img alt"  src="${imgUrl(img2,640)}" alt="${p.name} detalle" width="600" height="400" loading="lazy" decoding="async">` : '';
     return `<article class="prod-card" data-cat="${p.category}" data-product="${i}" onclick="openModal(${i})">
       <div class="prod-img-wrap">
         ${imgMain}${imgAlt}
@@ -695,14 +706,23 @@ function renderGrid() {
   }).join('');
 
   /* 3D Tilt */
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   document.querySelectorAll('.prod-card').forEach(card => {
+    let raf = 0, rect = null;
+    card.addEventListener('mouseenter', () => { rect = card.getBoundingClientRect(); });
     card.addEventListener('mousemove', e => {
-      const r = card.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width  - 0.5;
-      const y = (e.clientY - r.top)  / r.height - 0.5;
-      card.style.transform = `perspective(600px) rotateY(${x*10}deg) rotateX(${-y*10}deg) scale(1.02)`;
+      if (raf || !rect) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const x = (e.clientX - rect.left) / rect.width  - 0.5;
+        const y = (e.clientY - rect.top)  / rect.height - 0.5;
+        card.style.transform = `perspective(600px) rotateY(${x*8}deg) rotateX(${-y*8}deg) scale(1.02)`;
+      });
     });
-    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+    card.addEventListener('mouseleave', () => {
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      card.style.transform = '';
+    });
   });
 }
 
@@ -797,14 +817,14 @@ function openModal(idx) {
 function _renderGallery(p, variantIdx) {
   const imgs = _getImages(p, variantIdx);
   const mainImg = document.getElementById('modalMainImg');
-  mainImg.src = imgs[0] || '';
+  mainImg.src = imgs[0] ? imgUrl(imgs[0], 900) : '';
   mainImg.alt = p.name;
 
   const thumbsEl = document.getElementById('modalThumbs');
   if (imgs.length > 1) {
     thumbsEl.innerHTML = imgs.map((src, i) => `
       <div class="modal-thumb ${i===0?'active':''}" onclick="switchImg(${i})">
-        <img src="${src}" alt="${p.name} vista ${i+1}" width="52" height="52" loading="lazy">
+        <img src="${imgUrl(src,96)}" alt="${p.name} vista ${i+1}" width="52" height="52" loading="lazy" decoding="async">
       </div>`).join('');
     thumbsEl.style.display = '';
   } else {
@@ -836,7 +856,7 @@ function switchImg(imgIdx) {
   const mainImg = document.getElementById('modalMainImg');
   mainImg.classList.add('hidden');
   setTimeout(() => {
-    mainImg.src = imgs[imgIdx];
+    mainImg.src = imgUrl(imgs[imgIdx], 900);
     mainImg.classList.remove('hidden');
   }, 200);
   document.querySelectorAll('.modal-thumb').forEach((t, i) => t.classList.toggle('active', i === imgIdx));
@@ -858,7 +878,7 @@ function fillHeroGallery() {
   if (!imgs.length) return;
 
   gallery.innerHTML = imgs.map((src, i) =>
-    `<div class="cat-hero-slide${i === 0 ? ' active' : ''}"><img src="${src}" alt="producto ${i + 1}" loading="${i < 2 ? 'eager' : 'lazy'}"></div>`
+    `<div class="cat-hero-slide${i === 0 ? ' active' : ''}"><img src="${imgUrl(src,900)}" alt="producto ${i + 1}" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>`
   ).join('');
 
   const slides = gallery.querySelectorAll('.cat-hero-slide');

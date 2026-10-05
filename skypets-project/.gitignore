@@ -1,3 +1,6 @@
 # Datos dinámicos — no sobreescribir en deploys
 data/productos.json
 assets/images/catalog/
+
+# Caché de imágenes redimensionadas (generada en el servidor)
+assets/images/productos/cache/
