@@ -262,13 +262,18 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
 
 .clause ul { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
 .clause ul li {
-  display: flex; align-items: flex-start; gap: 12px;
+  /* Antes era flex con el bullet como item — si el texto tenía más de un
+     <strong> (ej. "Productos físicos... 7 días calendario..."), cada trozo
+     de texto se volvía un flex-item aparte y se veía partido en columnas.
+     Con el bullet posicionado absoluto, el <li> queda como un bloque normal
+     sin importar cuántos <strong> tenga adentro. */
+  position: relative; padding-left: 20px;
   font-size: .92rem; line-height: 1.7; color: var(--muted); font-weight: 300;
 }
 .clause ul li::before {
   content: ''; width: 8px; height: 8px; border-radius: 50%;
   background: var(--orange); border: 1.5px solid var(--ink);
-  flex-shrink: 0; margin-top: 6px;
+  position: absolute; left: 0; top: 6px;
 }
 
 /* ── INFO / WARN BOXES ── */
@@ -434,7 +439,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
 
   <div class="clause" id="c4">
     <div class="clause-header"><div class="clause-num">4</div><h2>Productos y servicios</h2></div>
-    <p>SkyPets Col ofrece una descripción clara y detallada de cada producto y servicio disponible, incluyendo precios, especificaciones y condiciones de disponibilidad. Los artículos identificados como <strong>"Agotados"</strong> no estarán disponibles para su compra hasta nueva reposición.</p>
+    <p>Skypets SAS ofrece una descripción clara y detallada de cada producto y servicio disponible, incluyendo precios, especificaciones y condiciones de disponibilidad. Los artículos identificados como <strong>"Agotados"</strong> no estarán disponibles para su compra hasta nueva reposición.</p>
     <div class="info-box">
       <span style="font-size:1.3rem;flex-shrink:0">✈️</span>
       <p>Los servicios activos actualmente incluyen: <strong>asesoría de viaje aéreo con mascotas, vacunas, microchip, serología</strong> y documentación relacionada.</p>
@@ -467,7 +472,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
     <div class="clause-header"><div class="clause-num">7</div><h2>Devoluciones y garantías</h2></div>
     <ul>
       <li><strong>Productos físicos:</strong> el cliente podrá solicitar la devolución sin costo dentro de los <strong>7 días calendario</strong> siguientes a la entrega, si el producto presenta defectos de fabricación.</li>
-      <li><strong>Servicios:</strong> los pagos no son reembolsables una vez iniciado el trámite, salvo incumplimiento comprobado por parte de SkyPets Col.</li>
+      <li><strong>Servicios:</strong> los pagos no son reembolsables una vez iniciado el trámite, salvo incumplimiento comprobado por parte de Skypets SAS.</li>
     </ul>
     <div class="info-box">
       <span style="font-size:1.3rem;flex-shrink:0">⚖️</span>
@@ -477,7 +482,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
 
   <div class="clause" id="c8">
     <div class="clause-header"><div class="clause-num">8</div><h2>Responsabilidades</h2></div>
-    <p>SkyPets Col se compromete a gestionar con diligencia todas las órdenes y solicitudes. No será responsable por retrasos derivados de:</p>
+    <p>Skypets SAS se compromete a gestionar con diligencia todas las órdenes y solicitudes. No será responsable por retrasos derivados de:</p>
     <ul>
       <li>Eventos de fuerza mayor o caso fortuito</li>
       <li>Fallas logísticas o demoras en mensajería</li>
@@ -492,16 +497,16 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
 
   <div class="clause" id="c9">
     <div class="clause-header"><div class="clause-num">9</div><h2>Propiedad intelectual</h2></div>
-    <p>Todos los contenidos del sitio web —textos, imágenes, logotipos, gráficos, documentos y diseño— son propiedad exclusiva de <strong>SkyPets Col</strong> o de sus respectivos autores, protegidos por las leyes de derechos de autor y propiedad intelectual.</p>
+    <p>Todos los contenidos del sitio web —textos, imágenes, logotipos, gráficos, documentos y diseño— son propiedad exclusiva de <strong>Skypets SAS</strong> o de sus respectivos autores, protegidos por las leyes de derechos de autor y propiedad intelectual.</p>
     <div class="warn-box">
       <span style="font-size:1.2rem;flex-shrink:0">🚫</span>
-      <p>Está prohibida la copia, reproducción o uso de cualquier contenido de este sitio sin autorización previa y expresa de SkyPets Col.</p>
+      <p>Está prohibida la copia, reproducción o uso de cualquier contenido de este sitio sin autorización previa y expresa de Skypets SAS.</p>
     </div>
   </div>
 
   <div class="clause" id="c10">
     <div class="clause-header"><div class="clause-num">10</div><h2>Vigencia y modificaciones</h2></div>
-    <p>Estos Términos y Condiciones estarán vigentes desde su publicación y podrán ser modificados por SkyPets Col en cualquier momento. Cualquier actualización será publicada en este sitio indicando la fecha de entrada en vigor.</p>
+    <p>Estos Términos y Condiciones estarán vigentes desde su publicación y podrán ser modificados por Skypets SAS en cualquier momento. Cualquier actualización será publicada en este sitio indicando la fecha de entrada en vigor.</p>
     <p>El uso continuado del sitio después de las modificaciones implica la aceptación de los nuevos términos.</p>
   </div>
 
@@ -544,7 +549,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
   </div>
 
   <div style="text-align:center;padding:32px 0 0;color:var(--muted);font-size:.78rem;font-weight:300">
-    Versión vigente desde el 25 de noviembre de 2025 · SkyPets SAS · NIT 902112444-1
+    Versión vigente desde el 25 de noviembre de 2025 · Skypets SAS · NIT 902112444-1
   </div>
 
 </div>
