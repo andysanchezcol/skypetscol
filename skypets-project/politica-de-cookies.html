@@ -709,25 +709,14 @@ footer {
 <!-- FOOTER -->
 
 <script>
-/* NAV */
-const navbar = document.getElementById('navbar');
-window.addEventListener('scroll', () => {
-  navbar.classList.toggle('scrolled', window.scrollY > 30);
-}, { passive: true });
-
-/* HAMBURGER */
-const hamburger  = document.getElementById('hamburger');
-const mobileMenu = document.getElementById('mobileMenu');
-hamburger.addEventListener('click', () => {
-  const open = mobileMenu.classList.toggle('open');
-  hamburger.classList.toggle('open', open);
-  hamburger.setAttribute('aria-expanded', String(open));
-});
-function closeMenu() {
-  mobileMenu.classList.remove('open');
-  hamburger.classList.remove('open');
-  hamburger.setAttribute('aria-expanded', 'false');
-}
+/* NAV y HAMBURGER: los maneja layout.js (se carga al final de esta página e
+   inyecta #navbar/#hamburger/#mobileMenu) — el bloque que había aquí
+   duplicaba esa lógica pero corría ANTES de que layout.js inyectara esos
+   elementos, y sin chequear null. hamburger.addEventListener() reventaba
+   de inmediato, deteniendo el resto de este bloque de código — incluido el REVEAL
+   de abajo, dejando toda la página en blanco (opacity:0 permanente en
+   cada .reveal). Ver el mismo guard correcto (if(hb && mm)) ya usado en
+   terminos-y-condiciones.html y dentro del propio layout.js. */
 
 /* REVEAL */
 const revealEls = document.querySelectorAll('.reveal');
