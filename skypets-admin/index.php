@@ -1,8 +1,6 @@
 <?php
-ini_set('session.gc_maxlifetime', 28800); // 8 horas
-ini_set('session.cookie_lifetime', 28800);
 require_once __DIR__ . '/auth.php';
-session_start();
+iniciarSesionAdmin();
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
