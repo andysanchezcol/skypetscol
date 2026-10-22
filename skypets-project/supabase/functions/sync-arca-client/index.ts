@@ -16,6 +16,10 @@ interface ArcaClientRecord {
 }
 
 Deno.serve(async (req: Request) => {
+  // La llama un trigger de la base de Arca (otro proyecto) con un secreto propio; la función se publica sin verificación de JWT.
+  const secreto = Deno.env.get('ARCA_WEBHOOK_SECRETO')
+  if (secreto && req.headers.get('x-arca-secreto') !== secreto) return Response.json({ error: 'no_autorizado' }, { status: 401 })
+
   const payload = await req.json()
   const record = payload.record as ArcaClientRecord
 
