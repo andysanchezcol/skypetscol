@@ -136,6 +136,31 @@ const DOC_INFO: Record<string, DocInfo> = {
   },
 }
 
+// Tipo de documento del portal → nombre del ítem del checklist de viajes en Arca.
+const CHECKLIST_ARCA: Record<string, string> = {
+  certificado_apoyo_emocional: 'Certificado Apoyo Emocional',
+  certificado_asistencia_servicio: 'Certificado de Servicio',
+  certificado_salud_nacional: 'Certificado de Salud Nacional',
+  certificado_salud_internacional: 'Certificado de Salud Internacional',
+  anexo_europa: 'Anexo Europa',
+  anexo_latinoamerica: 'Anexo Latinoamerica',
+  certificado_cdc: 'CDC',
+  microchip_certificado: 'Microchip',
+  prueba_titulacion_rabia: 'Serología',
+}
+
+// API de integración de Arca (otro proyecto). Si falla, el correo al cliente se envía igual.
+async function arca(ruta: string, init: RequestInit = {}): Promise<Record<string, unknown> | null> {
+  const url = Deno.env.get('ARCA_URL'), secreto = Deno.env.get('ARCA_INTEGRACION_SECRETO')
+  if (!url || !secreto) return null
+  try {
+    const res = await fetch(`${url}${ruta}`, { ...init, headers: { Authorization: `Bearer ${secreto}`, 'Content-Type': 'application/json' } })
+    return res.ok ? await res.json() : null
+  } catch (_e) {
+    return null
+  }
+}
+
 Deno.serve(async (req: Request) => {
   const payload = await req.json()
   const record = payload.record as DocumentRecord
@@ -228,9 +253,11 @@ Equipo SkyPets`
 
   // Copiar a la asesora responsable del viaje (si tiene uno activo), para que
   // quede con acceso directo al documento sin tener que pedirlo aparte.
-  const { data: asesorEmail } = await supabaseAdmin.rpc('get_trip_asesor_email', {
-    p_email: profile.email,
-  })
+  // Transición: si la API de Arca no responde se usa la función SQL anterior (mientras compartan proyecto).
+  const asesora = await arca(`/api/integracion/asesora?email=${encodeURIComponent(profile.email)}`)
+  const asesorEmail = asesora
+    ? asesora.asesoraEmail as string | null
+    : (await supabaseAdmin.rpc('get_trip_asesor_email', { p_email: profile.email }).then(r => r.data, () => null)) as string | null
 
   // Copias fijas en todo documento (sin importar el tipo): la veterinaria y
   // Andrés, para que ambos tengan constancia aunque el correo al cliente caiga
@@ -264,10 +291,14 @@ Equipo SkyPets`
   // Sincronización con Arca: si este tipo de documento corresponde a un
   // ítem del checklist de viajes (arca.trip_documents), lo marca como
   // "enviado" para que el asesor lo vea reflejado sin duplicar el dato a mano.
-  const { data: arcaSynced } = await supabaseAdmin.rpc('mark_trip_document_sent', {
-    p_email: profile.email,
-    p_doc_type: record.type,
-  })
+  let arcaSynced = false
+  const documento = CHECKLIST_ARCA[record.type]
+  if (documento) {
+    const marca = await arca('/api/integracion/documento-enviado', { method: 'POST', body: JSON.stringify({ email: profile.email, documento }) })
+    arcaSynced = marca
+      ? marca.marcado === true
+      : (await supabaseAdmin.rpc('mark_trip_document_sent', { p_email: profile.email, p_doc_type: record.type }).then(r => r.data === true, () => false))
+  }
 
   return Response.json({ sent: true, arca_checklist_synced: arcaSynced ?? false })
 })

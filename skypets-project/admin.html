@@ -916,7 +916,7 @@ async function loadTripBadges(clients) {
   await Promise.all(withEmail.map(async c => {
     const cell = document.getElementById(`trip-badge-${c.id}`);
     if (!cell) return;
-    const { data, error } = await sb.rpc('get_trip_checklist', { p_email: c.email });
+    const { data, error } = await sb.functions.invoke('arca-viajes', { body: { email: c.email } });
     if (error || !data || !data.length) { cell.innerHTML = '<span style="color:var(--muted)">Sin viaje</span>'; return; }
 
     const { flight_date } = data[0];
@@ -935,7 +935,7 @@ async function loadTripBadges(clients) {
   }));
 }
 
-/* ── VIAJES (todos, vía get_all_trips) ── */
+/* ── VIAJES (todos, vía la Edge Function arca-viajes → API de Arca) ── */
 let allTrips = [];
 
 function tripUrgency(trip) {
@@ -962,7 +962,7 @@ async function loadTrips() {
   const tbody = document.getElementById('tripsBody');
   tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Cargando...</td></tr>';
 
-  const { data, error } = await sb.rpc('get_all_trips');
+  const { data, error } = await sb.functions.invoke('arca-viajes', { body: {} });
   if (error || !data) {
     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Error al cargar viajes: ${error?.message || ''}</td></tr>`;
     return;
@@ -1174,7 +1174,7 @@ async function loadTripChecklist(clientId) {
   box.style.display = '';
   box.innerHTML = 'Cargando checklist de viaje…';
 
-  const { data, error } = await sb.rpc('get_trip_checklist', { p_email: client.email });
+  const { data, error } = await sb.functions.invoke('arca-viajes', { body: { email: client.email } });
 
   if (error || !data || !data.length) {
     box.innerHTML = '<em style="color:var(--muted)">Sin viaje activo registrado en Arca para este cliente.</em>';
