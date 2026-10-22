@@ -162,6 +162,11 @@ async function arca(ruta: string, init: RequestInit = {}): Promise<Record<string
 }
 
 Deno.serve(async (req: Request) => {
+  // Si hay NOTIFY_SECRETO, la llamada debe traer el mismo valor (la hace un trigger de la base, sin JWT). Sin esa variable
+  // (proyecto anterior) se mantiene la verificación de JWT de Supabase.
+  const secreto = Deno.env.get('NOTIFY_SECRETO')
+  if (secreto && req.headers.get('x-notify-secreto') !== secreto) return Response.json({ error: 'no_autorizado' }, { status: 401 })
+
   const payload = await req.json()
   const record = payload.record as DocumentRecord
 
