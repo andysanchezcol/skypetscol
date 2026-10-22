@@ -534,8 +534,8 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = 'https://yicrkuntrsiaonkrfzlm.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpY3JrdW50cnNpYW9ua3JmemxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTgzODUsImV4cCI6MjA5NTg5NDM4NX0.Layg3dN6QF6U6po7zkqbn8393LDvApdp2nGISKcMrU8';
+const SUPABASE_URL = 'https://jkrcdsneilbnuwvqgjba.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprcmNkc25laWxibnV3dnFnamJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MzQwMjUsImV4cCI6MjEwODIxMDAyNX0.BcmMQrmwG1xtQKWquxmcgZT7qbywU1UVQqyo-nT3604';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const DOC_ICONS = {
@@ -976,7 +976,7 @@ async function initPortalSession() {
 
   // 1. Leer token de localStorage directamente (sin red)
   try {
-    const raw = localStorage.getItem('sb-yicrkuntrsiaonkrfzlm-auth-token');
+    const raw = localStorage.getItem('sb-jkrcdsneilbnuwvqgjba-auth-token');
     if (raw) {
       const stored  = JSON.parse(raw);
       const token   = stored?.access_token;
