@@ -544,7 +544,7 @@ tr:hover td { background: rgba(0,141,131,0.03); }
       <div id="tripChecklistBox" style="display:none;margin:-4px 0 4px;padding:12px 14px;background:var(--bg1,#FFFAEC);border-radius:12px;font-size:0.82rem;"></div>
       <div>
         <label class="form-label">Tipo de documento *</label>
-        <select class="select-input" id="uploadType">
+        <select class="select-input" id="uploadType" onchange="onUploadTypeChange()">
           <option value="">Selecciona el tipo...</option>
           <option value="certificado_salud_nacional">Certificado de Salud Nacional</option>
           <option value="certificado_salud_internacional">Certificado de Salud Internacional</option>
@@ -565,16 +565,16 @@ tr:hover td { background: rgba(0,141,131,0.03); }
       </div>
       <div>
         <label class="form-label">Nombre del documento *</label>
-        <input type="text" class="form-input" id="uploadName" placeholder="Ej: Certificado ESA — Milo — Jun 2025">
+        <input type="text" class="form-input" id="uploadName" placeholder="Ej: Certificado ESA — Milo — Jun 2025" oninput="uploadNameAuto=false">
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
         <div>
           <label class="form-label">Fecha de emisión</label>
-          <input type="date" class="form-input" id="uploadIssued" oninput="document.getElementById('uploadExpiry').min = this.value">
+          <input type="date" class="form-input" id="uploadIssued" oninput="document.getElementById('uploadExpiry').min = this.value; onUploadIssuedChange()">
         </div>
         <div>
           <label class="form-label">Fecha de vencimiento</label>
-          <input type="date" class="form-input" id="uploadExpiry">
+          <input type="date" class="form-input" id="uploadExpiry" oninput="uploadExpiryAuto=false">
         </div>
       </div>
       <div>
@@ -1132,6 +1132,8 @@ function renderAllDocs(data) {
 
 /* ── UPLOAD MODAL ── */
 function openUploadModal() {
+  resetUploadAutofill();
+  ['uploadType', 'uploadName', 'uploadIssued', 'uploadExpiry'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('uploadModal').classList.add('open');
 }
 function openUploadForClient(clientId) {
@@ -1166,6 +1168,8 @@ const TRIP_DEADLINE_HOURS = {
 
 async function loadTripChecklist(clientId) {
   const box = document.getElementById('tripChecklistBox');
+  uploadPetName = '';
+  refreshAutoName();
   if (!clientId) { box.style.display = 'none'; box.innerHTML = ''; return; }
 
   const client = allClients.find(c => c.id === clientId);
@@ -1182,6 +1186,8 @@ async function loadTripChecklist(clientId) {
   }
 
   const { pet_name, flight_date, destination } = data[0];
+  uploadPetName = (pet_name || '').trim();
+  refreshAutoName();
   const total = data.length;
   const enviados = data.filter(d => d.doc_status === 'enviado').length;
   const pct = Math.round((enviados / total) * 100);
@@ -1215,7 +1221,51 @@ async function loadTripChecklist(clientId) {
     <div style="font-size:0.72rem;color:var(--muted);margin-top:6px">Los ítems sin archivo (vacunas, microchip, ICA presencial, agendamiento) se marcan a mano en Arca.</div>
   `;
 }
+/* ── Autocompletado de nombre y vencimiento ── */
+let uploadPetName = '';
+let uploadNameAuto = true;
+let uploadExpiryAuto = true;
+// Vigencia de 1 año desde la emisión (certificados ESA y SVAN)
+const UPLOAD_TYPES_1_ANO = ['certificado_apoyo_emocional', 'certificado_asistencia_servicio'];
+
+function autoDocName() {
+  const sel = document.getElementById('uploadType');
+  if (!sel.value || sel.value === 'otro') return '';
+  const label = sel.options[sel.selectedIndex].text.replace(/\s*\([^)]*\)\s*$/, '').trim();
+  return uploadPetName ? `${label} — ${uploadPetName}` : label;
+}
+function refreshAutoName() {
+  if (!uploadNameAuto) return;
+  document.getElementById('uploadName').value = autoDocName();
+}
+function addOneYear(isoDate) {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  let dt = new Date(Date.UTC(y + 1, m - 1, d));
+  if (dt.getUTCMonth() !== m - 1) dt = new Date(Date.UTC(y + 1, m, 0)); // 29 feb → 28 feb
+  return dt.toISOString().slice(0, 10);
+}
+function refreshAutoExpiry() {
+  if (!uploadExpiryAuto) return;
+  const type = document.getElementById('uploadType').value;
+  const issued = document.getElementById('uploadIssued').value;
+  const exp = document.getElementById('uploadExpiry');
+  exp.value = (UPLOAD_TYPES_1_ANO.includes(type) && issued) ? addOneYear(issued) : '';
+}
+function onUploadTypeChange() {
+  refreshAutoName();
+  refreshAutoExpiry();
+}
+function onUploadIssuedChange() {
+  refreshAutoExpiry();
+}
+function resetUploadAutofill() {
+  uploadPetName = '';
+  uploadNameAuto = true;
+  uploadExpiryAuto = true;
+}
+
 function closeUploadModal() {
+  resetUploadAutofill();
   document.getElementById('uploadModal').classList.remove('open');
   document.getElementById('fileSelected').textContent = '';
   document.getElementById('uploadProgress').classList.remove('show');
