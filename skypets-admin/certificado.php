@@ -229,50 +229,8 @@ function v(array $saved, string $key): string {
     </div>
 
     <?php
-    $vacunas_lista = [
-        'BRONCHICINE'               => ['TOS DE PERRERAS'],
-        'CANIGEN MHA2PPI/L'         => ['PENTAVALENTE'],
-        'CANINE DAPP 3YR LEPTO 1YR' => ['RABIA', 'LEPTOSPIRA'],
-        'CANINE VAC-R'              => ['RABIA'],
-        'DAPP'                      => ['PENTAVALENTE'],
-        'DENSOR 1'                  => ['RABIA'],
-        'FELIGEN C.R.P.'            => ['TRIPLE FELINA'],
-        'FELIGEN CRP/R'             => ['RABIA', 'TRIPLE FELINA'],
-        'INMUNOVAX 5'               => ['PENTAVALENTE'],
-        'INMUNOVAX RABIA'           => ['RABIA'],
-        'NOBIVAC DHPPI'             => ['PENTAVALENTE'],
-        'NOBIVAC INTRA TAC'         => ['TOS DE PERRERAS'],
-        'NOBIVAC KC'                => ['TOS DE PERRERAS'],
-        'NOBIVAC RL'                => ['LEPTOSPIRA', 'RABIA'],
-        'NOVICAC RABIA'             => ['RABIA'],
-        'PROCYON DA2PPVL'           => ['PENTAVALENTE'],
-        'PROCYON DOG PV'            => ['PARVO'],
-        'PROVIDEAN 10CV-4L'         => ['PENTAVALENTE', 'CORONAVIRUS', 'LEPTOSPIRA'],
-        'PROVIDEAN 10CV/4L'         => ['PENTAVALENTE', 'CORONAVIRUS', 'LEPTOSPIRA'],
-        'PROVIDEAN 6 CV'            => ['PENTAVALENTE'],
-        'PROVIDEAN 9 (L4)'          => ['PENTAVALENTE', 'LEPTOSPIRA'],
-        'PUREVAX DHPPI'             => ['PENTAVALENTE'],
-        'PUREVAX RCP'               => ['TRIPLE FELINA'],
-        'RABISIN'                   => ['RABIA'],
-        'RABCAN'                    => ['RABIA'],
-        'RABIGEN MONO'              => ['TRIPLE FELINA'],
-        'RABIES TYPER HILLED'       => ['RABIA'],
-        'RABVACL'                   => ['RABIA'],
-        'RECOMBITEK C3'             => ['PENTAVALENTE'],
-        'RECOMBITEK C6/CV'          => ['PENTAVALENTE'],
-        'RECOMBITEK LEPTO'          => ['LEPTOSPIRA'],
-        'RECOMBITEK ORAL'           => ['TOS DE PERRERAS'],
-        'RONVAC'                    => ['RABIA'],
-        'VANGUARD L4 / CV'          => ['PENTAVALENTE', 'LEPTOSPIRA', 'CORONAVIRUS'],
-        'VANGUARD PLUS 5'           => ['PENTAVALENTE'],
-        'VANGUARD PLUS 5 L4'        => ['PENTAVALENTE'],
-        'VENCOMAX 8'                => ['PENTAVALENTE'],
-        'VIBIX C5'                  => ['PENTAVALENTE'],
-        'VIBIX C6R'                 => ['PENTAVALENTE', 'LEPTOSPIRA', 'RABIA'],
-        'VIBIX F3'                  => ['TRIPLE FELINA'],
-        'VIBIX F3+R'                => ['RABIA', 'TRIPLE FELINA'],
-        'VIBIX PUPPY'               => ['PARVO'],
-    ];
+    $__cat = catalogoMedicamentos();
+    $vacunas_lista = $__cat['vacuna'];
 
     // Datos guardados para restaurar en JS
     $saved_vacs_js = [];
@@ -371,23 +329,7 @@ function v(array $saved, string $key): string {
             <div class="form-group">
                 <label>Seleccionar producto</label>
                 <?php
-                $desintProductos = [
-                    'ADVOCATE'       => ['principio' => 'MOXIDECTINA 1%',                                              'ica' => 'REG ICA NO 7336 MV'],
-                    'CANISAN D'      => ['principio' => 'FEBANTEL PAMOATO DE PIRANTEL PRAZICUENTEL',                   'ica' => 'Reg ICA No 5610 MV'],
-                    'CANNEX'         => ['principio' => 'FENBENDAZOL TOLTRAZURIL PRAZIQUANTEL',                        'ica' => 'Reg ICA No 6803-MV'],
-                    'CREDELIO PLUS'  => ['principio' => 'MIBEMICINA OXIMA',                                            'ica' => 'Reg ICA No 9871 MV'],
-                    'DOGG & CAT'     => ['principio' => 'PAMOATO DE PIRANTEL Y PRAZIQUANTEL',                          'ica' => 'Reg ICA No 8722-MV'],
-                    'DRONTAL'        => ['principio' => 'FEBANTEL, PAMOATO DE PIRANTEL PRAZICUANTEL',                  'ica' => 'Reg ICA No 6838 MV'],
-                    'ENDOGARD'       => ['principio' => 'FEBANTEL PAMOATO DE PIRANTEL PRAZIQUANTEL IVERMECTINA',       'ica' => 'Reg ICA No 6510 MV'],
-                    'GALGOCAL'       => ['principio' => 'FEBANTEL PAMOATO DE PIRANTEL PRAZICUENTEL',                   'ica' => 'Reg ICA No 5610 MV'],
-                    'GALGOCAL 600'   => ['principio' => 'ALBENDAZOL PRAZICUANTEL',                                     'ica' => 'Reg ICA No 4853 DB'],
-                    'NEXGARD COMBO'  => ['principio' => 'EPRINOMECTINA PRAZICUANTEL',                                  'ica' => 'Reg ICA No 11095 MV'],
-                    'NEXGARD SPECTRA'=> ['principio' => 'MILBEMICIN A OXIMA',                                          'ica' => 'Reg ICA No 9759-MV'],
-                    'PARACANIS'      => ['principio' => 'EMBONATO PIRANTEL PRAZICUENTEL',                              'ica' => 'Reg ICA No 4265-DB MV'],
-                    'RONDEL PUPPY'   => ['principio' => 'FEBANTEL PAMOATO DE PIRANTEL PRAZICUENTEL',                   'ica' => 'Reg ICA No 5610 MV'],
-                    'SIMPARICA TRIO' => ['principio' => 'MOXIDECTINA SAROLANER',                                       'ica' => 'Reg ICA No 10890 MV'],
-                    'TOTAL F LC'     => ['principio' => 'FENBENDAZOL PIRANTEL PRAZICUANTEL',                           'ica' => 'Reg ICA No 8365 MV'],
-                ];
+                $desintProductos = $__cat['desint'];
                 $savedDesintProd = v($saved,'desint_producto');
                 $isDesintOtro = $savedDesintProd !== '' && !array_key_exists($savedDesintProd, $desintProductos);
                 $desintSelectVal = $isDesintOtro ? '__otro__' : $savedDesintProd;
@@ -440,20 +382,7 @@ function v(array $saved, string $key): string {
             <div class="form-group">
                 <label>Seleccionar producto</label>
                 <?php
-                $desextProductos = [
-                    'ADVANTIX'       => ['principio' => 'IMIDACLOPRID Y PERMETRINA',  'ica' => 'Reg ICA No 10888 MV'],
-                    'ADVOCATE'       => ['principio' => 'IMIDACLOPRIDA 10%',           'ica' => 'REG ICA NO 7336 MV'],
-                    'BRAVECTO'       => ['principio' => 'FLURALANER',                  'ica' => 'Reg ICA 9759 MV'],
-                    'CREDELIO'       => ['principio' => 'LOTILANER',                   'ica' => 'Reg ICA No 9561 MV'],
-                    'CREDELIO PLUS'  => ['principio' => 'LOTILANER',                   'ica' => 'Reg ICA No 9871 MV'],
-                    'FIPROTECTION'   => ['principio' => 'FIPRONIL',                    'ica' => 'REG ICA NO 8794 MV'],
-                    'NEXGARD'        => ['principio' => 'AFOXOLANER',                  'ica' => 'Reg ICA No 10888 MV'],
-                    'NEXGARD COMBO'  => ['principio' => 'ESAFOXOLANE',                 'ica' => 'Reg ICA No 11095 MV'],
-                    'NEXGARD SPECTRA'=> ['principio' => 'MILBEMICIN A OXIMA',          'ica' => 'Reg ICA No 9759-MV'],
-                    'PULFENNDOS'     => ['principio' => 'FIPRONIL',                    'ica' => 'Reg ICA NO 10504 MV'],
-                    'REVOLUTION 6%'  => ['principio' => 'SELAMECTINA',                 'ica' => 'Reg ICA No 10887 MV'],
-                    'SIMPARICA TRIO' => ['principio' => 'MOXIDECTINA SAROLANER',       'ica' => 'Reg ICA No 10890 MV'],
-                ];
+                $desextProductos = $__cat['desext'];
                 $savedDesextProd = v($saved,'desext_producto');
                 $isDesextOtro = $savedDesextProd !== '' && !array_key_exists($savedDesextProd, $desextProductos);
                 $desextSelectVal = $isDesextOtro ? '__otro__' : $savedDesextProd;
@@ -609,39 +538,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── Desparasitantes ───────────────────────────────────────────────────────────
-const DESPAR = {
-    int: {
-        'ADVOCATE':        {principio:'MOXIDECTINA 1%',                                              ica:'REG ICA NO 7336 MV'},
-        'CANISAN D':       {principio:'FEBANTEL PAMOATO DE PIRANTEL PRAZICUENTEL',                   ica:'Reg ICA No 5610 MV'},
-        'CANNEX':          {principio:'FENBENDAZOL TOLTRAZURIL PRAZIQUANTEL',                        ica:'Reg ICA No 6803-MV'},
-        'CREDELIO PLUS':   {principio:'MIBEMICINA OXIMA',                                            ica:'Reg ICA No 9871 MV'},
-        'DOGG & CAT':      {principio:'PAMOATO DE PIRANTEL Y PRAZIQUANTEL',                          ica:'Reg ICA No 8722-MV'},
-        'DRONTAL':         {principio:'FEBANTEL, PAMOATO DE PIRANTEL PRAZICUANTEL',                  ica:'Reg ICA No 6838 MV'},
-        'ENDOGARD':        {principio:'FEBANTEL PAMOATO DE PIRANTEL PRAZIQUANTEL IVERMECTINA',       ica:'Reg ICA No 6510 MV'},
-        'GALGOCAL':        {principio:'FEBANTEL PAMOATO DE PIRANTEL PRAZICUENTEL',                   ica:'Reg ICA No 5610 MV'},
-        'GALGOCAL 600':    {principio:'ALBENDAZOL PRAZICUANTEL',                                     ica:'Reg ICA No 4853 DB'},
-        'NEXGARD COMBO':   {principio:'EPRINOMECTINA PRAZICUANTEL',                                  ica:'Reg ICA No 11095 MV'},
-        'NEXGARD SPECTRA': {principio:'MILBEMICIN A OXIMA',                                          ica:'Reg ICA No 9759-MV'},
-        'PARACANIS':       {principio:'EMBONATO PIRANTEL PRAZICUENTEL',                              ica:'Reg ICA No 4265-DB MV'},
-        'RONDEL PUPPY':    {principio:'FEBANTEL PAMOATO DE PIRANTEL PRAZICUENTEL',                   ica:'Reg ICA No 5610 MV'},
-        'SIMPARICA TRIO':  {principio:'MOXIDECTINA SAROLANER',                                       ica:'Reg ICA No 10890 MV'},
-        'TOTAL F LC':      {principio:'FENBENDAZOL PIRANTEL PRAZICUANTEL',                           ica:'Reg ICA No 8365 MV'},
-    },
-    ext: {
-        'ADVANTIX':        {principio:'IMIDACLOPRID Y PERMETRINA',  ica:'Reg ICA No 10888 MV'},
-        'ADVOCATE':        {principio:'IMIDACLOPRIDA 10%',           ica:'REG ICA NO 7336 MV'},
-        'BRAVECTO':        {principio:'FLURALANER',                  ica:'Reg ICA 9759 MV'},
-        'CREDELIO':        {principio:'LOTILANER',                   ica:'Reg ICA No 9561 MV'},
-        'CREDELIO PLUS':   {principio:'LOTILANER',                   ica:'Reg ICA No 9871 MV'},
-        'FIPROTECTION':    {principio:'FIPRONIL',                    ica:'REG ICA NO 8794 MV'},
-        'NEXGARD':         {principio:'AFOXOLANER',                  ica:'Reg ICA No 10888 MV'},
-        'NEXGARD COMBO':   {principio:'ESAFOXOLANE',                 ica:'Reg ICA No 11095 MV'},
-        'NEXGARD SPECTRA': {principio:'MILBEMICIN A OXIMA',          ica:'Reg ICA No 9759-MV'},
-        'PULFENNDOS':      {principio:'FIPRONIL',                    ica:'Reg ICA NO 10504 MV'},
-        'REVOLUTION 6%':   {principio:'SELAMECTINA',                 ica:'Reg ICA No 10887 MV'},
-        'SIMPARICA TRIO':  {principio:'MOXIDECTINA SAROLANER',       ica:'Reg ICA No 10890 MV'},
-    }
-};
+const DESPAR = <?= json_encode(['int' => $desintProductos, 'ext' => $desextProductos], JSON_UNESCAPED_UNICODE | JSON_FORCE_OBJECT) ?>;
 
 // ── Auto Próxima dosis: +1 año desde fecha de aplicación ────────
 function autoProxima(idx, fechaAplic) {
