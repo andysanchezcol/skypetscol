@@ -958,13 +958,13 @@ const TRIP_URGENCY_BADGE = {
   pasado:    { cls: 'badge-gray',    label: 'Vuelo pasado' },
 };
 
-async function loadTrips() {
+async function loadTrips(silent = false) {
   const tbody = document.getElementById('tripsBody');
-  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Cargando...</td></tr>';
+  if (!silent) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Cargando...</td></tr>';
 
   const { data, error } = await sb.functions.invoke('arca-viajes', { body: {} });
   if (error || !data) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Error al cargar viajes: ${error?.message || ''}</td></tr>`;
+    if (!silent) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Error al cargar viajes: ${error?.message || ''}</td></tr>`;
     return;
   }
 
@@ -984,7 +984,7 @@ async function loadTrips() {
     docNames.map(d => `<option value="${d}">${d}</option>`).join('');
   docSelect.value = currentDoc;
 
-  renderTrips(allTrips);
+  filterTrips(); // respeta los filtros activos (búsqueda, asesora, estado, documento)
 }
 
 function filterTrips() {
@@ -1384,7 +1384,12 @@ async function doUpload() {
   document.getElementById('uploadProgress').classList.remove('show');
   loadDashboard();
   loadAllDocs();
+  // Arca marca el documento como enviado unos segundos después de subirlo (lo hace
+  // el mismo proceso que envía el correo al cliente, así que la demora varía): se
+  // refresca el checklist y la lista de Viajes en silencio, sin parpadeo, en varias
+  // pasadas para no obligar a recargar la página.
   setTimeout(() => loadTripChecklist(clientId), 2500);
+  [3000, 8000, 15000].forEach(ms => setTimeout(() => loadTrips(true), ms));
 
   const client = allClients.find(c => c.id === clientId);
   document.getElementById('uploadFormFields').style.display = 'none';
