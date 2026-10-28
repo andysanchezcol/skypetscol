@@ -286,6 +286,7 @@ $totalGen  = count($generados);
 <nav class="topbar">
     <img src="assets/images/logo.png" alt="SkyPets" height="36">
     <span class="topbar-title">Certificados</span>
+    <a href="medicamentos.php" class="btn-logout" style="background:rgba(255,250,236,0.14);">💊 Medicamentos</a>
     <a href="logout.php" class="btn-logout">Salir</a>
 </nav>
 
