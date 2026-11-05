@@ -27,6 +27,7 @@ function statusLabel(string $s): string {
 }
 
 function driveViewUrl(string $fileId): string {
+    if (str_starts_with($fileId, 'konexa-')) return 'ver_konexa.php?id=' . substr($fileId, 7);
     return "https://drive.google.com/file/d/$fileId/view";
 }
 

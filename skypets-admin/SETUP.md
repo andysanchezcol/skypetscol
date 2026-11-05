@@ -59,3 +59,9 @@ chmod 755 tmp/
 5. Llena los datos médicos manualmente
 6. Clic en "Guardar datos"
 7. Clic en "Generar PDF" → se descarga el certificado listo
+
+### 7. Formulario de Konexa (certificados de salud)
+El dashboard suma a las filas de la hoja de Google las respuestas del formulario CERTIFICADOS DE SALUD de Konexa, que llegan por webhook.
+- Ejecuta `add-konexa-envios.sql` en la base de datos.
+- Copia `konexa_config.example.php` como `konexa_config.php` (no va a git) y pon la clave del destino webhook del formulario en Konexa.
+- `recibir_konexa.php` recibe el webhook (firma HMAC-SHA256); `ver_konexa.php` muestra las fotos; `google_api.php` mezcla las filas (fila 100002 + id) y descarga las fotos de Konexa.
