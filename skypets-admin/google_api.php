@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
+// Clave y atajo del formulario de Konexa (archivo propio del servidor, fuera de git). Si no existe, el admin sigue leyendo solo la hoja de Google.
+if (file_exists(__DIR__ . '/konexa_config.php')) require_once __DIR__ . '/konexa_config.php';
 
 function base64url_encode(string $data): string {
     return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
@@ -77,7 +79,7 @@ function getAccessToken(): string {
     return $token;
 }
 
-function getSheetRows(): array {
+function getSheetRowsGoogle(): array {
     static $cache = null;
     static $cacheTime = 0;
     if ($cache !== null && time() < $cacheTime + 60) {
@@ -112,7 +114,92 @@ function getSheetRows(): array {
     }
 }
 
+/**
+ * Filas de la hoja de Google (clave = fila - 2) MÁS las respuestas del formulario de Konexa (clave = 100000 + id, o sea fila 100002 + id).
+ * Con claves distintas, los números de fila de unas y otras no se mezclan aunque la hoja crezca; el dashboard y los generadores buscan por clave.
+ * Si Konexa no está configurado o falla la base, se devuelve solo lo de la hoja: el admin nunca se cae por esto.
+ */
+function getSheetRows(): array {
+    $rows = getSheetRowsGoogle();
+    if (defined('KONEXA_SECRET')) {
+        try { $rows = $rows + konexaRows(); } catch (Throwable $e) { error_log('konexaRows: ' . $e->getMessage()); }
+    }
+    return $rows;
+}
+
+const KONEXA_FILA_BASE = 100000;
+// Orden de las 35 columnas A:AI de la hoja del formulario de salud (las posiciones que usa el mapa COL de config.php).
+const KONEXA_ENCABEZADOS = [
+    'Timestamp', 'Correo', 'TIPO DE CERTIFICADO', 'FECHA DE VIAJE', 'CIUDAD DE ORIGEN', 'CIUDAD DE DESTINO', 'CIUDAD DE DESTINO',
+    'TIENES ALGUNA ESCALA ? MENCIONALA', 'AEROLINEA', 'NOMBRE DEL TUTOR', 'TIPO DE DOCUMENTO DE IDENTIDAD', 'CORREO ELECTRONICO', 'CELULAR',
+    'DIRECCION DE RESIDENCIA', 'DIRECCION DE DESTINO', 'CODIGO POSTAL', 'NOMBRE PELUDITO', 'FOTO DEL PELUDITO', 'FECHA DE NACIMIENTO', 'ESPECIE',
+    'NUMERO MICROCHIP (15 DIGITOS)', 'RAZA', 'SEXO', 'PESO', 'EDAD DE TU PELUDITO', 'COLOR', 'FOTO CARNET DE VACUNAS', 'DESPARASITANTE INTERNO',
+    'FOTO DESPARASITANTE INTERNO', 'NOMBRE DESPARASITANTE EXTERNO', 'FOTO DESPARASITENTE EXTERNO', 'RESULTADO DE SEROLOGIA',
+    'NOMBRE DEL ASESOR QUE LLEVA TU CASO', 'CONFIRMA TU FECHA DE VIAJE', 'NUMERO DE DOCUMERO',
+];
+const KONEXA_TIPO_DOC = [
+    'cédula de ciudadanía' => 'CEDULA', 'cédula de extranjería' => 'CEDULA DE EXTRANJERIA', 'pasaporte' => 'PASAPORTE',
+    'tarjeta de identidad' => 'TARJETA DE IDENTIDAD', 'permiso por protección temporal (ppt)' => 'PPT', 'nit' => 'NIT',
+];
+
+function konexaRows(): array {
+    $out = [];
+    foreach (getDB()->query('SELECT id, payload FROM konexa_envios ORDER BY id') as $r) {
+        $p = json_decode($r['payload'], true);
+        if (is_array($p)) $out[KONEXA_FILA_BASE + (int)$r['id']] = konexaFila($p);
+    }
+    return $out;
+}
+
+/** Convierte lo que manda Konexa en una fila con el MISMO orden de columnas que la hoja, para que col()/COL sigan funcionando sin cambios. */
+function konexaFila(array $p): array {
+    $resp = is_array($p['respuestas'] ?? null) ? $p['respuestas'] : [];
+    $urls = [];
+    foreach (($p['archivos'] ?? []) as $a) {
+        $urls[trim($a['columna'] ?? '')][] = $a['url'] ?? '';
+    }
+    $bogota = new DateTimeZone('America/Bogota');
+    $cuando = new DateTime($p['completado_at'] ?? 'now', new DateTimeZone('UTC'));
+    $cuando->setTimezone($bogota);
+    $fechaViaje = trim($resp['FECHA DE VIAJE'] ?? '');
+    $vistos = [];
+    $fila = [];
+    foreach (KONEXA_ENCABEZADOS as $i => $h) {
+        $dup = isset($vistos[$h]); $vistos[$h] = true;
+        $v = '';
+        if ($h === 'Timestamp')                                $v = $cuando->format('n/j/Y G:i:s');
+        elseif ($h === 'Correo')                               $v = $resp['CORREO ELECTRONICO'] ?? '';
+        elseif ($dup)                                          $v = ''; // «CIUDAD DE DESTINO» aparece dos veces en la hoja
+        elseif ($h === 'NOMBRE DEL ASESOR QUE LLEVA TU CASO')  $v = strtoupper(explode(' ', trim($p['asesor'] ?? ''))[0]);
+        elseif ($h === 'CONFIRMA TU FECHA DE VIAJE')           $v = $fechaViaje !== '' && strtotime($fechaViaje) ? date('j-m-Y', strtotime($fechaViaje)) : $fechaViaje;
+        elseif (isset($urls[$h]))                              $v = implode(', ', $urls[$h]); // fotos: una o varias direcciones de Konexa
+        elseif ($h === 'TIPO DE DOCUMENTO DE IDENTIDAD')       { $t = trim($resp[$h] ?? ''); $v = KONEXA_TIPO_DOC[mb_strtolower($t)] ?? strtoupper($t); }
+        elseif ($h === 'ESPECIE' || $h === 'SEXO')             $v = strtoupper($resp[$h] ?? '');
+        else                                                   $v = $resp[$h] ?? '';
+        $fila[$i] = (string)$v;
+    }
+    return $fila;
+}
+
+/** Descarga una foto de Konexa con la clave del destino. Devuelve [cuerpo, códigoHTTP, tipo]. */
+function konexaDescargar(string $uuid): array {
+    $ch = curl_init('https://api.eclipseagency.com.co/api/integracion/archivo/' . rawurlencode($uuid));
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true, CURLOPT_SSL_VERIFYPEER => true, CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+        CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_TIMEOUT => 30, CURLOPT_FOLLOWLOCATION => false,
+        CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . KONEXA_SECRET],
+    ]);
+    $body = curl_exec($ch);
+    if ($body === false) $body = curl_exec($ch); // un reintento si la conexión no se establece
+    $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $tipo = (string)curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+    curl_close($ch);
+    return [$body === false ? '' : $body, $code, $tipo];
+}
+
 function driveFileId(string $url): string {
+    // Foto guardada por Konexa: se identifica como «konexa-<uuid>» y se descarga de Konexa, no de Drive.
+    if (preg_match('#/api/integracion/archivo/([0-9a-f-]{36})#i', $url, $m)) return 'konexa-' . strtolower($m[1]);
     if (preg_match('/[?&]id=([^&]+)/', $url, $m)) return $m[1];
     if (preg_match('/\/d\/([^\/]+)/', $url, $m)) return $m[1];
     return '';
@@ -120,6 +207,16 @@ function driveFileId(string $url): string {
 
 function downloadDriveImage(string $fileId): ?string {
     if (!$fileId) return null;
+
+    if (str_starts_with($fileId, 'konexa-')) {
+        $tmp = __DIR__ . '/tmp/' . $fileId . '.jpg';
+        if (file_exists($tmp) && filemtime($tmp) > time() - 3600) return $tmp;
+        try {
+            [$data, $code] = konexaDescargar(substr($fileId, 7));
+            if ($code === 200 && $data !== '') { file_put_contents($tmp, $data); return $tmp; }
+        } catch (Throwable $e) { error_log('downloadDriveImage konexa: ' . $e->getMessage()); }
+        return null;
+    }
 
     $tmpFile = __DIR__ . '/tmp/' . $fileId . '.jpg';
     if (file_exists($tmpFile) && filemtime($tmpFile) > time() - 3600) {
