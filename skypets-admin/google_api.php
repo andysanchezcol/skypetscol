@@ -170,11 +170,11 @@ function konexaFila(array $p): array {
         if ($h === 'Timestamp')                                $v = $cuando->format('n/j/Y G:i:s');
         elseif ($h === 'Correo')                               $v = $resp['CORREO ELECTRONICO'] ?? '';
         elseif ($dup)                                          $v = ''; // «CIUDAD DE DESTINO» aparece dos veces en la hoja
-        elseif ($h === 'NOMBRE DEL ASESOR QUE LLEVA TU CASO')  $v = strtoupper(explode(' ', trim($p['asesor'] ?? ''))[0]);
+        elseif ($h === 'NOMBRE DEL ASESOR QUE LLEVA TU CASO')  $v = mb_strtoupper(explode(' ', trim($p['asesor'] ?? ''))[0], 'UTF-8');
         elseif ($h === 'CONFIRMA TU FECHA DE VIAJE')           $v = $fechaViaje !== '' && strtotime($fechaViaje) ? date('j-m-Y', strtotime($fechaViaje)) : $fechaViaje;
         elseif (isset($urls[$h]))                              $v = implode(', ', $urls[$h]); // fotos: una o varias direcciones de Konexa
-        elseif ($h === 'TIPO DE DOCUMENTO DE IDENTIDAD')       { $t = trim($resp[$h] ?? ''); $v = KONEXA_TIPO_DOC[mb_strtolower($t)] ?? strtoupper($t); }
-        elseif ($h === 'ESPECIE' || $h === 'SEXO')             $v = strtoupper($resp[$h] ?? '');
+        elseif ($h === 'TIPO DE DOCUMENTO DE IDENTIDAD')       { $t = trim($resp[$h] ?? ''); $v = KONEXA_TIPO_DOC[mb_strtolower($t, 'UTF-8')] ?? mb_strtoupper($t, 'UTF-8'); }
+        elseif ($h === 'ESPECIE' || $h === 'SEXO')             $v = mb_strtoupper($resp[$h] ?? '', 'UTF-8');
         else                                                   $v = $resp[$h] ?? '';
         $fila[$i] = (string)$v;
     }
