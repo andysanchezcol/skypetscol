@@ -15,7 +15,8 @@ if (!$row) { header('Location: dashboard.php'); exit; }
 
 $mascota = col($row, 'nombre_mascota');
 $tutor   = col($row, 'nombre_tutor');
-$correo  = trim(col($row, 'correo'));
+// En minúscula: Supabase guarda los correos así, y la hoja trae mayúsculas tal como las escribió el cliente.
+$correo  = mb_strtolower(trim(col($row, 'correo')), 'UTF-8');
 $celular = trim(col($row, 'celular'));
 
 function waLink(string $phone, string $text): ?string {
@@ -70,6 +71,13 @@ function supabaseRequest(string $method, string $path, ?array $jsonBody = null, 
     return ['status' => $status, 'body' => $response];
 }
 
+// Busca el perfil del portal por correo sin distinguir mayúsculas (ilike, con los comodines escapados).
+function buscarPerfil(string $correo): array {
+    $patron = addcslashes($correo, '\\%_');
+    $res = supabaseRequest('GET', '/rest/v1/profiles?select=id&limit=1&email=ilike.' . rawurlencode($patron));
+    return ['status' => $res['status'], 'profiles' => json_decode($res['body'], true) ?: []];
+}
+
 $msg = '';
 $msgTipo = '';
 $clienteSinPortal = false;
@@ -80,8 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'crear
         $msg = 'El registro de este cliente no tiene correo. No se puede crear la cuenta.';
         $msgTipo = 'error';
     } else {
-        $find = supabaseRequest('GET', '/rest/v1/profiles?select=id&email=eq.' . rawurlencode($correo));
-        $profiles = json_decode($find['body'], true) ?: [];
+        $find = buscarPerfil($correo);
+        $profiles = $find['profiles'];
 
         if ($find['status'] === 200 && !empty($profiles)) {
             $msg = 'Este cliente ya tenía cuenta en el portal — ya puedes subir el documento.';
@@ -94,7 +102,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'crear
             ]);
             $created = json_decode($create['body'], true) ?: [];
 
-            if ($create['status'] >= 300 || empty($created['id'])) {
+            if (($created['error_code'] ?? '') === 'email_exists') {
+                // La cuenta ya existe (la búsqueda inicial no la vio): se vuelve a buscar y se continúa.
+                $again = buscarPerfil($correo);
+                if (!empty($again['profiles'])) {
+                    $msg = 'Este cliente ya tenía cuenta en el portal — ya puedes subir el documento.';
+                    $msgTipo = 'ok';
+                } else {
+                    $msg = 'El correo ' . htmlspecialchars($correo) . ' ya está registrado en el portal, pero su perfil no aparece. Avisa a soporte para repararlo.';
+                    $msgTipo = 'error';
+                }
+            } elseif ($create['status'] >= 300 || empty($created['id'])) {
                 $msg = 'Error al crear la cuenta en el portal: ' . $create['body'];
                 $msgTipo = 'error';
             } else {
@@ -123,8 +141,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? 'subir_doc') =
         $msg = 'Selecciona al menos un archivo para subir.';
         $msgTipo = 'error';
     } else {
-        $find = supabaseRequest('GET', '/rest/v1/profiles?select=id&email=eq.' . rawurlencode($correo));
-        $profiles = json_decode($find['body'], true) ?: [];
+        $find = buscarPerfil($correo);
+        $profiles = $find['profiles'];
 
         if ($find['status'] !== 200 || empty($profiles)) {
             $msg = 'Este cliente no existe en el portal (' . htmlspecialchars($correo) . '). Crea su cuenta primero con el botón de abajo.';
@@ -199,8 +217,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? 'subir_doc') =
 // Chequeo proactivo: si aún no se sabe (GET normal, o tras crear la cuenta),
 // verifica si el cliente ya existe en el portal para decidir qué formulario mostrar.
 if ($correo && !$docUploaded && !$clienteSinPortal) {
-    $findGet = supabaseRequest('GET', '/rest/v1/profiles?select=id&email=eq.' . rawurlencode($correo));
-    $profilesGet = json_decode($findGet['body'], true) ?: [];
+    $findGet = buscarPerfil($correo);
+    $profilesGet = $findGet['profiles'];
     if ($findGet['status'] !== 200 || empty($profilesGet)) {
         $clienteSinPortal = true;
     }
