@@ -82,7 +82,7 @@ function getAccessToken(): string {
 // PAUSA (orden de Andrés, 2026-11-11): con true NO se consulta el formulario de Google. Se muestra la última copia
 // guardada de la hoja (los certificados ya registrados siguen visibles) y no entra ninguna respuesta nueva.
 // Para reanudar: poner false y publicar.
-const FORMULARIO_GOOGLE_PAUSADO = true;
+const FORMULARIO_GOOGLE_PAUSADO = false;
 
 function getSheetRowsGoogle(): array {
     static $cache = null;
