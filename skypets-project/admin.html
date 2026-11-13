@@ -443,6 +443,9 @@ tr:hover td { background: rgba(0,141,131,0.03); }
                 <option value="pendiente">Pendiente</option>
                 <option value="vencido">Vencido</option>
               </select>
+              <select class="search-input" id="docTypeFilter" onchange="filterAllDocs()" style="min-width:170px">
+                <option value="">Todos los tipos</option>
+              </select>
               <button class="btn-sm btn-sm-teal" onclick="openUploadModal()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Subir documento
@@ -1095,6 +1098,7 @@ async function loadAllDocs() {
   if (status) q = q.eq('status', status);
   const { data } = await q;
   allDocsData = data ?? [];
+  fillDocTypeFilter();
   filterAllDocs();
 }
 
@@ -1102,14 +1106,27 @@ async function loadAllDocs() {
 // El nombre de la mascota no vive en una columna propia de "documents" (solo
 // en el título, ej. "Certificado Apoyo Emocional - Estrellita"), así que la
 // búsqueda revisa d.name además del cliente (nombre y email).
+// Llena el filtro de tipo solo con los tipos que existen, conservando la selección.
+function fillDocTypeFilter() {
+  const sel = document.getElementById('docTypeFilter');
+  const actual = sel.value;
+  const tipos = [...new Set(allDocsData.map(d => d.type).filter(Boolean))]
+    .sort((x, y) => (DOC_TYPE_NAMES[x] || x).localeCompare(DOC_TYPE_NAMES[y] || y, 'es'));
+  sel.innerHTML = '<option value="">Todos los tipos</option>' +
+    tipos.map(t => `<option value="${t}">${DOC_TYPE_NAMES[t] || t}</option>`).join('');
+  sel.value = tipos.includes(actual) ? actual : '';
+}
+
 function filterAllDocs() {
   const q = document.getElementById('docSearch').value.trim().toLowerCase();
+  const tipo = document.getElementById('docTypeFilter').value;
+  const base = tipo ? allDocsData.filter(d => d.type === tipo) : allDocsData;
   const filtered = q
-    ? allDocsData.filter(d =>
+    ? base.filter(d =>
         (d.name || '').toLowerCase().includes(q) ||
         (d.profiles?.full_name || '').toLowerCase().includes(q) ||
         (d.profiles?.email || '').toLowerCase().includes(q))
-    : allDocsData;
+    : base;
   renderAllDocs(filtered);
 }
 
