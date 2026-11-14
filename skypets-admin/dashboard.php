@@ -53,6 +53,8 @@ function diasHastaViajeStatic(string $fecha): int {
     }
     if (!$d) { $ts = strtotime($fecha); if ($ts) $d = (new DateTime())->setTimestamp($ts); }
     if (!$d) return 9999;
+    // Año mal digitado (ej. 14-Dec-0026): se asume 20xx en vez de tratarlo como vencido
+    if ((int)$d->format('Y') < 100) $d->setDate((int)$d->format('Y') + 2000, (int)$d->format('n'), (int)$d->format('j'));
     $hoy = new DateTime('today');
     $diff = (int)$hoy->diff($d)->days;
     return $d < $hoy ? -$diff : $diff;
@@ -93,6 +95,8 @@ function diasHastaViaje(string $fecha): int {
         if ($ts) $d = (new DateTime())->setTimestamp($ts);
     }
     if (!$d) return 9999;
+    // Año mal digitado (ej. 14-Dec-0026): se asume 20xx en vez de tratarlo como vencido
+    if ((int)$d->format('Y') < 100) $d->setDate((int)$d->format('Y') + 2000, (int)$d->format('n'), (int)$d->format('j'));
     $hoy = new DateTime('today');
     $diff = (int)$hoy->diff($d)->days;
     return $d < $hoy ? -$diff : $diff;
