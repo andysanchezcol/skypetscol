@@ -1,7 +1,10 @@
 <?php
+require_once __DIR__ . '/_comun.php';
 header('Content-Type: application/json');
 
 $maxSize = 10 * 1024 * 1024; // 10 MB
+
+exigirMismoOrigen();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_FILES['image'])) {
     http_response_code(400);
@@ -28,7 +31,8 @@ if ($file['size'] > $maxSize) {
 
 $ext      = $extPorTipo[$info[2]];
 $slug     = preg_replace('/[^a-z0-9\-]/', '', strtolower($_POST['slug'] ?? 'producto'));
-$filename = $slug . '-' . uniqid() . '.' . $ext;
+$slug     = substr($slug, 0, 60) ?: 'producto';
+$filename = $slug . '-' . bin2hex(random_bytes(8)) . '.' . $ext;   // sufijo aleatorio: no se puede adivinar el nombre
 $destDir  = __DIR__ . '/../assets/images/productos/';
 $destPath = $destDir . $filename;
 

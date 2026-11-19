@@ -37,6 +37,7 @@ $fotoDesExtId   = driveFileId(col($row, 'foto_desp_ext'));
 $serologiaId    = driveFileId(col($row, 'serologia'));
 
 $msg = '';
+$msgTipo = 'ok';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
     $fields = ['raza_corregida','fecha_emision',
                'vacuna1_medicamento','vacuna1_lote','vacuna1_aplicacion','vacuna1_proxima','vacuna1_uso',
@@ -55,11 +56,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
                     'vacuna5_aplicacion','vacuna5_proxima',
                     'desint_fecha','desext_fecha'];
     $data = [];
+    $errorValidacion = '';
     foreach ($fields as $f) {
-        $val = trim($_POST[$f] ?? '');
+        $crudo = $_POST[$f] ?? '';
+        $val = is_string($crudo) ? trim($crudo) : '';
+        if (mb_strlen($val, 'UTF-8') > 255) { $errorValidacion = 'Un campo es demasiado largo (máximo 255 caracteres).'; break; }
+        if (in_array($f, $camposFecha) && $val !== '') {
+            $d = DateTime::createFromFormat('!Y-m-d', $val);
+            if (!$d || $d->format('Y-m-d') !== $val) { $errorValidacion = 'Hay una fecha con formato inválido (use AAAA-MM-DD).'; break; }
+        }
         $data[$f] = (in_array($f, $camposFecha) && $val === '') ? null : $val;
     }
 
+    if ($errorValidacion !== '') {
+        $msg = $errorValidacion;
+        $msgTipo = 'error';
+    } else {
     if ($saved) {
         $set = implode(', ', array_map(fn($f) => "$f = :$f", $fields));
         $s = $db->prepare("UPDATE certificados SET $set, status='en_proceso' WHERE sheet_row = :sheet_row");
@@ -74,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
     $cert->execute([$rowNum]);
     $saved = $cert->fetch() ?: [];
     $msg   = 'Datos guardados correctamente.';
+    }
 }
 
 function v(array $saved, string $key): string {
@@ -105,7 +118,7 @@ function v(array $saved, string $key): string {
 <div class="container">
 
 <?php if ($msg): ?>
-<div class="alert alert-ok"><?= $msg ?></div>
+<div class="alert alert-<?= $msgTipo ?>"><?= htmlspecialchars($msg) ?></div>
 <?php endif; ?>
 
 <!-- ─── INFO RÁPIDA ──────────────────────────────────────────── -->
@@ -456,10 +469,14 @@ const USO_COLORS = {
     'PARVO':         '#FF5722',
 };
 
+function escHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function usosBadges(usos) {
     return usos.map(u => {
         const c = USO_COLORS[u] || '#6B5540';
-        return `<span style="background:${c};color:#fff;border-radius:100px;padding:3px 10px;font-size:11px;font-family:Poppins,sans-serif;font-weight:600;white-space:nowrap;">${u}</span>`;
+        return `<span style="background:${c};color:#fff;border-radius:100px;padding:3px 10px;font-size:11px;font-family:Poppins,sans-serif;font-weight:600;white-space:nowrap;">${escHtml(u)}</span>`;
     }).join('');
 }
 

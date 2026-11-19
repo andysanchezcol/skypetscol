@@ -4,6 +4,7 @@
 // compartida; Konexa reintenta si no recibe un 2xx, y envio_id evita duplicados.
 require_once __DIR__ . '/konexa_config.php';
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/ratelimit.php';
 header('Content-Type: application/json; charset=utf-8');
 
 function responder(int $codigo, array $datos): void { http_response_code($codigo); echo json_encode($datos); exit; }
@@ -12,7 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') responder(405, ['error' => 'metodo no
 $raw = file_get_contents('php://input');
 if ($raw === false || strlen($raw) > 1_000_000) responder(413, ['error' => 'cuerpo invalido']);
 $firma = $_SERVER['HTTP_X_KONEXA_FIRMA'] ?? '';
-if (!hash_equals(hash_hmac('sha256', $raw, KONEXA_SECRET), $firma)) responder(401, ['error' => 'firma invalida']);
+// Freno a quien pruebe firmas al azar: 20 fallos por IP cada 15 minutos (Konexa firma bien, así que nunca lo alcanza).
+$claveRl = 'konexa-ip-' . rlIp();
+if (rlBloqueado($claveRl, 20, 900) > 0) responder(429, ['error' => 'demasiados intentos']);
+if (!hash_equals(hash_hmac('sha256', $raw, KONEXA_SECRET), $firma)) {
+    rlRegistrarFallo($claveRl, 900);
+    responder(401, ['error' => 'firma invalida']);
+}
 
 $p = json_decode($raw, true);
 if (!is_array($p) || ($p['evento'] ?? '') !== 'formulario.completado' || !preg_match('/^[0-9a-f-]{36}$/i', (string)($p['envio_id'] ?? ''))) {

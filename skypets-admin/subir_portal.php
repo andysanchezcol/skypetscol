@@ -78,6 +78,28 @@ function buscarPerfil(string $correo): array {
     return ['status' => $res['status'], 'profiles' => json_decode($res['body'], true) ?: []];
 }
 
+// Valida un archivo subido por su CONTENIDO (no por la extensión ni por el tipo que declara el navegador).
+// Devuelve [extensión, tipo MIME] o null si no es PDF, DOCX, JPG ni PNG, o si pesa más de 15 MB.
+const SUBIDA_MAX_BYTES = 15 * 1024 * 1024;
+function validarArchivoSubido(string $tmp, int $error): ?array {
+    if ($error !== UPLOAD_ERR_OK || !is_uploaded_file($tmp)) return null;
+    $tam = filesize($tmp);
+    if ($tam === false || $tam < 8 || $tam > SUBIDA_MAX_BYTES) return null;
+    $cab = (string)file_get_contents($tmp, false, null, 0, 8);
+    if (str_starts_with($cab, '%PDF-')) return ['pdf', 'application/pdf'];
+    if (str_starts_with($cab, "\xFF\xD8\xFF")) return ['jpg', 'image/jpeg'];
+    if (str_starts_with($cab, "\x89PNG\r\n\x1a\n")) return ['png', 'image/png'];
+    if (str_starts_with($cab, "PK\x03\x04")) { // DOCX = ZIP con word/document.xml
+        $z = new ZipArchive();
+        if ($z->open($tmp) === true) {
+            $ok = $z->locateName('word/document.xml') !== false && $z->locateName('[Content_Types].xml') !== false;
+            $z->close();
+            if ($ok) return ['docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        }
+    }
+    return null;
+}
+
 $msg = '';
 $msgTipo = '';
 $clienteSinPortal = false;
@@ -113,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'crear
                     $msgTipo = 'error';
                 }
             } elseif ($create['status'] >= 300 || empty($created['id'])) {
-                $msg = 'Error al crear la cuenta en el portal: ' . $create['body'];
+                $msg = 'Error al crear la cuenta en el portal: ' . htmlspecialchars((string)$create['body']);
                 $msgTipo = 'error';
             } else {
                 // El trigger de auth.users ya crea la fila en profiles (email + full_name);
@@ -152,23 +174,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? 'subir_doc') =
             $ownerId = $profiles[0]['id'];
             $names    = $_FILES['documento']['name'];
             $tmpNames = $_FILES['documento']['tmp_name'];
-            $count    = count(array_filter($tmpNames));
+            $errores  = $_FILES['documento']['error'];
+            $validos  = [];   // [tmp, nombre original saneado, ext, mime]
+            $invalido = false;
+            foreach ($tmpNames as $i => $tmp) {
+                if (($errores[$i] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) continue;
+                $v = validarArchivoSubido((string)$tmp, (int)($errores[$i] ?? UPLOAD_ERR_NO_FILE));
+                if (!$v) { $invalido = true; break; }
+                $limpio = preg_replace('/[^A-Za-z0-9._ -]/', '_', basename((string)$names[$i]));
+                $validos[] = [$tmp, $limpio, $v[0], $v[1]];
+            }
+            if ($invalido || !$validos || count($validos) > 10) {
+                $msg = 'Solo se aceptan PDF, DOCX, JPG o PNG de hasta 15 MB (máximo 10 archivos). Revisa los archivos e intenta de nuevo.';
+                $msgTipo = 'error';
+            } else {
+            $count    = count($validos);
             $docId    = uuidv4();
 
             if ($count === 1) {
-                $ext      = strtolower(pathinfo($names[0], PATHINFO_EXTENSION));
+                $ext      = $validos[0][2];
                 $filePath = "$ownerId/$docId.$ext";
-                $fileData = file_get_contents($tmpNames[0]);
-                $contentType = $_FILES['documento']['type'][0] ?: 'application/octet-stream';
+                $fileData = file_get_contents($validos[0][0]);
+                $contentType = $validos[0][3];
             } else {
                 // Varios archivos del mismo documento (ej. carnet + adiestramiento + certificado médico):
                 // se agrupan en un solo ZIP para que el cliente vea un único documento en su portal.
                 $zipPath = tempnam(sys_get_temp_dir(), 'skypets_zip_');
                 $zip = new ZipArchive();
                 $zip->open($zipPath, ZipArchive::OVERWRITE);
-                foreach ($tmpNames as $i => $tmp) {
-                    if (!$tmp) continue;
-                    $zip->addFile($tmp, $names[$i]);
+                foreach ($validos as $k => [$tmp, $limpio]) {
+                    $zip->addFile($tmp, ($k + 1) . '-' . $limpio);
                 }
                 $zip->close();
                 $filePath = "$ownerId/$docId.zip";
@@ -185,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? 'subir_doc') =
             );
 
             if ($upload['status'] >= 300) {
-                $msg = 'Error al subir el archivo al portal: ' . $upload['body'];
+                $msg = 'Error al subir el archivo al portal: ' . htmlspecialchars((string)$upload['body']);
                 $msgTipo = 'error';
             } else {
                 $nombreDoc = $tiposDoc[$tipo] . ' - ' . $mascota;
@@ -200,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? 'subir_doc') =
 
                 if ($insert['status'] >= 300) {
                     supabaseRequest('DELETE', '/storage/v1/object/skypets-docs/' . $filePath);
-                    $msg = 'Error al registrar el documento: ' . $insert['body'];
+                    $msg = 'Error al registrar el documento: ' . htmlspecialchars((string)$insert['body']);
                     $msgTipo = 'error';
                 } else {
                     getDB()->prepare("UPDATE certificados SET portal_uploaded_at = NOW() WHERE sheet_row = ?")
@@ -209,6 +244,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? 'subir_doc') =
                     $msgTipo = 'ok';
                     $docUploaded = true;
                 }
+            }
             }
         }
     }

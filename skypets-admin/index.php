@@ -4,12 +4,18 @@ iniciarSesionAdmin();
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (doLogin($_POST['usuario'] ?? '', $_POST['clave'] ?? '')) {
-        $_SESSION['admin_logged_in'] = true;
+    $espera = loginBloqueo();
+    if ($espera > 0) {
+        rlResponder429($espera);
+        $error = 'Demasiados intentos. Espera ' . max(1, (int)ceil($espera / 60)) . ' minuto(s) y vuelve a intentar.';
+    } elseif (doLogin((string)($_POST['usuario'] ?? ''), (string)($_POST['clave'] ?? ''))) {
+        loginExito();
         header('Location: dashboard.php');
         exit;
+    } else {
+        loginFallo();
+        $error = 'Usuario o contraseña incorrectos.';
     }
-    $error = 'Usuario o contraseña incorrectos.';
 }
 ?>
 <!DOCTYPE html>

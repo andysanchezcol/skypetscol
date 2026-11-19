@@ -19,18 +19,25 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.html -f
 RewriteRule ^(.+)$ $1.html [L]
 
-# Seguridad
+# Seguridad (always: los encabezados salen también en respuestas 301/404/500)
 <IfModule mod_headers.c>
-  Header set X-Frame-Options "DENY"
-  Header set X-Content-Type-Options "nosniff"
-  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "DENY"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Strict-Transport-Security "max-age=31536000"
-  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://app.konexa.com.co; style-src 'self' 'unsafe-inline' https://app.konexa.com.co; img-src 'self' data: blob: https:; media-src 'self' blob: https://jkrcdsneilbnuwvqgjba.supabase.co; font-src 'self' data:; connect-src 'self' https://jkrcdsneilbnuwvqgjba.supabase.co wss://jkrcdsneilbnuwvqgjba.supabase.co https://api.eclipseagency.com.co https://app.konexa.com.co https://cdn.jsdelivr.net; frame-src https://app.konexa.com.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+  # El sitio no usa cámara, micrófono, ubicación, pagos ni USB/Bluetooth/serial.
+  # Cámara, micrófono y ubicación quedan delegados solo al formulario de Konexa (iframe), por si lo necesita.
+  Header always set Permissions-Policy "camera=(self \"https://app.konexa.com.co\"), microphone=(self \"https://app.konexa.com.co\"), geolocation=(self \"https://app.konexa.com.co\"), payment=(), usb=(), bluetooth=(), serial=(), midi=(), magnetometer=(), gyroscope=(), accelerometer=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://app.konexa.com.co; style-src 'self' 'unsafe-inline' https://app.konexa.com.co; img-src 'self' data: blob: https:; media-src 'self' blob: https://jkrcdsneilbnuwvqgjba.supabase.co; font-src 'self' data:; connect-src 'self' https://jkrcdsneilbnuwvqgjba.supabase.co wss://jkrcdsneilbnuwvqgjba.supabase.co https://api.eclipseagency.com.co https://app.konexa.com.co https://cdn.jsdelivr.net; frame-src https://app.konexa.com.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 </IfModule>
 
 # Archivos internos que no se publican
 RedirectMatch 404 ^/(supabase|\.claude)(/|$)
 <FilesMatch "^(\.DS_Store|CLAUDE\.md|README\.md|netlify\.toml)$">
+  Require all denied
+</FilesMatch>
+# Secretos, volcados y copias que nunca deben servirse por web
+<FilesMatch "(^\.env|\.(env|sql|log|bak|old|orig|swp|sh|lock|map|pem|key)$)">
   Require all denied
 </FilesMatch>
 

@@ -4,7 +4,8 @@
 // documento — evita mantener dos listas de clientes por separado. Además le
 // envía un correo de bienvenida (vía Resend) con un link para que el propio
 // cliente cree su contraseña la primera vez que entra al portal.
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.119.0'
+import { EMAIL_RE, escapeHtml, leerJson, secretoValido, textoOpcional } from '../_compartido/seguridad.ts'
 
 interface ArcaClientRecord {
   id: string
@@ -17,14 +18,25 @@ interface ArcaClientRecord {
 
 Deno.serve(async (req: Request) => {
   // La llama un trigger de la base de Arca (otro proyecto) con un secreto propio; la función se publica sin verificación de JWT.
+  // Sin ARCA_WEBHOOK_SECRETO configurado no responde: antes quedaba abierta y podía crear cuentas del portal y mandar correos.
   const secreto = Deno.env.get('ARCA_WEBHOOK_SECRETO')
-  if (secreto && req.headers.get('x-arca-secreto') !== secreto) return Response.json({ error: 'no_autorizado' }, { status: 401 })
+  if (!secreto) return Response.json({ error: 'configuracion_incompleta' }, { status: 500 })
+  if (!secretoValido(req.headers.get('x-arca-secreto'), secreto)) return Response.json({ error: 'no_autorizado' }, { status: 401 })
 
-  const payload = await req.json()
-  const record = payload.record as ArcaClientRecord
-
-  if (!record.email) {
-    return Response.json({ skipped: 'sin_email' })
+  const payload = await leerJson(req)
+  const r = (payload?.record ?? null) as Record<string, unknown> | null
+  if (!r) return Response.json({ error: 'payload_invalido' }, { status: 400 })
+  if (!r.email) return Response.json({ skipped: 'sin_email' })
+  if (typeof r.email !== 'string' || !EMAIL_RE.test(r.email.trim()) || typeof r.full_name !== 'string' || r.full_name.length > 200) {
+    return Response.json({ error: 'payload_invalido' }, { status: 400 })
+  }
+  const record: ArcaClientRecord = {
+    id: String(r.id ?? ''),
+    full_name: r.full_name,
+    email: r.email.trim(),
+    phone: textoOpcional(r.phone, 40),
+    city: textoOpcional(r.city, 120),
+    pet_name: textoOpcional(r.pet_name, 120),
   }
 
   const supabaseAdmin = createClient(
@@ -35,7 +47,7 @@ Deno.serve(async (req: Request) => {
   const { data: existing } = await supabaseAdmin
     .from('profiles')
     .select('id')
-    .ilike('email', record.email)
+    .ilike('email', record.email!.replace(/[\\%_]/g, '\\$&')) // sin comodines: «_» y «%» de un correo no deben coincidir con otras cuentas
     .maybeSingle()
 
   if (existing) {
@@ -78,11 +90,11 @@ Deno.serve(async (req: Request) => {
   const firstName = (record.full_name ?? '').trim().split(' ')[0] || 'Hola'
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#1a1a1a;line-height:1.5">
-      <p>Hola ${firstName},</p>
+      <p>Hola ${escapeHtml(firstName)},</p>
       <p>Bienvenido al portal de clientes de SkyPets. Aquí vas a poder ver y descargar todos los documentos de viaje de tu mascota apenas los subamos.</p>
       <p>Antes de entrar, crea tu contraseña de acceso con el siguiente botón:</p>
       <p style="margin-top:24px">
-        <a href="${linkData.properties.action_link}" style="background:#FF7600;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Crear mi contraseña</a>
+        <a href="${escapeHtml(linkData.properties.action_link)}" style="background:#FF7600;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Crear mi contraseña</a>
       </p>
       <p style="margin-top:24px">Equipo SkyPets</p>
     </div>
