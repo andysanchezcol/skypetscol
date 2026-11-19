@@ -83,12 +83,16 @@
         <li><a href="/terminos-y-condiciones">Términos y Condiciones</a></li>
         <li><a href="/politica-de-privacidad">Política de Privacidad</a></li>
         <li><a href="/politica-de-cookies">Política de Cookies</a></li>
+        <li><a href="/politica-de-reembolsos">Política de Reembolsos</a></li>
+        <li><a href="/eliminar-mis-datos">Eliminar mis datos</a></li>
+        <li><button type="button" class="footer-link-btn" onclick="window.spCookies&&window.spCookies.open()">Configurar cookies</button></li>
         <li><a href="/nosotros">Acerca de Nosotros</a></li>
       </ul>
     </div>
     <div class="footer-col">
       <h4>Contacto</h4>
       <div class="footer-contact">
+        <!-- PENDIENTE (Andrés): dirección física exacta del domicilio de SkyPets SAS (Ley 1480, art. 50). Agrégala aquí cuando la confirmes. -->
         <div class="footer-cr">📍 Bogotá D.C., Colombia</div>
         <div class="footer-cr">📞 +57 321 355 6909</div>
         <div class="footer-cr">📧 info@skypetscol.com</div>
@@ -99,8 +103,8 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2026 SkyPets — Todos los derechos reservados</span>
-    <span>Hecho con 🧡 en Bogotá</span>
+    <span>© 2026 SkyPets SAS · NIT 902112444-1 · Bogotá D.C., Colombia · Todos los derechos reservados</span>
+    <span>Nuestros servicios son para mayores de 18 años.</span>
   </div>
 </footer>
 
@@ -149,6 +153,13 @@ footer{background:#2B2418;color:rgba(255,250,236,0.48);padding:clamp(56px,8vw,88
 .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
 .footer-col ul a{font-size:0.84rem;color:rgba(255,250,236,0.40);text-decoration:none;font-weight:300;transition:color 0.2s;}
 .footer-col ul a:hover{color:#FF7600;}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #008D83;outline-offset:2px;}
+.nav a:focus-visible,.nav-mobile a:focus-visible,footer a:focus-visible,footer button:focus-visible{outline-color:#FF7600;}
+.skip-link{position:absolute;left:-9999px;top:8px;z-index:3000;background:#2B2418;color:#FFFAEC;padding:12px 18px;border-radius:8px;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:600;text-decoration:none;}
+.skip-link:focus{left:12px;outline:3px solid #FF7600;outline-offset:2px;}
+.footer-link-btn{background:none;border:0;padding:0;font:inherit;font-size:0.84rem;color:rgba(255,250,236,0.40);font-weight:300;cursor:pointer;text-align:left;transition:color 0.2s;}
+.footer-link-btn:hover{color:#FF7600;}
+.footer-link-btn:focus-visible,.footer-col ul a:focus-visible{outline:2px solid #FF7600;outline-offset:2px;}
 .footer-contact{display:flex;flex-direction:column;gap:10px;}
 .footer-cr{display:flex;align-items:center;gap:8px;font-size:0.84rem;font-weight:300;}
 .footer-bottom{max-width:1100px;margin:0 auto;border-top:1px solid rgba(255,250,236,0.07);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:0.75rem;}
@@ -166,6 +177,15 @@ html.kx-chat .wa-float{bottom:112px;}
 
   /* ── Inyectar nav al inicio del body ── */
   document.body.insertAdjacentHTML('afterbegin', NAV_HTML);
+
+  /* ── Enlace para saltar al contenido (teclado) ── */
+  /* Ninguna página tiene <main>: se usa la primera sección de contenido (después del menú) como destino. */
+  const mainEl = document.querySelector('main, header.hero, .hero, section');
+  if (mainEl) {
+    if (!mainEl.id) mainEl.id = 'contenido';
+    mainEl.setAttribute('tabindex', '-1');
+    document.body.insertAdjacentHTML('afterbegin', '<a class="skip-link" href="#' + mainEl.id + '">Saltar al contenido</a>');
+  }
 
   /* ── Inyectar footer al final del body ── */
   document.body.insertAdjacentHTML('beforeend', FOOTER_HTML);
@@ -211,9 +231,13 @@ html.kx-chat .wa-float{bottom:112px;}
     }, { passive: true });
   }
 
-  /* Páginas con el chat de Konexa: el botón de WhatsApp sube para no taparse con la burbuja (una clase en <html>, sin selectores :has). */
-  document.addEventListener('DOMContentLoaded', function () {
-    if (document.querySelector('script[src*="app.konexa.com.co/widget.js"]')) document.documentElement.classList.add('kx-chat');
-  });
+  /* Consentimiento de cookies y chat de Konexa: lo maneja consentimiento.js (el chat solo carga si la persona lo acepta
+     y, al cargar, pone la clase kx-chat en <html> para subir el botón de WhatsApp). */
+  if (!document.getElementById('sp-ck-script')) {
+    var ck = document.createElement('script');
+    ck.id = 'sp-ck-script';
+    ck.src = '/assets/scripts/consentimiento.js?v=1';
+    document.body.appendChild(ck);
+  }
 })();
 

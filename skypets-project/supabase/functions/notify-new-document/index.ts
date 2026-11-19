@@ -161,6 +161,10 @@ async function arca(ruta: string, init: RequestInit = {}): Promise<Record<string
   }
 }
 
+// Medio de baja / eliminación de datos que van en el pie de cada correo y en el encabezado List-Unsubscribe.
+const BAJA_CORREO = 'info@skypetscol.com'
+const BAJA_URL = 'https://skypetscol.com/eliminar-mis-datos'
+
 Deno.serve(async (req: Request) => {
   // Si hay NOTIFY_SECRETO, la llamada debe traer el mismo valor (la hace un trigger de la base, sin JWT). Sin esa variable
   // (proyecto anterior) se mantiene la verificación de JWT de Supabase.
@@ -215,6 +219,7 @@ Deno.serve(async (req: Request) => {
         <a href="https://skypetscol.com/portal" style="background:#FF7600;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Ingresar al portal</a>
       </p>
       <p style="margin-top:24px">Equipo SkyPets</p>
+      <p style="margin-top:24px;padding-top:12px;border-top:1px solid #ddd;font-size:12px;color:#666">Recibes este correo de servicio porque SkyPets SAS (NIT 902112444-1) tiene un trámite tuyo en curso; no es publicidad. Si no quieres recibir más correos o quieres que eliminemos tus datos, <a href="${BAJA_URL}" style="color:#666">solicítalo aquí</a> o escribe a ${BAJA_CORREO}. Tratamiento de datos: <a href="https://skypetscol.com/politica-de-privacidad" style="color:#666">Política de Privacidad</a>.</p>
     </div>
   `
 
@@ -228,7 +233,11 @@ Si necesitas realizar alguna solicitud, corrección o requieres información adi
 
 Ingresa a tu portal: https://skypetscol.com/portal
 
-Equipo SkyPets`
+Equipo SkyPets
+
+--
+Recibes este correo de servicio porque SkyPets SAS (NIT 902112444-1) tiene un trámite tuyo en curso; no es publicidad. Si no quieres recibir más correos o quieres que eliminemos tus datos, solicítalo en ${BAJA_URL} o escribe a ${BAJA_CORREO}.
+Política de Privacidad: https://skypetscol.com/politica-de-privacidad`
 
   // Adjuntar el archivo real al correo, además del link al portal — si la
   // descarga del storage falla (archivo grande, bucket caído, etc.) se envía
@@ -283,6 +292,8 @@ Equipo SkyPets`
       to: profile.email,
       cc: Array.from(ccList),
       subject: `${info.label} disponible en tu portal SkyPets`,
+      // Baja: correo + página de eliminación de datos (la página la publica el redactor legal).
+      headers: { 'List-Unsubscribe': `<mailto:${BAJA_CORREO}?subject=Baja%20de%20correos>, <${BAJA_URL}>` },
       html,
       text,
       ...(attachments ? { attachments } : {}),

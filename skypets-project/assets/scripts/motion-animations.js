@@ -1,8 +1,8 @@
-/* SkyPets — Motion animations (motion.dev CDN)
+/* SkyPets — Motion animations (motion.dev, copia propia en /assets/vendor)
  * Complementa main.js sin reemplazarlo.
  * Respeta prefers-reduced-motion automáticamente.
  */
-import { animate, inView, scroll, spring } from "https://cdn.jsdelivr.net/npm/motion@12.40.0/+esm";
+import { animate, inView, scroll, spring } from "/assets/vendor/motion-12.40.0.min.js";
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
