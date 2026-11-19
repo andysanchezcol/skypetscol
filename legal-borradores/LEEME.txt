@@ -1,0 +1,10 @@
+Borrador generado como punto de partida. No es asesoría legal. Debe revisarlo un abogado y aprobarlo Andrés antes de publicarse.
+
+Contenido (fecha 2026-11-19, versión 2):
+- skypets-project/politica-de-privacidad.html   (L01, L16, L18 en parte)
+- skypets-project/terminos-y-condiciones.html   (L02, X13: cláusula 10)
+- skypets-project/politica-de-reembolsos.html   (L03)
+- skypets-project/politica-de-cookies.html      (L04)
+- skypets-project/eliminar-mis-datos.html       (L18)
+- legal-borradores/consentimiento-formularios.txt (L16 y textos de autorización; sin instalar)
+Cada dato que falta está marcado en el texto como [PENDIENTE (Andrés): ...]. Búscalo con: grep -n "PENDIENTE" skypets-project/*.html

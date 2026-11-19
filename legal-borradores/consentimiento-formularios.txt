@@ -1,0 +1,26 @@
+Textos de autorización para los formularios de skypetscol.com (SkyPets SAS)
+Versión 2, fecha de vigencia 2026-11-19. BORRADOR: debe revisarlo un abogado y aprobarlo Andrés.
+Estos textos NO están instalados en las páginas (los formularios y el pie son de otro responsable).
+Casillas SIEMPRE sin marcar. El enlace de "política de tratamiento de datos" va a /politica-de-privacidad.
+
+1) Formulario de contacto (contacto.html) — casilla obligatoria para enviar
+[ ] Autorizo a SkyPets SAS (NIT 902112444-1) a tratar mis datos personales para responder mi consulta, según la política de tratamiento de datos (/politica-de-privacidad). Sé que puedo conocerlos, corregirlos, pedir que se eliminen o revocar esta autorización escribiendo a info@skypetscol.com.
+
+2) Registro del portal de clientes (portal.html, pestaña "Crear cuenta") — casilla obligatoria
+[ ] Autorizo a SkyPets SAS a tratar mis datos y los de mi mascota para crear mi cuenta y gestionar mis documentos, y a transferirlos a sus proveedores en Estados Unidos y otros países (Supabase, Resend, Google), según la política de tratamiento de datos (/politica-de-privacidad).
+
+3) Entrada con Google (botón "Continuar con Google") — texto bajo el botón, sin casilla
+Al continuar aceptas la política de tratamiento de datos (/politica-de-privacidad) y los términos y condiciones (/terminos-y-condiciones).
+
+4) Chat web (burbuja de Konexa) — aviso corto antes de escribir
+Al escribirnos autorizas a SkyPets SAS a tratar tus mensajes y archivos para atenderte, según la política de tratamiento de datos (/politica-de-privacidad).
+
+5) Mensajes comerciales — casilla SEPARADA, OPCIONAL, sin marcar (solo si algún día se piden)
+[ ] Quiero recibir novedades y ofertas de SkyPets por correo o WhatsApp. Puedo retirar este permiso cuando quiera. No es necesario para recibir el servicio.
+
+6) Datos de salud del titular (certificado de apoyo emocional o de asistencia) — casilla OPCIONAL
+[ ] Autorizo de forma expresa a SkyPets SAS a tratar los datos de salud que le entrego, solo para emitir este certificado. Sé que no estoy obligado a darlos.
+
+7) Menores de 18 años
+Aviso para los formularios: "Este sitio no está dirigido a menores de 18 años. Los trámites los hace una persona adulta."
+Solo si algún día se recogen datos de un menor: "Soy el representante legal del menor y autorizo el tratamiento de sus datos. Esta autorización es voluntaria." (no se condiciona el servicio a darla).
