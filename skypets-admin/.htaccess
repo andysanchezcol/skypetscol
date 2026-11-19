@@ -1,8 +1,19 @@
 Options -Indexes
+
+# Siempre por https
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 DirectoryIndex index.php
 
 # Proteger archivos sensibles
 <FilesMatch "\.(json|log|sh|env|sql|md|phar|lock)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Documentos de la veterinaria: el PDF los lee del disco, nunca por web
+<FilesMatch "^(cedula\.jpg|firma\.png|tarjeta\.jpg|instalar_fpdi\.php|composer-setup\.php)$">
     Order Allow,Deny
     Deny from all
 </FilesMatch>
