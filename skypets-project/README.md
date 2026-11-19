@@ -4,8 +4,8 @@ Sitio web estático de [SkyPets Colombia](https://skypetscol.com), empresa de as
 
 ## Stack
 - HTML5 / CSS3 / Vanilla JS — sin frameworks ni build tools
-- Hosting: [Netlify](https://netlify.com) (plan gratuito)
-- Dominio: skypetscol.com (apuntado a Netlify)
+- Hosting: HostGator (cPanel), publicado con el webhook `deploy.php` en cada push a `main`
+- Dominio: skypetscol.com (nameservers de HostGator)
 
 ## Estructura
 ```
@@ -26,18 +26,12 @@ Sitio web estático de [SkyPets Colombia](https://skypetscol.com), empresa de as
 │   │   └── tokens.css                  ← Design system tokens
 │   └── scripts/
 │       └── main.js                     ← JS compartido
-├── netlify.toml                        ← Config de deploy
 └── CLAUDE.md                           ← Instrucciones para Claude Code
 ```
 
-## Cómo publicar en Netlify
+## Cómo publicar
 
-1. Sube este proyecto a un repositorio de GitHub
-2. Ve a [netlify.com](https://netlify.com) → "Add new site" → "Import from Git"
-3. Selecciona el repositorio
-4. En "Publish directory" escribe: `.`
-5. Haz clic en "Deploy site"
-6. En "Domain settings", conecta `skypetscol.com` cambiando los nameservers a Netlify
+Haz push a `main`: el webhook `deploy.php` actualiza HostGator solo.
 
 ## Cómo hacer cambios con Claude Code
 
