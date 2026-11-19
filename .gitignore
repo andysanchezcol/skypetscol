@@ -6,3 +6,11 @@ skypets-admin/tmp/
 skypets-admin/deploy.php
 skypets-project/deploy.php
 skypets-project/catalogo-admin/.htpasswd
+
+# Documentos privados de la veterinaria: viven solo en el servidor y en ~/.skypets-privado
+skypets-admin/assets/images/cedula.jpg
+skypets-admin/assets/images/firma.png
+skypets-admin/assets/images/tarjeta.jpg
+skypets-admin/composer.phar
+skypets-admin/composer-setup.php
+skypets-admin/instalar_fpdi.php
