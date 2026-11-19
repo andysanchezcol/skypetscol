@@ -2013,7 +2013,7 @@ footer {
       <!-- CARD 1 -->
       <div class="pw-card" data-index="0">
         <div class="pw-img-wrap">
-          <video src="/assets/images/cliente-marina.MP4" autoplay muted loop playsinline preload="none"></video>
+          <video src="/assets/images/cliente-marina.MP4" muted loop playsinline preload="none"></video>
           <div class="pw-badge">Cabina ✈️</div>
           <div class="pw-info">
             <span class="pw-name">Marina, Molly & Macarena</span>
@@ -2025,7 +2025,7 @@ footer {
       <!-- CARD 2 -->
       <div class="pw-card" data-index="1">
         <div class="pw-img-wrap">
-          <video src="/assets/images/cliente-venus.MP4" autoplay muted loop playsinline preload="none"></video>
+          <video src="/assets/images/cliente-venus.MP4" muted loop playsinline preload="none"></video>
           <div class="pw-badge">Cabina ✈️</div>
           <div class="pw-info">
             <span class="pw-name">Venus & Pulgas</span>
@@ -2037,7 +2037,7 @@ footer {
       <!-- CARD 3 -->
       <div class="pw-card" data-index="2">
         <div class="pw-img-wrap">
-          <video src="/assets/images/cliente-oro_jose.MP4" autoplay muted loop playsinline preload="none"></video>
+          <video src="/assets/images/cliente-oro_jose.MP4" muted loop playsinline preload="none"></video>
           <div class="pw-badge">Cabina ✈️</div>
           <div class="pw-info">
             <span class="pw-name">Oro & Jose</span>
@@ -2061,7 +2061,7 @@ footer {
       <!-- CARD 5 -->
       <div class="pw-card" data-index="4">
         <div class="pw-img-wrap">
-          <video src="/assets/images/cliente-ghost.MP4" autoplay muted loop playsinline preload="none"></video>
+          <video src="/assets/images/cliente-ghost.MP4" muted loop playsinline preload="none"></video>
           <div class="pw-badge">Cabina ✈️</div>
           <div class="pw-info">
             <span class="pw-name">Ghost</span>
@@ -2073,7 +2073,7 @@ footer {
       <!-- CARD 6 -->
       <div class="pw-card" data-index="5">
         <div class="pw-img-wrap">
-          <video src="/assets/images/cliente-Megan_Medellin_Alemania.mp4" autoplay muted loop playsinline preload="none"></video>
+          <video src="/assets/images/cliente-Megan_Medellin_Alemania.mp4" muted loop playsinline preload="none"></video>
           <div class="pw-badge">Cabina ✈️</div>
           <div class="pw-info">
             <span class="pw-name">Megan</span>
@@ -2475,6 +2475,9 @@ window.addEventListener('scroll', () => {
     return off;
   }
 
+  /* Los videos solo se cargan y reproducen cuando la sección está en pantalla (antes los 5 se descargaban al abrir la página: ~11 MB) */
+  let enVista = false;
+
   /* Aplica posiciones 3D a todas las cards */
   function applyLayout() {
     const cw  = cards[0].offsetWidth || 260;
@@ -2499,7 +2502,7 @@ window.addEventListener('scroll', () => {
       const vid = card.querySelector('video');
       if (off === 0) {
         card.classList.add('pw-active');
-        if (vid) {
+        if (vid && enVista) {
           if (vid.readyState === 0) vid.load();
           vid.play().catch(() => {});
         }
@@ -2554,10 +2557,11 @@ window.addEventListener('scroll', () => {
   /* Pausa cuando la sección no está en vista */
   const secObs = new IntersectionObserver(entries => {
     entries.forEach(e => {
+      enVista = e.isIntersecting;
       if (e.isIntersecting) {
         resetAuto();
         const vid = cards[current] && cards[current].querySelector('video');
-        if (vid) vid.play().catch(() => {});
+        if (vid) { if (vid.readyState === 0) vid.load(); vid.play().catch(() => {}); }
       } else {
         clearInterval(autoTimer);
         cards.forEach(c => { const v = c.querySelector('video'); if (v) v.pause(); });
