@@ -7,6 +7,9 @@ RewriteEngine On
 RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# /admin/ (marcadores viejos, antes era el catálogo) → portal de documentos
+RewriteRule ^admin/?$ /admin.html [L,R=301]
+
 # /blog → /blog/index.html (excepción necesaria porque blog/ es directorio)
 RewriteRule ^blog$ /blog/index.html [L]
 
