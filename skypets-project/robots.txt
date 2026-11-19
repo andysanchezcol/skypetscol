@@ -2,6 +2,7 @@ User-agent: *
 Disallow: /admin.html
 Disallow: /portal.html
 Disallow: /cotizador.html
+Disallow: /catalogo-admin/
 
 # AI bots — permitir indexación y citas
 User-agent: GPTBot
