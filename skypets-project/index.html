@@ -41,7 +41,7 @@
 <style>
 /* ─── RESET ─── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 16px; overflow-x: clip; }
 body {
   font-family: 'Poppins', sans-serif;
   background: #FFFAEC;
@@ -2438,13 +2438,6 @@ footer {
 <!-- ══ FOOTER ══ -->
 
 <script>
-/* ── NAV ── */
-const navbar = document.getElementById('navbar');
-window.addEventListener('scroll', () => {
-  navbar.classList.toggle('scrolled', window.scrollY > 30);
-}, { passive: true });
-
-
 /* ── PHOTO WALL — 3D Coverflow Infinito ── */
 (function(){
   const stage  = document.querySelector('.pw-stage');

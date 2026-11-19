@@ -1,0 +1,6 @@
+# Aquí solo van imágenes: nunca se ejecuta código
+<FilesMatch "\.(php|phtml|phar|pl|py|cgi|sh)$">
+  Order Allow,Deny
+  Deny from all
+</FilesMatch>
+Options -ExecCGI -Indexes

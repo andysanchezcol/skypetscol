@@ -1,7 +1,6 @@
 <?php
 header('Content-Type: application/json');
 
-$allowed = ['image/png','image/jpeg','image/webp'];
 $maxSize = 10 * 1024 * 1024; // 10 MB
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_FILES['image'])) {
@@ -12,7 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_FILES['image'])) {
 
 $file = $_FILES['image'];
 
-if (!in_array($file['type'], $allowed)) {
+// El tipo se lee del contenido del archivo, no de lo que declara el navegador.
+$extPorTipo = [IMAGETYPE_PNG => 'png', IMAGETYPE_JPEG => 'jpg', IMAGETYPE_WEBP => 'webp'];
+$info = @getimagesize($file['tmp_name']);
+if ($file['error'] !== UPLOAD_ERR_OK || !$info || !isset($extPorTipo[$info[2]])) {
     http_response_code(400);
     echo json_encode(['error' => 'Solo se permiten PNG, JPG o WebP.']);
     exit;
@@ -24,9 +26,9 @@ if ($file['size'] > $maxSize) {
     exit;
 }
 
-$ext      = pathinfo($file['name'], PATHINFO_EXTENSION);
+$ext      = $extPorTipo[$info[2]];
 $slug     = preg_replace('/[^a-z0-9\-]/', '', strtolower($_POST['slug'] ?? 'producto'));
-$filename = $slug . '-' . uniqid() . '.' . strtolower($ext);
+$filename = $slug . '-' . uniqid() . '.' . $ext;
 $destDir  = __DIR__ . '/../assets/images/productos/';
 $destPath = $destDir . $filename;
 

@@ -25,6 +25,7 @@ RewriteRule ^(.+)$ $1.html [L]
   Header set X-Content-Type-Options "nosniff"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Strict-Transport-Security "max-age=31536000"
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://app.konexa.com.co; style-src 'self' 'unsafe-inline' https://app.konexa.com.co; img-src 'self' data: blob: https:; media-src 'self' blob: https://jkrcdsneilbnuwvqgjba.supabase.co; font-src 'self' data:; connect-src 'self' https://jkrcdsneilbnuwvqgjba.supabase.co wss://jkrcdsneilbnuwvqgjba.supabase.co https://api.eclipseagency.com.co https://app.konexa.com.co https://cdn.jsdelivr.net; frame-src https://app.konexa.com.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 </IfModule>
 
 # Archivos internos que no se publican
