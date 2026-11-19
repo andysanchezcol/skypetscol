@@ -814,8 +814,8 @@ async function loadRecentDocs() {
   if (!data?.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Sin documentos aún</td></tr>'; return; }
   tbody.innerHTML = data.map(d => `
     <tr>
-      <td><strong>${d.name}</strong><div style="font-size:0.72rem;color:var(--muted)">${DOC_TYPE_NAMES[d.type]||d.type}</div></td>
-      <td><div>${d.profiles?.full_name||'—'}</div><div style="font-size:0.72rem;color:var(--muted)">${d.profiles?.email||''}</div></td>
+      <td><strong>${esc(d.name)}</strong><div style="font-size:0.72rem;color:var(--muted)">${DOC_TYPE_NAMES[d.type]||d.type}</div></td>
+      <td><div>${esc(d.profiles?.full_name||'—')}</div><div style="font-size:0.72rem;color:var(--muted)">${esc(d.profiles?.email)}</div></td>
       <td><span class="badge ${statusBadge(d.status)}">${d.status}</span></td>
       <td style="font-size:0.82rem">${d.expiry_date ? formatDate(d.expiry_date) : '—'}</td>
       <td><button class="btn-sm btn-sm-red" onclick="deleteDoc('${d.id}','${d.file_path||''}')">Eliminar</button></td>
@@ -868,8 +868,7 @@ async function createClient() {
         email,
         full_name: name,
         phone:    phone || null,
-        city:     city  || null,
-        is_admin: false
+        city:     city  || null
       });
     }
 
@@ -892,6 +891,8 @@ async function loadClients() {
   populateClientSelect();
 }
 
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
 function renderClients(clients) {
   const tbody = document.getElementById('clientsBody');
   if (!clients.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:48px;color:var(--muted)">No hay clientes registrados aún</td></tr>'; return; }
@@ -899,12 +900,12 @@ function renderClients(clients) {
     <tr>
       <td>
         <div class="user-cell">
-          <div class="user-avatar">${(c.full_name||c.email||'?')[0].toUpperCase()}</div>
-          <div><div class="user-name">${c.full_name||'Sin nombre'}</div><div class="user-email">${c.email||''}</div></div>
+          <div class="user-avatar">${esc((c.full_name||c.email||'?')[0].toUpperCase())}</div>
+          <div><div class="user-name">${esc(c.full_name||'Sin nombre')}</div><div class="user-email">${esc(c.email)}</div></div>
         </div>
       </td>
-      <td style="font-size:0.85rem">${c.phone||'—'}</td>
-      <td style="font-size:0.85rem">${c.city||'—'}</td>
+      <td style="font-size:0.85rem">${esc(c.phone||'—')}</td>
+      <td style="font-size:0.85rem">${esc(c.city||'—')}</td>
       <td><button class="btn-sm btn-sm-ghost" onclick="openUploadForClient('${c.id}')">Ver docs</button></td>
       <td id="trip-badge-${c.id}" style="font-size:0.78rem;color:var(--muted);min-width:150px">—</td>
       <td style="font-size:0.78rem;color:var(--muted)">${formatDate(c.created_at)}</td>
@@ -967,7 +968,7 @@ async function loadTrips(silent = false) {
 
   const { data, error } = await sb.functions.invoke('arca-viajes', { body: {} });
   if (error || !data) {
-    if (!silent) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Error al cargar viajes: ${error?.message || ''}</td></tr>`;
+    if (!silent) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Error al cargar viajes: ${esc(error?.message)}</td></tr>`;
     return;
   }
 
@@ -1030,20 +1031,20 @@ function renderTrips(trips) {
     return `
       <tr>
         <td>
-          <div style="font-weight:600">${t.client_name || '<em style="color:var(--muted);font-weight:400">Sin cliente</em>'}</div>
-          <div style="font-size:0.8rem;color:var(--muted)">${t.pet_name || '—'}</div>
+          <div style="font-weight:600">${t.client_name ? esc(t.client_name) : '<em style="color:var(--muted);font-weight:400">Sin cliente</em>'}</div>
+          <div style="font-size:0.8rem;color:var(--muted)">${esc(t.pet_name || '—')}</div>
         </td>
         <td style="font-size:0.85rem">
           ${formatDate(t.flight_date)}
-          <div style="font-size:0.78rem;color:var(--muted)">${[t.destination, t.airline].filter(Boolean).join(' · ') || '—'}</div>
+          <div style="font-size:0.78rem;color:var(--muted)">${esc([t.destination, t.airline].filter(Boolean).join(' · ') || '—')}</div>
         </td>
-        <td style="font-size:0.85rem">${t.seller_name || '—'}</td>
+        <td style="font-size:0.85rem">${esc(t.seller_name || '—')}</td>
         <td style="min-width:160px">
           <div style="display:flex;align-items:center;gap:6px">
             <div class="progress-bar-wrap" style="flex:1;margin-top:0;max-width:100px"><div class="progress-bar" style="width:${pct}%;background:${barColor}"></div></div>
             <span style="font-size:0.75rem;font-weight:600;color:${barColor}">${t.sent_docs}/${t.total_docs}</span>
           </div>
-          ${pendientes ? `<div style="font-size:0.72rem;color:var(--muted);margin-top:4px;max-width:280px">Pendientes: ${pendientes}</div>` : ''}
+          ${pendientes ? `<div style="font-size:0.72rem;color:var(--muted);margin-top:4px;max-width:280px">Pendientes: ${esc(pendientes)}</div>` : ''}
         </td>
         <td><span class="badge ${badge.cls}">${badge.label}</span></td>
         <td><button class="btn-sm btn-sm-teal" onclick='openUploadForTrip(${JSON.stringify(t).replace(/'/g, "&#39;")})'>+ Subir doc</button></td>
@@ -1135,8 +1136,8 @@ function renderAllDocs(data) {
   if (!data?.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--muted)">Sin documentos</td></tr>'; return; }
   tbody.innerHTML = data.map(d => `
     <tr>
-      <td><strong>${d.name}</strong></td>
-      <td style="font-size:0.82rem">${d.profiles?.full_name||'—'}<div style="font-size:0.7rem;color:var(--muted)">${d.profiles?.email||''}</div></td>
+      <td><strong>${esc(d.name)}</strong></td>
+      <td style="font-size:0.82rem">${esc(d.profiles?.full_name||'—')}<div style="font-size:0.7rem;color:var(--muted)">${esc(d.profiles?.email)}</div></td>
       <td><span class="badge badge-teal" style="font-size:0.68rem">${DOC_TYPE_NAMES[d.type]||d.type}</span></td>
       <td><span class="badge ${statusBadge(d.status)}">${d.status}</span></td>
       <td style="font-size:0.82rem">${d.expiry_date ? formatDate(d.expiry_date) : '—'}</td>
@@ -1223,13 +1224,13 @@ async function loadTripChecklist(clientId) {
   const rows = sorted.map(d => {
     const ok = d.doc_status === 'enviado';
     return `<div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;${ok ? 'color:var(--success)' : ''}">
-      <span>${ok ? '✅' : '🕐'} ${d.doc_name}</span>
+      <span>${ok ? '✅' : '🕐'} ${esc(d.doc_name)}</span>
       ${ok && d.doc_sent_at ? `<span style="font-size:0.72rem;color:var(--muted)">${formatDate(d.doc_sent_at)}</span>` : ''}
     </div>`;
   }).join('');
 
   box.innerHTML = `
-    <div style="font-weight:600;margin-bottom:6px">✈️ Viaje de ${pet_name || 'la mascota'} — ${destination || 'destino sin definir'} (${formatDate(flight_date)})</div>
+    <div style="font-weight:600;margin-bottom:6px">✈️ Viaje de ${esc(pet_name || 'la mascota')} — ${esc(destination || 'destino sin definir')} (${formatDate(flight_date)})</div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;max-width:280px">
       <div class="progress-bar-wrap" style="flex:1;margin-top:0"><div class="progress-bar" style="width:${pct}%;background:${barColor}"></div></div>
       <span style="font-size:0.72rem;font-weight:600;color:${barColor};flex-shrink:0">${enviados}/${total}</span>

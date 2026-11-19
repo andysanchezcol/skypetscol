@@ -813,6 +813,8 @@ function renderDocs() {
   container.innerHTML = `<div class="doc-grid">${filtered.map(docCard).join('')}</div>`;
 }
 
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
 function docCard(doc) {
   const icon      = DOC_ICONS[doc.type]  || '📄';
   const typeName  = DOC_NAMES[doc.type]  || 'Documento';
@@ -826,13 +828,13 @@ function docCard(doc) {
     <div class="doc-card-top">
       <div class="doc-type-icon">${icon}</div>
       <div class="doc-card-meta">
-        <div class="doc-name">${doc.name}</div>
+        <div class="doc-name">${esc(doc.name)}</div>
         <div class="doc-type">${typeName}</div>
       </div>
       <span class="doc-status ${doc.status}">${statusLbl}</span>
     </div>
     ${issued || expiry ? `<div class="doc-dates">${issued ? `<span>${issued}</span>` : ''}${expiry ? `<span>${expiry}</span>` : ''}</div>` : ''}
-    ${doc.notes ? `<div class="doc-notes">${doc.notes}</div>` : ''}
+    ${doc.notes ? `<div class="doc-notes">${esc(doc.notes)}</div>` : ''}
     <button class="btn-download ${!hasFile ? 'no-file' : ''}"
             ${hasFile ? `data-doc-id="${doc.id}"` : 'disabled'}>
       ${hasFile ? '⬇️ Descargar documento' : '📋 Documento en proceso'}

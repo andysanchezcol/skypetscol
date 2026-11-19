@@ -2,8 +2,6 @@ User-agent: *
 Disallow: /admin.html
 Disallow: /portal.html
 Disallow: /cotizador.html
-Disallow: /deploy.php
-Disallow: /supabase/
 
 # AI bots — permitir indexación y citas
 User-agent: GPTBot

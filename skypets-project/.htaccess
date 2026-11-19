@@ -3,6 +3,10 @@ DirectoryIndex index.html
 
 RewriteEngine On
 
+# Siempre por https
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
 # /blog → /blog/index.html (excepción necesaria porque blog/ es directorio)
 RewriteRule ^blog$ /blog/index.html [L]
 
@@ -17,7 +21,14 @@ RewriteRule ^(.+)$ $1.html [L]
   Header set X-Frame-Options "DENY"
   Header set X-Content-Type-Options "nosniff"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Strict-Transport-Security "max-age=31536000"
 </IfModule>
+
+# Archivos internos que no se publican
+RedirectMatch 404 ^/(supabase|\.claude)(/|$)
+<FilesMatch "^(\.DS_Store|CLAUDE\.md|README\.md|netlify\.toml)$">
+  Require all denied
+</FilesMatch>
 
 # Cache de assets estáticos
 <IfModule mod_expires.c>

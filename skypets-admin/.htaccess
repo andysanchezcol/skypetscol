@@ -2,7 +2,7 @@ Options -Indexes
 DirectoryIndex index.php
 
 # Proteger archivos sensibles
-<FilesMatch "\.(json|log|sh|env)$">
+<FilesMatch "\.(json|log|sh|env|sql|md|phar|lock)$">
     Order Allow,Deny
     Deny from all
 </FilesMatch>
