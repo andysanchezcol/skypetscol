@@ -1972,6 +1972,7 @@ footer {
 </section>
 
 <!-- ══ STATS ══ -->
+<!-- PENDIENTE (Andrés), L12: cifras sin fuente en el repo y distintas a las de /nosotros (aquí 620 y 169; allí 591 y 168). Define una sola fuente (Arca) y una fecha de corte, y pon «a [fecha]» junto a las cifras. -->
 <div class="stats" id="statsEl">
   <div class="stats-inner">
     <div class="stat-item reveal">
@@ -2218,6 +2219,7 @@ footer {
       </div>
       <div class="why-feat">
         <div class="why-feat-icon">🌍</div>
+        <!-- PENDIENTE (Andrés), L12: «+40 destinos» sin respaldo; confirma la lista real de destinos atendidos. -->
         <div><h4>+40 Destinos</h4><p>Europa, EE.UU., Latinoamérica y más</p></div>
       </div>
       <div class="why-feat">
@@ -2246,6 +2248,7 @@ footer {
       </h2>
     </div>
 
+    <!-- PENDIENTE (Andrés), L11/L12: estas 3 reseñas y el 5.0 no tienen fuente verificable en el repo. Antes de publicar: (1) pega aquí el enlace directo a tu perfil de Google (el actual es una búsqueda genérica), (2) confirma que cada texto, nombre y fecha coincide con la reseña real (los «hace 3 meses» envejecen: usa la fecha real) y (3) confirma el 5.0 con el número de reseñas. Si no se pueden respaldar, elimina el bloque. -->
     <!-- Google summary -->
     <div class="google-bar reveal">
       <div class="gb-score">
@@ -2620,194 +2623,7 @@ if (statsEl) {
 }
 </script>
 
-<!-- ═══ COOKIE BANNER ═══ -->
-<div id="cookie-banner" role="dialog" aria-label="Consentimiento de cookies" aria-live="polite" style="display:none">
-  <div class="cookie-paw" aria-hidden="true">🐾</div>
-  <div class="cookie-body">
-    <p>En <strong>SkyPets</strong> utilizamos cookies para mejorar tu experiencia, analizar el tráfico del sitio y ofrecer contenido relevante. Puedes aceptar todas las cookies o configurar tus preferencias.</p>
-    <a href="/politica-de-cookies" class="cookie-policy-link">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
-      Leer Política de Cookies
-    </a>
-  </div>
-  <div class="cookie-actions">
-    <button class="cookie-btn-accept" id="cookieBtnAccept">
-      ✓ Aceptar cookies
-    </button>
-    <button class="cookie-btn-config" id="cookieBtnConfig">
-      ⚙ Configurar preferencias
-    </button>
-  </div>
-</div>
-
-<!-- Modal de preferencias -->
-<div id="cookie-modal-overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div id="cookie-modal">
-    <div class="modal-header">
-      <div class="modal-header-left">
-        <div class="modal-logo" aria-hidden="true">🐾</div>
-        <div>
-          <div class="modal-title" id="modalTitle">Preferencias de cookies</div>
-          <div class="modal-subtitle">Elige qué cookies permites</div>
-        </div>
-      </div>
-      <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
-    </div>
-
-    <div class="modal-body">
-      <p class="modal-desc">
-        Personaliza qué tipo de cookies aceptas. Las cookies necesarias no se pueden desactivar porque son esenciales para que el sitio funcione.
-      </p>
-
-      <!-- Necesarias -->
-      <div class="cookie-toggle-row">
-        <div class="toggle-info">
-          <div class="toggle-label">
-            🔒 Necesarias
-            <span class="toggle-required">Siempre activas</span>
-          </div>
-          <p class="toggle-desc">Esenciales para la navegación, autenticación y funcionamiento básico del sitio. No pueden desactivarse.</p>
-        </div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="toggleNecesarias" checked disabled>
-          <span class="toggle-track"></span>
-        </label>
-      </div>
-
-      <!-- Estadísticas -->
-      <div class="cookie-toggle-row">
-        <div class="toggle-info">
-          <div class="toggle-label">📊 Estadísticas</div>
-          <p class="toggle-desc">Nos ayudan a entender cómo navegas por el sitio mediante información anónima (Google Analytics).</p>
-        </div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="toggleEstadisticas">
-          <span class="toggle-track"></span>
-        </label>
-      </div>
-
-      <!-- Marketing -->
-      <div class="cookie-toggle-row">
-        <div class="toggle-info">
-          <div class="toggle-label">📣 Marketing</div>
-          <p class="toggle-desc">Permiten mostrarte anuncios relevantes según tu comportamiento (Facebook Pixel, Google Ads).</p>
-        </div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="toggleMarketing">
-          <span class="toggle-track"></span>
-        </label>
-      </div>
-
-      <!-- Preferencias -->
-      <div class="cookie-toggle-row">
-        <div class="toggle-info">
-          <div class="toggle-label">⚙️ Preferencias</div>
-          <p class="toggle-desc">Recuerdan tu configuración e idioma para personalizar tu experiencia en futuras visitas.</p>
-        </div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="togglePreferencias">
-          <span class="toggle-track"></span>
-        </label>
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="modal-btn-save" id="modalBtnSave">
-        Guardar mis preferencias
-      </button>
-      <button class="modal-btn-reject" id="modalBtnReject">
-        Solo cookies necesarias
-      </button>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ── COOKIE CONSENT ── */
-(function () {
-  const STORAGE_KEY = 'sp_cookie_consent';
-
-  function getConsent() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; }
-  }
-
-  function saveConsent(prefs) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...prefs, ts: Date.now() }));
-  }
-
-  function hideBanner() {
-    const b = document.getElementById('cookie-banner');
-    b.classList.add('hiding');
-    b.addEventListener('animationend', () => b.style.display = 'none', { once: true });
-  }
-
-  function closeModal() {
-    const o = document.getElementById('cookie-modal-overlay');
-    o.style.display = 'none';
-  }
-
-  function openModal() {
-    const saved = getConsent();
-    if (saved) {
-      document.getElementById('toggleEstadisticas').checked  = !!saved.estadisticas;
-      document.getElementById('toggleMarketing').checked     = !!saved.marketing;
-      document.getElementById('togglePreferencias').checked  = !!saved.preferencias;
-    }
-    document.getElementById('cookie-modal-overlay').style.display = 'flex';
-    document.getElementById('modalClose').focus();
-  }
-
-  function acceptAll() {
-    saveConsent({ necesarias: true, estadisticas: true, marketing: true, preferencias: true });
-    hideBanner();
-    closeModal();
-  }
-
-  function saveSelected() {
-    saveConsent({
-      necesarias:    true,
-      estadisticas:  document.getElementById('toggleEstadisticas').checked,
-      marketing:     document.getElementById('toggleMarketing').checked,
-      preferencias:  document.getElementById('togglePreferencias').checked,
-    });
-    hideBanner();
-    closeModal();
-  }
-
-  function rejectAll() {
-    saveConsent({ necesarias: true, estadisticas: false, marketing: false, preferencias: false });
-    hideBanner();
-    closeModal();
-  }
-
-  /* Init */
-  document.addEventListener('DOMContentLoaded', function () {
-    if (!getConsent()) {
-      const banner = document.getElementById('cookie-banner');
-      /* Show with a slight delay so page paint finishes first */
-      setTimeout(() => { banner.style.display = 'flex'; }, 800);
-    }
-
-    document.getElementById('cookieBtnAccept').addEventListener('click', acceptAll);
-    document.getElementById('cookieBtnConfig').addEventListener('click', openModal);
-    document.getElementById('modalClose').addEventListener('click', closeModal);
-    document.getElementById('modalBtnSave').addEventListener('click', saveSelected);
-    document.getElementById('modalBtnReject').addEventListener('click', rejectAll);
-
-    /* Close modal on overlay click */
-    document.getElementById('cookie-modal-overlay').addEventListener('click', function (e) {
-      if (e.target === this) closeModal();
-    });
-
-    /* Keyboard: Escape closes modal */
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && document.getElementById('cookie-modal-overlay').style.display !== 'none') {
-        closeModal();
-      }
-    });
-  });
-})();
-</script>
+<!-- Banner de cookies: ahora vive en /assets/scripts/consentimiento.js (lo carga layout.js). -->
 <script>
 (function(){
   var SB_URL='https://jkrcdsneilbnuwvqgjba.supabase.co';
@@ -2957,7 +2773,7 @@ document.querySelectorAll('.mv-card').forEach(function(card){
   card.addEventListener('mouseleave',function(){card.style.transform='';});
 });
 </script>
-<script src="/assets/scripts/layout.js?v=4" defer></script>
+<script src="/assets/scripts/layout.js?v=5" defer></script>
 <script>
 (function(){
   var WA_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
@@ -2999,7 +2815,6 @@ document.querySelectorAll('.mv-card').forEach(function(card){
     .catch(function(){});
 })();
 </script>
-<!-- Chat web de Konexa (SkyPets) -->
-<script src="https://app.konexa.com.co/widget.js" data-clave="wc__K4LK-tGkaI-JtxFUvg9qw" async></script>
+<!-- Chat de Konexa: lo carga /assets/scripts/consentimiento.js solo si la persona lo acepta en el banner de cookies. -->
 </body>
 </html>

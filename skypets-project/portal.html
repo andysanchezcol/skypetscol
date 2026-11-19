@@ -419,6 +419,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V7l-3 2-3-2-3 2-3-2-3 2-3-2v1l3 2v9a2 2 0 002 2h8a2 2 0 002-2v-9l3-2z"/><path d="M3 8l9 6 9-6"/></svg>
         ¿No puedes ingresar? Enviar link de acceso
       </button>
+      <p style="font-size:.72rem;color:#6B5540;text-align:center;margin:14px 0 0;line-height:1.5">Al ingresar, tus datos se tratan según nuestra <a href="/politica-de-privacidad" style="color:#006F67;text-decoration:underline">Política de Privacidad</a>. «Continuar con Google» comparte tu correo con Google. Este portal es para mayores de 18 años.</p>
     </div>
 
     <!-- Magic link (alternativa cuando usuario/contraseña falla) -->
@@ -449,6 +450,10 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg1); color: var(--
       <div class="form-group">
         <label class="form-label">Contraseña</label>
         <input type="password" class="form-input" id="regPass" placeholder="Mínimo 6 caracteres">
+      </div>
+      <div class="form-group" style="flex-direction:row;align-items:flex-start;gap:10px">
+        <input type="checkbox" id="regConsent" style="width:20px;height:20px;margin-top:2px;flex-shrink:0;accent-color:#008D83">
+        <label for="regConsent" style="font-size:.78rem;line-height:1.5">He leído la <a href="/politica-de-privacidad" target="_blank" rel="noopener" style="color:#006F67;text-decoration:underline">Política de Privacidad</a> y autorizo el tratamiento de mis datos para gestionar mi cuenta y mis documentos. Soy mayor de 18 años.</label>
       </div>
       <button class="btn-auth" id="btnRegister" onclick="doRegister()">Crear mi cuenta</button>
     </div>
@@ -664,6 +669,7 @@ async function doRegister() {
   const email = document.getElementById('regEmail').value.trim();
   const pass  = document.getElementById('regPass').value;
   if (!name || !email || !pass) return showMsg('Completa todos los campos.');
+  if (!document.getElementById('regConsent').checked) return showMsg('Marca la casilla de autorización para crear tu cuenta.');
   if (pass.length < 6) return showMsg('La contraseña debe tener al menos 6 caracteres.');
   const btn = document.getElementById('btnRegister');
   btn.disabled = true; btn.textContent = 'Creando cuenta...';
