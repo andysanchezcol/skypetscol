@@ -12,14 +12,14 @@ const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").match
  */
 if (!reduceMotion) {
   /* Cards en grid (equipo, servicios, blog) — stagger 60ms */
-  inView(".equipo-grid .team-card, .svc-grid .svc-card, .blog-grid .blog-card", (info) => {
-    const siblings = info.target.parentElement.querySelectorAll(
+  inView(".equipo-grid .team-card, .svc-grid .svc-card, .blog-grid .blog-card", (el) => {
+    const siblings = el.parentElement.querySelectorAll(
       ".team-card, .svc-card, .blog-card"
     );
-    const index = Array.from(siblings).indexOf(info.target);
+    const index = Array.from(siblings).indexOf(el);
 
     animate(
-      info.target,
+      el,
       { opacity: [0, 1], y: [32, 0], scale: [0.97, 1] },
       {
         duration: 0.45,
@@ -30,18 +30,18 @@ if (!reduceMotion) {
   }, { amount: 0.15 });
 
   /* Elementos genéricos .reveal que no son cards */
-  inView(".reveal:not(.team-card):not(.svc-card):not(.blog-card)", (info) => {
+  inView(".reveal:not(.team-card):not(.svc-card):not(.blog-card)", (el) => {
     animate(
-      info.target,
+      el,
       { opacity: [0, 1], y: [24, 0] },
       { duration: 0.5, easing: "ease-out" }
     );
   }, { amount: 0.1 });
 
   /* Títulos de sección */
-  inView(".section-title, .section-sub", (info) => {
+  inView(".section-title, .section-sub", (el) => {
     animate(
-      info.target,
+      el,
       { opacity: [0, 1], y: [20, 0] },
       { duration: 0.55, easing: "ease-out" }
     );
@@ -94,11 +94,11 @@ if (!reduceMotion) {
  * Los stat-stickers del hero entran con rebote suave.
  */
 if (!reduceMotion) {
-  inView(".stat-sticker", (info) => {
+  inView(".stat-sticker", (el) => {
     const stickers = document.querySelectorAll(".stat-sticker");
-    const index = Array.from(stickers).indexOf(info.target);
+    const index = Array.from(stickers).indexOf(el);
     animate(
-      info.target,
+      el,
       { opacity: [0, 1], scale: [0.7, 1], rotate: [index % 2 === 0 ? -6 : 6, 0] },
       {
         duration: 0.6,
