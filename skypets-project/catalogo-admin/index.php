@@ -237,6 +237,8 @@ body{font-family:'Poppins',sans-serif;background:#f4f0e8;color:var(--ink);min-he
 
 <script>
 /* ══ Estado ══ */
+/* Escapa texto antes de meterlo en HTML */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let products    = [];
 let editIdx     = -1;
 let variantType = 'none';
@@ -257,7 +259,7 @@ function renderTable() {
   tbody.innerHTML = products.map((p, i) => {
     const firstImg = p.variants?.length ? (p.variants[0].images[0] || '') : (p.images?.[0] || '');
     const thumb = firstImg
-      ? `<img class="prod-thumb" src="${firstImg}" alt="${p.name}">`
+      ? `<img class="prod-thumb" src="${esc(firstImg)}" alt="${esc(p.name)}">`
       : `<div class="prod-thumb-empty">📦</div>`;
     const varCount = p.variants?.length || 0;
     const varInfo  = varCount ? `${varCount} variante${varCount>1?'s':''}` : '—';
@@ -265,8 +267,8 @@ function renderTable() {
     return `<tr>
       <td class="drag-handle" title="Reordenar">⠿</td>
       <td>${thumb}</td>
-      <td><strong>${p.name}</strong></td>
-      <td><span class="cat-pill ${catClass}">${p.badge}</span></td>
+      <td><strong>${esc(p.name)}</strong></td>
+      <td><span class="cat-pill ${catClass}">${esc(p.badge)}</span></td>
       <td>${varInfo}</td>
       <td style="display:flex;gap:8px">
         <button class="btn btn-teal btn-sm" onclick="openDrawer(${i})">Editar</button>
@@ -326,7 +328,7 @@ function resetDrawer() {
 function addFeature(val = '') {
   const row = document.createElement('div');
   row.className = 'feature-row';
-  row.innerHTML = `<input type="text" placeholder="Ej: Aprobada por aerolíneas colombianas" value="${val}">
+  row.innerHTML = `<input type="text" placeholder="Ej: Aprobada por aerolíneas colombianas" value="${esc(val)}">
     <button class="btn-icon" onclick="this.parentElement.remove()" title="Eliminar">✕</button>`;
   document.getElementById('featuresList').appendChild(row);
 }
@@ -355,8 +357,8 @@ function addVariant(data = null) {
   card.innerHTML = `
     <button class="variant-remove" onclick="removeVariant(this,'${vid}')" title="Eliminar variante">✕</button>
     <div class="variant-card-header">
-      ${isColor ? `<input type="color" class="color-input" value="${data?.color || '#888888'}">` : ''}
-      <input type="text" class="variant-label-input" placeholder="${isColor ? 'Nombre del color (ej: Negro)' : 'Talla (ej: S, M, L, XL)'}" value="${data?.label || ''}">
+      ${isColor ? `<input type="color" class="color-input" value="${esc(data?.color || '#888888')}">` : ''}
+      <input type="text" class="variant-label-input" placeholder="${isColor ? 'Nombre del color (ej: Negro)' : 'Talla (ej: S, M, L, XL)'}" value="${esc(data?.label || '')}">
     </div>
     <div style="font-size:0.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em">Fotos de esta variante</div>
     <div class="img-upload-zone" id="drop_${vid}">
@@ -407,7 +409,7 @@ function renderMainPreviews() {
   const el = document.getElementById('previewMain');
   el.innerHTML = mainImages.map((img, i) => `
     <div class="img-preview-item">
-      <img src="${img.path}" alt="foto ${i+1}">
+      <img src="${esc(img.path)}" alt="foto ${i+1}">
       ${i===0 ? '<span class="img-main-badge">Principal</span>' : ''}
       <button class="img-remove" onclick="removeImg('main',${i})">✕</button>
     </div>`).join('');
@@ -418,7 +420,7 @@ function renderVariantPreviews(vid) {
   if (!el) return;
   el.innerHTML = (variantImgs[vid] || []).map((img, i) => `
     <div class="img-preview-item">
-      <img src="${img.path}" alt="foto ${i+1}">
+      <img src="${esc(img.path)}" alt="foto ${i+1}">
       ${i===0 ? '<span class="img-main-badge">Principal</span>' : ''}
       <button class="img-remove" onclick="removeImg('${vid}',${i})">✕</button>
     </div>`).join('');

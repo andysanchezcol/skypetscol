@@ -4,7 +4,8 @@
 // es el texto real que SkyPets ya usaba manualmente por correo — el resto de tipos
 // se redactó con el mismo tono pero SIN inventar datos de vigencia o requisitos que
 // no están confirmados; revisar con Andrés antes de dar por bueno cada uno.
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.119.0'
+import { escapeHtml, leerJson, secretoValido, UUID_RE } from '../_compartido/seguridad.ts'
 
 interface DocumentRecord {
   id: string
@@ -166,13 +167,20 @@ const BAJA_CORREO = 'info@skypetscol.com'
 const BAJA_URL = 'https://skypetscol.com/eliminar-mis-datos'
 
 Deno.serve(async (req: Request) => {
-  // Si hay NOTIFY_SECRETO, la llamada debe traer el mismo valor (la hace un trigger de la base, sin JWT). Sin esa variable
-  // (proyecto anterior) se mantiene la verificación de JWT de Supabase.
+  // La llamada la hace un trigger de la base con el secreto compartido (sin JWT). Sin NOTIFY_SECRETO configurado la función NO responde:
+  // antes quedaba abierta a cualquiera que conociera la URL y podía mandar correos (con adjunto) a los clientes.
   const secreto = Deno.env.get('NOTIFY_SECRETO')
-  if (secreto && req.headers.get('x-notify-secreto') !== secreto) return Response.json({ error: 'no_autorizado' }, { status: 401 })
+  if (!secreto) return Response.json({ error: 'configuracion_incompleta' }, { status: 500 })
+  if (!secretoValido(req.headers.get('x-notify-secreto'), secreto)) return Response.json({ error: 'no_autorizado' }, { status: 401 })
 
-  const payload = await req.json()
-  const record = payload.record as DocumentRecord
+  const payload = await leerJson(req)
+  const r = (payload?.record ?? null) as Record<string, unknown> | null
+  if (
+    !r || typeof r.owner_id !== 'string' || !UUID_RE.test(r.owner_id) || typeof r.type !== 'string' || r.type.length > 80 ||
+    typeof r.name !== 'string' || r.name.length > 300 ||
+    (r.file_path != null && (typeof r.file_path !== 'string' || r.file_path.length > 400 || r.file_path.includes('..')))
+  ) return Response.json({ error: 'payload_invalido' }, { status: 400 })
+  const record = r as unknown as DocumentRecord
 
   const supabaseAdmin = createClient(
     Deno.env.get('SUPABASE_URL')!,
@@ -210,8 +218,8 @@ Deno.serve(async (req: Request) => {
 
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#1a1a1a;line-height:1.5">
-      <p>Hola ${firstName},</p>
-      <p>Te hacemos entrega de la documentación correspondiente para el viaje de ${petPhrase}: <strong>${info.label}</strong>. Te pedimos revisarla con atención y validar que todos los datos estén correctos según la información suministrada.</p>
+      <p>Hola ${escapeHtml(firstName)},</p>
+      <p>Te hacemos entrega de la documentación correspondiente para el viaje de ${escapeHtml(petPhrase)}: <strong>${info.label}</strong>. Te pedimos revisarla con atención y validar que todos los datos estén correctos según la información suministrada.</p>
       <p>Gracias por confiar en nosotros para acompañarte en este proceso.</p>
       ${recsHtml ? `<p><strong>Recomendaciones importantes:</strong></p>${recsHtml}` : ''}
       <p><strong>Importante:</strong> si necesitas realizar alguna solicitud, corrección o requieres información adicional, comunícate directamente con nosotros.</p>

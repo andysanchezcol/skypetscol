@@ -780,7 +780,7 @@ async function loadDocuments(userId) {
   let data, error;
   try {
     ({ data, error } = await withRetry(
-      () => sb.from('documents').select('*').eq('owner_id', userId).order('created_at', { ascending: false }),
+      () => sb.from('documents').select('id,type,name,file_path,file_url,issued_date,expiry_date,status,notes').eq('owner_id', userId).order('created_at', { ascending: false }),
       { attempts: 3, timeoutMs: 12000 },
     ));
   } catch (_) {
@@ -995,7 +995,7 @@ async function initPortalSession() {
         let profile = null;
         try {
           ({ data: profile } = await withRetry(
-            () => sb.from('profiles').select('*').eq('id', user.id).single(),
+            () => sb.from('profiles').select('id,full_name,email,phone,city,country,avatar_url').eq('id', user.id).single(),
             { attempts: 2, timeoutMs: 8000 },
           ));
         } catch (_) {}
@@ -1018,7 +1018,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
     let profile = null;
     try {
       ({ data: profile } = await withRetry(
-        () => sb.from('profiles').select('*').eq('id', session.user.id).single(),
+        () => sb.from('profiles').select('id,full_name,email,phone,city,country,avatar_url').eq('id', session.user.id).single(),
         { attempts: 2, timeoutMs: 8000 },
       ));
     } catch (_) {}

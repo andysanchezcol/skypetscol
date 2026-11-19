@@ -211,9 +211,12 @@ function konexaDescargar(string $uuid): array {
 function driveFileId(string $url): string {
     // Foto guardada por Konexa: se identifica como «konexa-<uuid>» y se descarga de Konexa, no de Drive.
     if (preg_match('#/api/integracion/archivo/([0-9a-f-]{36})#i', $url, $m)) return 'konexa-' . strtolower($m[1]);
-    if (preg_match('/[?&]id=([^&]+)/', $url, $m)) return $m[1];
-    if (preg_match('/\/d\/([^\/]+)/', $url, $m)) return $m[1];
-    return '';
+    // El id sale de un enlace que escribió el cliente en el formulario: solo se acepta la forma real de un id de Drive
+    // (letras, números, _ y -). Así no puede colarse una ruta («../») ni comillas en el nombre del archivo temporal ni en los enlaces.
+    $id = '';
+    if (preg_match('/[?&]id=([^&]+)/', $url, $m)) $id = $m[1];
+    elseif (preg_match('/\/d\/([^\/]+)/', $url, $m)) $id = $m[1];
+    return preg_match('/^[A-Za-z0-9_-]{10,200}$/', $id) ? $id : '';
 }
 
 function downloadDriveImage(string $fileId): ?string {

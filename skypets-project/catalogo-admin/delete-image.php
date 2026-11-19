@@ -1,19 +1,19 @@
 <?php
-header('Content-Type: application/json');
+require_once __DIR__ . '/_comun.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405); echo json_encode(['error' => 'Método no permitido.']); exit;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') responderJson(405, ['error' => 'Método no permitido.']);
+exigirMismoOrigen();
+if (stripos((string)($_SERVER['CONTENT_TYPE'] ?? ''), 'application/json') !== 0) responderJson(415, ['error' => 'Se esperaba JSON.']);
+
+$input = json_decode((string)file_get_contents('php://input'), true);
+$path  = is_array($input) ? (string)($input['path'] ?? '') : '';
+
+// Solo archivos de imagen dentro de assets/images/productos/ (sin «..» ni subcarpetas)
+if (!preg_match('#^/assets/images/productos/([A-Za-z0-9][A-Za-z0-9._-]{0,150}\.(png|jpe?g|webp))$#i', $path, $m)) {
+    responderJson(400, ['error' => 'Ruta no válida.']);
 }
 
-$input = json_decode(file_get_contents('php://input'), true);
-$path  = $input['path'] ?? '';
+$fullPath = __DIR__ . '/../assets/images/productos/' . $m[1];
+if (is_file($fullPath)) unlink($fullPath);
 
-// Solo permitir rutas dentro de assets/images/productos/
-if (!preg_match('#^/assets/images/productos/[a-zA-Z0-9\-_.]+$#', $path)) {
-    http_response_code(400); echo json_encode(['error' => 'Ruta no válida.']); exit;
-}
-
-$fullPath = __DIR__ . '/..' . $path;
-if (file_exists($fullPath)) unlink($fullPath);
-
-echo json_encode(['ok' => true]);
+responderJson(200, ['ok' => true]);

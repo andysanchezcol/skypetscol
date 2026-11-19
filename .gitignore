@@ -14,3 +14,15 @@ skypets-admin/assets/images/tarjeta.jpg
 skypets-admin/composer.phar
 skypets-admin/composer-setup.php
 skypets-admin/instalar_fpdi.php
+
+# Secretos y variables de entorno: nunca se versionan (X02)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+skypets-admin/konexa_config.php
+skypets-admin/tmp/
+skypets-react/.env*

@@ -671,6 +671,8 @@ body {
 let PRODUCTS = [];
 
 /* Imágenes redimensionadas (WebP en caché) vía /img.php */
+/* Escapa texto del catálogo antes de meterlo en HTML (lo que viene de productos.json nunca se inserta tal cual) */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const IMG_RE = /^\/assets\/images\/productos\/[^/]+$/;
 function imgUrl(src, w) {
   return IMG_RE.test(src) ? `/img.php?w=${w}&src=${encodeURIComponent(src)}` : src;
@@ -696,22 +698,22 @@ function renderGrid() {
     const imgs = p.variants?.length ? (p.variants[0].images || []) : (p.images || []);
     const img1 = imgs[0] || '';
     const img2 = imgs[1] || img1;
-    const imgMain = img1 ? `<img class="prod-img main" src="${imgUrl(img1,640)}" alt="${p.name}" width="600" height="400" loading="${i < 3 ? 'eager' : 'lazy'}" decoding="async">` : '';
-    const imgAlt  = img2 ? `<img class="prod-img alt"  src="${imgUrl(img2,640)}" alt="${p.name} detalle" width="600" height="400" loading="lazy" decoding="async">` : '';
-    return `<article class="prod-card" data-cat="${p.category}" data-product="${i}" onclick="openModal(${i})">
+    const imgMain = img1 ? `<img class="prod-img main" src="${esc(imgUrl(img1,640))}" alt="${esc(p.name)}" width="600" height="400" loading="${i < 3 ? 'eager' : 'lazy'}" decoding="async">` : '';
+    const imgAlt  = img2 ? `<img class="prod-img alt"  src="${esc(imgUrl(img2,640))}" alt="${esc(p.name)} detalle" width="600" height="400" loading="lazy" decoding="async">` : '';
+    return `<article class="prod-card" data-cat="${esc(p.category)}" data-product="${i}" onclick="openModal(${i})">
       <div class="prod-img-wrap">
         ${imgMain}${imgAlt}
-        <span class="prod-badge${p.badgeClass?' '+p.badgeClass:''}">${p.badge}</span>
-        <a href="https://wa.me/573213556909?text=${p.wa}%20%F0%9F%90%BE"
+        <span class="prod-badge${p.badgeClass?' '+esc(p.badgeClass):''}">${esc(p.badge)}</span>
+        <a href="https://wa.me/573213556909?text=${esc(p.wa)}%20%F0%9F%90%BE"
            class="prod-wa-quick" aria-label="Consultar por WhatsApp" onclick="event.stopPropagation()">
           ${WA_SVG}
         </a>
       </div>
       <div class="prod-body">
-        <div class="prod-name">${p.name}</div>
-        <div class="prod-desc">${p.desc}</div>
+        <div class="prod-name">${esc(p.name)}</div>
+        <div class="prod-desc">${esc(p.desc)}</div>
         <div class="prod-footer">
-          <div class="prod-price">${p.price}<small>${p.variants?.length ? 'precio según variante' : ''}</small></div>
+          <div class="prod-price">${esc(p.price)}<small>${p.variants?.length ? 'precio según variante' : ''}</small></div>
           <button class="btn-detail">Ver detalles</button>
         </div>
       </div>
@@ -745,7 +747,7 @@ function initFilters() {
   const cats  = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
   const label = c => c.charAt(0).toUpperCase() + c.slice(1).replace(/-/g,' ');
   inner.innerHTML = `<button class="filter-btn active" data-cat="todos">Todos</button>`
-    + cats.map(c => `<button class="filter-btn" data-cat="${c}">${label(c)}</button>`).join('');
+    + cats.map(c => `<button class="filter-btn" data-cat="${esc(c)}">${esc(label(c))}</button>`).join('');
 
   inner.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -802,12 +804,12 @@ function openModal(idx) {
         <div class="modal-variants-label">${label}</div>
         <div class="variant-pills">
           ${p.variants.map((v, i) => isColor
-            ? `<button class="variant-dot${i===0?' active':''}" style="background-color:${v.color}"
-                 onclick="selectVariant(${i})" title="${v.label}">
-                 <span class="variant-dot-tooltip">${v.label}</span>
+            ? `<button class="variant-dot${i===0?' active':''}" style="background-color:${esc(v.color)}"
+                 onclick="selectVariant(${i})" title="${esc(v.label)}">
+                 <span class="variant-dot-tooltip">${esc(v.label)}</span>
                </button>`
             : `<button class="variant-pill${i===0?' active':''}"
-                 onclick="selectVariant(${i})">${v.label}</button>`
+                 onclick="selectVariant(${i})">${esc(v.label)}</button>`
           ).join('')}
         </div>
       </div>`;
@@ -820,7 +822,7 @@ function openModal(idx) {
   _renderGallery(p, 0);
 
   const featsEl = document.getElementById('modalFeatures');
-  featsEl.innerHTML = p.features.map(f => `<li>${f}</li>`).join('');
+  featsEl.innerHTML = (p.features || []).map(f => `<li>${esc(f)}</li>`).join('');
 
   document.getElementById('modalWaBtn').href = _waLink(p, 0);
   document.getElementById('modalOverlay').classList.add('open');
@@ -837,7 +839,7 @@ function _renderGallery(p, variantIdx) {
   if (imgs.length > 1) {
     thumbsEl.innerHTML = imgs.map((src, i) => `
       <div class="modal-thumb ${i===0?'active':''}" onclick="switchImg(${i})">
-        <img src="${imgUrl(src,96)}" alt="${p.name} vista ${i+1}" width="52" height="52" loading="lazy" decoding="async">
+        <img src="${esc(imgUrl(src,96))}" alt="${esc(p.name)} vista ${i+1}" width="52" height="52" loading="lazy" decoding="async">
       </div>`).join('');
     thumbsEl.style.display = '';
   } else {
@@ -891,7 +893,7 @@ function fillHeroGallery() {
   if (!imgs.length) return;
 
   gallery.innerHTML = imgs.map((src, i) =>
-    `<div class="cat-hero-slide${i === 0 ? ' active' : ''}"><img src="${imgUrl(src,900)}" alt="producto ${i + 1}" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>`
+    `<div class="cat-hero-slide${i === 0 ? ' active' : ''}"><img src="${esc(imgUrl(src,900))}" alt="producto ${i + 1}" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>`
   ).join('');
 
   const slides = gallery.querySelectorAll('.cat-hero-slide');

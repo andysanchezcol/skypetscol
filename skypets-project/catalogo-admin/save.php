@@ -1,26 +1,22 @@
 <?php
-header('Content-Type: application/json');
+require_once __DIR__ . '/_comun.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['error' => 'Método no permitido.']);
-    exit;
-}
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') responderJson(405, ['error' => 'Método no permitido.']);
+exigirMismoOrigen();
+// Solo JSON: un formulario de otro sitio no puede mandar este tipo de contenido sin permiso previo del navegador.
+if (stripos((string)($_SERVER['CONTENT_TYPE'] ?? ''), 'application/json') !== 0) responderJson(415, ['error' => 'Se esperaba JSON.']);
 
-$input = json_decode(file_get_contents('php://input'), true);
-if (!isset($input['products']) || !is_array($input['products'])) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Datos inválidos.']);
-    exit;
-}
+$raw = file_get_contents('php://input');
+if ($raw === false || strlen($raw) > 2_000_000) responderJson(413, ['error' => 'Cuerpo demasiado grande.']);
+$input = json_decode($raw, true);
+if (!is_array($input) || !isset($input['products']) || !is_array($input['products'])) responderJson(400, ['error' => 'Datos inválidos.']);
+
+$error = validarProductos($input['products']);
+if ($error !== null) responderJson(422, ['error' => $error]);
 
 $dataFile = __DIR__ . '/../data/productos.json';
-$result   = file_put_contents($dataFile, json_encode($input['products'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+$result   = file_put_contents($dataFile, json_encode($input['products'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT), LOCK_EX);
 
-if ($result === false) {
-    http_response_code(500);
-    echo json_encode(['error' => 'No se pudo guardar. Verifica permisos del archivo data/productos.json']);
-    exit;
-}
+if ($result === false) responderJson(500, ['error' => 'No se pudo guardar. Verifica permisos del archivo data/productos.json']);
 
-echo json_encode(['ok' => true]);
+responderJson(200, ['ok' => true]);

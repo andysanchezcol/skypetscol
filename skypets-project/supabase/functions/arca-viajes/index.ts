@@ -2,7 +2,8 @@
 // Reemplaza las funciones SQL get_all_trips y get_trip_checklist, que leían el esquema de Arca cuando Arca y el portal
 // compartían proyecto de Supabase. Ahora se pide a la API de integración de Arca con el secreto de esta empresa.
 //  Body {}: todos los viajes (solo admin del sitio).  Body { email }: checklist de ese cliente (admin o el propio cliente).
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.119.0'
+import { EMAIL_RE } from '../_compartido/seguridad.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -22,6 +23,7 @@ Deno.serve(async (req: Request) => {
   const { data: perfil } = await sb.from('profiles').select('is_admin').eq('id', user.id).maybeSingle()
   const esAdmin = perfil?.is_admin === true
   const { email } = await req.json().catch(() => ({})) as { email?: string }
+  if (email !== undefined && (typeof email !== 'string' || !EMAIL_RE.test(email.trim()))) return responder({ error: 'Correo inválido' }, 400)
 
   let ruta: string
   if (email) {
