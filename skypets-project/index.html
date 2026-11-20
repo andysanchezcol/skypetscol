@@ -1777,6 +1777,7 @@ footer {
 .nav-portal-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,141,131,0.40); }
 .nav-portal-btn::after { display: none !important; }
 
+.stat-num.mas::after{content:"+"}
 </style>
 
 <!-- ═══════════════════════════════════════
@@ -1968,22 +1969,21 @@ footer {
 </section>
 
 <!-- ══ STATS ══ -->
-<!-- PENDIENTE (Andrés), L12: cifras sin fuente en el repo y distintas a las de /nosotros (aquí 620 y 169; allí 591 y 168). Define una sola fuente (Arca) y una fecha de corte, y pon «a [fecha]» junto a las cifras. -->
 <div class="stats" id="statsEl">
   <div class="stats-inner">
     <div class="stat-item reveal">
       <div class="stat-icon">✈️</div>
-      <span class="stat-num" data-target="620">620</span>
+      <span class="stat-num mas" data-target="500">500</span>
       <span class="stat-lbl">Viajeros internacionales</span>
     </div>
     <div class="stat-item reveal d1">
       <div class="stat-icon">🧬</div>
-      <span class="stat-num teal-num" data-target="384">384</span>
+      <span class="stat-num teal-num mas" data-target="350">350</span>
       <span class="stat-lbl">Serologías realizadas</span>
     </div>
     <div class="stat-item reveal d2">
       <div class="stat-icon">🐾</div>
-      <span class="stat-num" data-target="169">169</span>
+      <span class="stat-num mas" data-target="150">150</span>
       <span class="stat-lbl">Pet Nannys</span>
     </div>
     <div class="stat-item reveal d3">
