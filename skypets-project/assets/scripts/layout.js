@@ -92,8 +92,7 @@
     <div class="footer-col">
       <h4>Contacto</h4>
       <div class="footer-contact">
-        <!-- PENDIENTE (Andrés): dirección física exacta del domicilio de SkyPets SAS (Ley 1480, art. 50). Agrégala aquí cuando la confirmes. -->
-        <div class="footer-cr">📍 Bogotá D.C., Colombia</div>
+        <div class="footer-cr">📍 Carrera 35 # 25B-32, Bogotá D.C., Colombia</div>
         <div class="footer-cr">📞 +57 321 355 6909</div>
         <div class="footer-cr">📧 info@skypetscol.com</div>
         <div class="footer-cr">🕗 Lun–Dom 8am–10pm</div>

@@ -264,6 +264,10 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
 .nav-portal-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,141,131,0.40); }
 .nav-portal-btn::after { display: none !important; }
 
+/* menú móvil y botón de cotizar legibles */
+@media(max-width:900px){.nav-links,.nav-actions{display:none!important}.nav-hamburger{display:flex!important}}
+.nav-cta{color:#2B2418!important}
+.nav-cta *{color:#2B2418}
 </style>
 
 <script type="application/ld+json">
@@ -569,8 +573,7 @@ footer { background: #2B2418; color: rgba(255,250,236,0.48); padding: clamp(56px
     <div class="footer-col">
       <h4>Contacto</h4>
       <div class="footer-contact">
-        <!-- PENDIENTE (Andrés): dirección física exacta del domicilio (Ley 1480, art. 50). -->
-        <div class="footer-cr">📍 Bogotá D.C., Colombia</div>
+        <div class="footer-cr">📍 Carrera 35 # 25B-32, Bogotá D.C., Colombia</div>
         <div class="footer-cr">📞 +57 321 355 6909</div>
         <div class="footer-cr">📧 info@skypetscol.com</div>
         <div class="footer-cr">🕗 Lun–Dom 8am–10pm</div>
